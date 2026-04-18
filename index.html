@@ -4,8 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#ffffff" id="themeColorMeta">
-  <title>Мобильный сервис | Задания • Работа • Помощь</title>
+  <title>Мобильный сервис | Облачная синхронизация</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+
   <style>
     * {
       margin: 0;
@@ -201,7 +207,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* карточки и текст — гарантия светлого цвета в тёмной теме */
     .greeting-card, .greeting-card p, .greeting-card strong, 
     .stat-block, .stat-block span, .stat-block strong,
     .menu-card h4, .menu-card p, .task-text, .job-title, .help-title,
@@ -348,6 +353,11 @@
       flex: 1;
       text-align: center;
     }
+    .cloud-save-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
     .job-card {
       background: var(--card-bg);
       border-radius: 24px;
@@ -408,6 +418,16 @@
       transform: translateY(-2px);
     }
     .small-text { font-size: 13px; margin-top: 5px; }
+    .sync-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background: var(--input-bg);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -458,6 +478,7 @@
 
       <div class="tab-pane" id="tab-tasks">
         <h3 style="font-size:20px; color:var(--text-primary);">📋 Общие задания</h3>
+        <div id="syncStatus" class="sync-status"><i class="fas fa-cloud-upload-alt"></i> <span>Облачная синхронизация активна</span></div>
         <div id="tasksContainer"></div>
         <div id="adminTaskPanel" style="display: none;">
           <div class="add-task-form">
@@ -467,10 +488,11 @@
           <div class="sync-buttons">
             <button id="exportTasksBtn" class="sync-btn"><i class="fas fa-download"></i> Экспорт</button>
             <button id="importTasksBtn" class="sync-btn"><i class="fas fa-upload"></i> Импорт</button>
+            <button id="forceSaveCloudBtn" class="sync-btn cloud-save-btn"><i class="fas fa-save"></i> Сохранить в облако</button>
           </div>
-          <div class="small-text" style="text-align:center;">⬆ Экспорт/импорт для синхронизации между устройствами</div>
+          <div class="small-text" style="text-align:center;">⬆ Экспорт/импорт + ручное сохранение в Firebase</div>
         </div>
-        <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания</div>
+        <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания — изменения сохраняются на всех устройствах</div>
       </div>
 
       <div class="tab-pane" id="tab-work">
@@ -483,7 +505,7 @@
       <div class="tab-pane" id="tab-help">
         <h3 style="font-size:20px; color:var(--text-primary);">🛟 Помощь</h3>
         <div class="help-card" id="telegramBtn"><i class="fab fa-telegram-plane"></i><div><div class="help-title">Написать разработчику</div><div class="small-text">Telegram: @vadymtm90</div></div></div>
-        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Как работают задания и статистика</div></div></div>
+        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Как работают задания и статистика (облачная синхронизация)</div></div></div>
       </div>
     </div>
     <div class="bottom-nav">
@@ -496,11 +518,30 @@
 </div>
 
 <script>
-  let tasks = [];
+  // ---------------------------- FIREBASE ИНИЦИАЛИЗАЦИЯ ----------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZYBxqh05e9HrEQXlaVYglP2RbPFdcivA",
+    authDomain: "bot-podkrutka.firebaseapp.com",
+    projectId: "bot-podkrutka",
+    storageBucket: "bot-podkrutka.firebasestorage.app",
+    messagingSenderId: "208233505545",
+    appId: "1:208233505545:web:f712433efb625fc8b2e9d8",
+    measurementId: "G-9Z3T5CQZMB"
+  };
+  
+  const firebaseApp = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const analytics = firebase.analytics();
+  
+  // Коллекция задач в Firestore (глобальная, один документ на задачу)
+  const tasksCollection = db.collection('global_tasks');
+  
+  let tasks = [];          // локальный массив задач, синхронизируется с Firestore
   let currentUser = null;
   let currentTheme = "light";
-
-  // DOM
+  let unsubscribeTasks = null;  // для отписки от реального времени
+  
+  // DOM элементы
   const authOverlay = document.getElementById('authOverlay');
   const mainApp = document.getElementById('mainApp');
   const loginFormDiv = document.getElementById('loginForm');
@@ -529,19 +570,9 @@
   const logoutCard = document.getElementById('logoutCard');
   const exportBtn = document.getElementById('exportTasksBtn');
   const importBtn = document.getElementById('importTasksBtn');
-
-  // Хранилище
-  function loadTasks() {
-    const stored = localStorage.getItem('globalTasks');
-    if (stored) tasks = JSON.parse(stored);
-    else tasks = [
-      { id: Date.now()+1, text: "Изучить новый интерфейс", completed: false },
-      { id: Date.now()+2, text: "Проверить статистику", completed: false },
-      { id: Date.now()+3, text: "Связаться с поддержкой", completed: false }
-    ];
-    saveTasks();
-  }
-  function saveTasks() { localStorage.setItem('globalTasks', JSON.stringify(tasks)); }
+  const forceSaveCloudBtn = document.getElementById('forceSaveCloudBtn');
+  
+  // ---------------------------- ЛОКАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ (без изменений) ----------------------------
   function loadUsers() {
     if (!localStorage.getItem('appUsers')) {
       localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } }));
@@ -549,8 +580,7 @@
   }
   function getUsers() { return JSON.parse(localStorage.getItem('appUsers') || '{}'); }
   function saveUsers(users) { localStorage.setItem('appUsers', JSON.stringify(users)); }
-
-  // Сессия (7 дней)
+  
   function saveSession(user) {
     localStorage.setItem('currentSession', JSON.stringify({ username: user.username, role: user.role, name: user.name, loginTime: Date.now() }));
   }
@@ -564,10 +594,203 @@
     } catch(e) { return null; }
   }
   function clearSession() { localStorage.removeItem('currentSession'); }
-
-  // Авторизация
-  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; currentUser = null; }
+  
+  // ---------------------------- FIRESTORE: РЕАЛЬНОЕ ВРЕМЯ + ОПЕРАЦИИ ----------------------------
+  function attachFirestoreListener() {
+    if (unsubscribeTasks) unsubscribeTasks();
+    unsubscribeTasks = tasksCollection.orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
+      const newTasks = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        newTasks.push({
+          id: doc.id,
+          text: data.text,
+          completed: data.completed || false,
+          createdAt: data.createdAt || 0
+        });
+      });
+      tasks = newTasks;
+      // Обновляем UI
+      if (document.getElementById('tab-tasks').classList.contains('active-pane') || true) {
+        renderTasksUI();
+      }
+      updateStatistics();
+    }, (error) => {
+      console.error("Ошибка Firestore:", error);
+      const statusDiv = document.getElementById('syncStatus');
+      if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка синхронизации, проверьте интернет';
+    });
+  }
+  
+  // Добавить задачу (только для админа)
+  async function addTaskToCloud(text) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    if (!text.trim()) return;
+    await tasksCollection.add({
+      text: text.trim(),
+      completed: false,
+      createdAt: Date.now(),
+      createdBy: currentUser.username
+    });
+  }
+  
+  // Переключить статус (доступно всем)
+  async function toggleTaskComplete(taskId, currentStatus) {
+    await tasksCollection.doc(taskId).update({
+      completed: !currentStatus
+    });
+  }
+  
+  // Редактировать текст (только админ)
+  async function editTaskText(taskId, newText) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    if (!newText.trim()) return;
+    await tasksCollection.doc(taskId).update({
+      text: newText.trim()
+    });
+  }
+  
+  // Удалить задачу (только админ)
+  async function deleteTaskFromCloud(taskId) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    await tasksCollection.doc(taskId).delete();
+  }
+  
+  // Принудительная синхронизация (резервное копирование текущего массива в Firestore)
+  async function forceSaveAllToCloud() {
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('Только администратор может сохранять все задания в облако.');
+      return;
+    }
+    try {
+      // Получим все существующие документы
+      const snapshot = await tasksCollection.get();
+      const batch = db.batch();
+      // Удаляем все старые
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      // Добавляем заново из текущего массива tasks
+      for (const task of tasks) {
+        await tasksCollection.add({
+          text: task.text,
+          completed: task.completed,
+          createdAt: task.createdAt || Date.now(),
+          createdBy: currentUser.username
+        });
+      }
+      alert('✅ Все задания сохранены в облако Firebase. Синхронизация выполнена!');
+    } catch(e) {
+      alert('Ошибка при сохранении: ' + e.message);
+    }
+  }
+  
+  // Экспорт / Импорт (работают с локальным массивом, после импорта перезаписываем облако)
+  function exportTasksToFile() {
+    const dataStr = JSON.stringify(tasks, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tasks_backup_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('Задания экспортированы в файл');
+  }
+  
+  async function importTasksFromFile() {
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('Только администратор может импортировать задания');
+      return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (Array.isArray(imported) && imported.every(t => typeof t.text === 'string' && typeof t.completed === 'boolean')) {
+            // Очистить Firestore и залить импортированные
+            const snapshot = await tasksCollection.get();
+            const batch = db.batch();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            for (const task of imported) {
+              await tasksCollection.add({
+                text: task.text,
+                completed: task.completed,
+                createdAt: Date.now(),
+                createdBy: currentUser.username
+              });
+            }
+            alert('Импорт выполнен! Задания синхронизированы в облаке.');
+          } else throw new Error();
+        } catch(err) { alert('Неверный формат файла'); }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+  
+  // UI рендер задач (использует глобальный tasks и права currentUser)
+  function renderTasksUI() {
+    if (!tasksContainer) return;
+    if (tasks.length === 0) {
+      tasksContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет заданий. Админ добавит позже.</div>';
+      return;
+    }
+    tasksContainer.innerHTML = '';
+    tasks.forEach(task => {
+      const div = document.createElement('div'); div.className = 'task-item';
+      const check = document.createElement('div'); check.className = `task-check ${task.completed ? 'completed' : ''}`;
+      if (task.completed) check.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
+      check.addEventListener('click', async () => {
+        await toggleTaskComplete(task.id, task.completed);
+      });
+      const textSpan = document.createElement('div'); textSpan.className = `task-text ${task.completed ? 'done' : ''}`; textSpan.innerText = task.text;
+      div.appendChild(check); div.appendChild(textSpan);
+      if (currentUser?.role === 'admin') {
+        const edit = document.createElement('button'); edit.className = 'edit-task'; edit.innerHTML = '<i class="fas fa-edit"></i>';
+        edit.addEventListener('click', async () => {
+          const newText = prompt('Редактировать:', task.text);
+          if (newText?.trim()) await editTaskText(task.id, newText);
+        });
+        const del = document.createElement('button'); del.className = 'delete-task'; del.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        del.addEventListener('click', async () => {
+          if (confirm('Удалить задание?')) await deleteTaskFromCloud(task.id);
+        });
+        div.appendChild(edit); div.appendChild(del);
+      }
+      tasksContainer.appendChild(div);
+    });
+  }
+  
+  function updateStatistics() {
+    const total = tasks.length, completed = tasks.filter(t => t.completed).length;
+    if (totalTasksStat) totalTasksStat.innerText = total;
+    if (completedTasksStat) completedTasksStat.innerText = completed;
+    const percent = total === 0 ? 0 : (completed / total) * 100;
+    if (progressFill) progressFill.style.width = `${percent}%`;
+  }
+  
+  // ---------------------------- АВТОРИЗАЦИЯ И СТАРТ ----------------------------
+  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); currentUser = null; }
   function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
+  
+  function afterLogin() {
+    hideAuthScreen();
+    applyTheme();
+    updateUIForUser();
+    attachFirestoreListener();   // Подключаем реальное время из Firestore
+    updateStatistics();
+    setupNavAndButtons();
+  }
+  
   function login(username, password) {
     const users = getUsers();
     const user = users[username];
@@ -578,6 +801,7 @@
       return true;
     } else { loginError.innerText = 'Неверный логин или пароль'; return false; }
   }
+  
   function register(name, password) {
     if (!name.trim()) { regError.innerText = 'Введите имя'; return false; }
     const users = getUsers();
@@ -589,15 +813,14 @@
     afterLogin();
     return true;
   }
-  function logout() { clearSession(); currentUser = null; showAuthScreen(); }
-  function afterLogin() {
-    hideAuthScreen();
-    applyTheme();
-    updateUIForUser();
-    renderTasksUI();
-    updateStatistics();
-    setupNavAndButtons();
+  
+  function logout() { 
+    clearSession(); 
+    if (unsubscribeTasks) unsubscribeTasks();
+    currentUser = null; 
+    showAuthScreen(); 
   }
+  
   function updateUIForUser() {
     if (currentUser) {
       displayNameSpan.innerText = currentUser.name || currentUser.username;
@@ -605,90 +828,15 @@
       adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
     }
   }
-
-  // UI задач
-  function renderTasksUI() {
-    if (!tasksContainer) return;
-    if (tasks.length === 0) { tasksContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет заданий. Админ добавит позже.</div>'; return; }
-    tasksContainer.innerHTML = '';
-    tasks.forEach(task => {
-      const div = document.createElement('div'); div.className = 'task-item';
-      const check = document.createElement('div'); check.className = `task-check ${task.completed ? 'completed' : ''}`;
-      if (task.completed) check.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
-      check.addEventListener('click', () => { task.completed = !task.completed; saveTasks(); renderTasksUI(); updateStatistics(); });
-      const textSpan = document.createElement('div'); textSpan.className = `task-text ${task.completed ? 'done' : ''}`; textSpan.innerText = task.text;
-      div.appendChild(check); div.appendChild(textSpan);
-      if (currentUser?.role === 'admin') {
-        const edit = document.createElement('button'); edit.className = 'edit-task'; edit.innerHTML = '<i class="fas fa-edit"></i>';
-        edit.addEventListener('click', () => { const newText = prompt('Редактировать:', task.text); if (newText?.trim()) { task.text = newText.trim(); saveTasks(); renderTasksUI(); updateStatistics(); } });
-        const del = document.createElement('button'); del.className = 'delete-task'; del.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        del.addEventListener('click', () => { if (confirm('Удалить?')) { tasks = tasks.filter(t => t.id !== task.id); saveTasks(); renderTasksUI(); updateStatistics(); } });
-        div.appendChild(edit); div.appendChild(del);
-      }
-      tasksContainer.appendChild(div);
-    });
-  }
-  function updateStatistics() {
-    const total = tasks.length, completed = tasks.filter(t => t.completed).length;
-    if (totalTasksStat) totalTasksStat.innerText = total;
-    if (completedTasksStat) completedTasksStat.innerText = completed;
-    const percent = total === 0 ? 0 : (completed / total) * 100;
-    if (progressFill) progressFill.style.width = `${percent}%`;
-  }
-  function addTaskByAdmin() {
-    if (currentUser?.role !== 'admin') return;
-    const text = newTaskInput.value.trim();
-    if (!text) { alert('Введите текст'); return; }
-    tasks.push({ id: Date.now(), text, completed: false });
-    saveTasks(); renderTasksUI(); updateStatistics(); newTaskInput.value = '';
-  }
-
-  // Синхронизация: экспорт/импорт
-  function exportTasks() {
-    const dataStr = JSON.stringify(tasks, null, 2);
-    const blob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tasks_backup_${new Date().toISOString().slice(0,19)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('Задания экспортированы в файл');
-  }
-  function importTasks() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const imported = JSON.parse(ev.target.result);
-          if (Array.isArray(imported) && imported.every(t => typeof t.id === 'number' && typeof t.text === 'string' && typeof t.completed === 'boolean')) {
-            tasks = imported;
-            saveTasks();
-            renderTasksUI();
-            updateStatistics();
-            alert('Задания успешно импортированы!');
-          } else throw new Error();
-        } catch(err) { alert('Неверный формат файла'); }
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  }
-
-  // Тема
+  
+  // ---------------------------- ТЕМА И НАВИГАЦИЯ ----------------------------
   function applyTheme() {
     document.body.classList.toggle('dark', currentTheme === 'dark');
     document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
     localStorage.setItem('appTheme', currentTheme);
   }
   function toggleTheme() { currentTheme = currentTheme === 'light' ? 'dark' : 'light'; applyTheme(); }
-
-  // Навигация
+  
   function setupNavAndButtons() {
     const navBtns = document.querySelectorAll('.nav-item');
     const panes = { menu: document.getElementById('tab-menu'), tasks: document.getElementById('tab-tasks'), work: document.getElementById('tab-work'), help: document.getElementById('tab-help') };
@@ -699,20 +847,22 @@
       if (panes[tabId]) panes[tabId].classList.add('active-pane');
       navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
       headerTitle.innerText = titles[tabId];
+      if (tabId === 'tasks') renderTasksUI();
     }
     navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     document.getElementById('themeCard')?.addEventListener('click', () => { toggleTheme(); alert(`Тема: ${currentTheme === 'dark' ? 'тёмная' : 'светлая'}`); });
     document.getElementById('statsCard')?.addEventListener('click', () => { updateStatistics(); alert(`Статистика: ${tasks.filter(t=>t.completed).length}/${tasks.length} выполнено`); });
-    document.getElementById('profileCard')?.addEventListener('click', () => alert(`Вы вошли как: ${currentUser.name}\nРоль: ${currentUser.role === 'admin' ? 'Администратор' : 'Пользователь'}`));
+    document.getElementById('profileCard')?.addEventListener('click', () => alert(`Вы вошли как: ${currentUser.name}\nРоль: ${currentUser.role === 'admin' ? 'Администратор' : 'Пользователь'}\nСинхронизация через Firebase`));
     document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
-    document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания общие. Админ может добавлять/удалять. Синхронизация через экспорт/импорт.'));
+    document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания хранятся в облаке Firebase. Любые изменения (добавление, отметка, редактирование) мгновенно синхронизируются на всех устройствах. Админ может управлять задачами.'));
     document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => alert('Заявка отправлена!')));
-    if (addTaskBtn) addTaskBtn.addEventListener('click', addTaskByAdmin);
+    if (addTaskBtn) addTaskBtn.addEventListener('click', () => { const text = newTaskInput.value.trim(); if(text) addTaskToCloud(text); newTaskInput.value = ''; });
     if (logoutCard) logoutCard.addEventListener('click', logout);
-    if (exportBtn) exportBtn.addEventListener('click', exportTasks);
-    if (importBtn) importBtn.addEventListener('click', importTasks);
+    if (exportBtn) exportBtn.addEventListener('click', exportTasksToFile);
+    if (importBtn) importBtn.addEventListener('click', importTasksFromFile);
+    if (forceSaveCloudBtn) forceSaveCloudBtn.addEventListener('click', forceSaveAllToCloud);
   }
-
+  
   function initAuthUI() {
     loginTab.addEventListener('click', () => { loginTab.classList.add('active'); registerTab.classList.remove('active'); loginFormDiv.style.display = 'flex'; registerFormDiv.style.display = 'none'; });
     registerTab.addEventListener('click', () => { registerTab.classList.add('active'); loginTab.classList.remove('active'); loginFormDiv.style.display = 'none'; registerFormDiv.style.display = 'flex'; });
@@ -721,9 +871,9 @@
     doLoginBtn.addEventListener('click', () => { const uname = loginUsername.value.trim(); const pwd = loginPassword.value; if (!uname) loginError.innerText = 'Введите логин'; else login(uname, pwd); });
     doRegisterBtn.addEventListener('click', () => { const name = regName.value.trim(); const pwd = regPassword.value; if (!name) regError.innerText = 'Введите имя'; else register(name, pwd); });
   }
-
+  
   function start() {
-    loadTasks(); loadUsers();
+    loadUsers();
     const savedTheme = localStorage.getItem('appTheme');
     if (savedTheme === 'dark') currentTheme = 'dark'; else currentTheme = 'light';
     applyTheme();
@@ -731,7 +881,7 @@
     if (session) {
       const users = getUsers();
       const userData = users[session.username];
-      if (userData) { currentUser = { username: session.username, role: userData.role, name: userData.name }; hideAuthScreen(); updateUIForUser(); renderTasksUI(); updateStatistics(); setupNavAndButtons(); }
+      if (userData) { currentUser = { username: session.username, role: userData.role, name: userData.name }; hideAuthScreen(); updateUIForUser(); attachFirestoreListener(); updateStatistics(); setupNavAndButtons(); }
       else showAuthScreen();
     } else showAuthScreen();
     initAuthUI();
