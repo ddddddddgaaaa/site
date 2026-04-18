@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#ffffff">
-  <title>Мобильный сервис | Меню • Задания • Работа • Помощь</title>
-  <!-- Font Awesome 6 (бесплатные иконки) -->
+  <meta name="theme-color" content="#ffffff" id="themeColorMeta">
+  <title>Мобильный помощник | Задания • Работа • Помощь</title>
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -15,32 +15,65 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Светлая тема (по умолчанию) */
+    :root {
+      --bg-body: #e5e9f0;
+      --app-bg: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-light: #edf2f7;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
+      --nav-bg: #ffffff;
+      --nav-active-bg: #eff6ff;
+      --nav-active-color: #3b82f6;
+      --accent: #3b82f6;
+      --task-bg: #ffffff;
+      --input-bg: #f8fafc;
+      --input-border: #e2e8f0;
+    }
+
+    body.dark {
+      --bg-body: #0f172a;
+      --app-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --border-light: #334155;
+      --card-bg: #334155;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --nav-bg: #0f172a;
+      --nav-active-bg: #1e293b;
+      --nav-active-color: #60a5fa;
+      --accent: #60a5fa;
+      --task-bg: #334155;
+      --input-bg: #0f172a;
+      --input-border: #475569;
+    }
+
     body {
-      background: #e5e9f0;   /* спокойный фон вокруг "телефона" */
+      background: var(--bg-body);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
       padding: 12px;
+      transition: background 0.2s, color 0.2s;
     }
 
-    /* контейнер, имитирующий мобильный экран */
     .mobile-app {
       max-width: 450px;
       width: 100%;
       height: 700px;
-      background: #ffffff;
+      background: var(--app-bg);
       border-radius: 36px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
-      transition: all 0.2s ease;
+      transition: background 0.2s;
     }
 
-    /* для совсем маленьких экранов (высота < 700px) делаем чуть меньше */
     @media (max-height: 720px) {
       .mobile-app {
         height: 95vh;
@@ -48,26 +81,21 @@
       }
     }
 
-    /* Верхняя панель с динамическим заголовком */
     .app-header {
-      background: white;
+      background: var(--app-bg);
       padding: 20px 24px 12px 24px;
-      border-bottom: 1px solid #f0f2f5;
+      border-bottom: 1px solid var(--border-light);
     }
 
     .app-header h1 {
       font-size: 28px;
       font-weight: 700;
-      letter-spacing: -0.3px;
-      background: linear-gradient(135deg, #1f2b3c, #2c3e50);
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
-      margin: 0;
-      display: inline-block;
     }
 
-    /* зона основного контента (скролл) */
     .main-content {
       flex: 1;
       overflow-y: auto;
@@ -75,7 +103,6 @@
       scroll-behavior: smooth;
     }
 
-    /* стили для всех вкладок (панелей) */
     .tab-pane {
       display: none;
       animation: fadeIn 0.25s ease-out;
@@ -86,35 +113,38 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ---------------------- карточки, списки, элементы UI ---------------------- */
+    /* карточки и элементы */
     .greeting-card {
-      background: #f8fafc;
+      background: var(--card-bg);
       border-radius: 28px;
       padding: 20px;
       margin-bottom: 24px;
-      border: 1px solid #eef2f6;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--card-shadow);
     }
 
     .greeting-card p {
-      color: #1e293b;
+      color: var(--text-primary);
       font-size: 16px;
       font-weight: 500;
-      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .greeting-card span {
+    .edit-name-btn {
+      background: transparent;
+      border: none;
+      color: var(--accent);
       font-size: 14px;
-      color: #5b6e8c;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 30px;
     }
 
     .menu-grid {
@@ -125,578 +155,568 @@
     }
 
     .menu-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 24px;
-      padding: 20px 12px;
+      padding: 18px 12px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
-      border: 1px solid #edf2f7;
-      transition: all 0.2s;
+      border: 1px solid var(--border-light);
       cursor: pointer;
+      transition: all 0.2s;
+    }
+    .menu-card:active { transform: scale(0.97); background: var(--input-bg); }
+    .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
+    .menu-card h4 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .menu-card p { font-size: 12px; color: var(--text-secondary); }
+
+    .stat-block {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 16px;
+      margin-top: 16px;
+      border: 1px solid var(--border-light);
+    }
+    .stat-bar {
+      background: var(--input-bg);
+      border-radius: 30px;
+      height: 8px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .stat-fill {
+      background: var(--accent);
+      width: 0%;
+      height: 100%;
+      border-radius: 30px;
+      transition: width 0.2s;
     }
 
-    .menu-card:active {
-      transform: scale(0.97);
-      background: #f9f9ff;
-    }
-
-    .menu-card i {
-      font-size: 32px;
-      color: #3b82f6;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .menu-card h4 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #0f172a;
-      margin-bottom: 4px;
-    }
-
-    .menu-card p {
-      font-size: 12px;
-      color: #5b6e8c;
-    }
-
-    /* список заданий */
+    /* задания */
     .task-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
+      margin: 16px 0;
     }
-
     .task-item {
-      background: #ffffff;
+      background: var(--task-bg);
       border-radius: 20px;
-      padding: 16px 18px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      border: 1px solid #eef2ff;
-      transition: 0.15s;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      gap: 12px;
+      border: 1px solid var(--border-light);
     }
-
     .task-check {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       border-radius: 30px;
-      border: 2px solid #cbd5e1;
-      background: white;
+      border: 2px solid var(--text-secondary);
+      background: transparent;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
       color: white;
-      font-size: 14px;
-      transition: 0.1s;
+    }
+    .task-check.completed {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .task-text {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+    .task-text.done {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+    .delete-task {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 30px;
+    }
+    .add-task-form {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      background: var(--input-bg);
+      padding: 12px;
+      border-radius: 60px;
+      border: 1px solid var(--border-light);
+    }
+    .add-task-form input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 10px 12px;
+      font-size: 15px;
+      outline: none;
+      color: var(--text-primary);
+    }
+    .add-task-form button {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    .task-check.completed {
-      background: #3b82f6;
-      border-color: #3b82f6;
-      color: white;
-    }
-
-    .task-text {
-      flex: 1;
-      font-size: 16px;
-      font-weight: 500;
-      color: #0f172a;
-    }
-
-    .task-text.done {
-      text-decoration: line-through;
-      color: #94a3b8;
-    }
-
-    /* карточки работы */
+    /* работа */
     .job-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 24px;
       padding: 18px;
       margin-bottom: 16px;
-      border: 1px solid #eef2f6;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-light);
     }
-
-    .job-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 6px;
-    }
-
-    .job-company {
-      font-size: 14px;
-      color: #3b82f6;
-      font-weight: 500;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .job-desc {
-      font-size: 14px;
-      color: #334155;
-      margin: 8px 0 12px 0;
-      line-height: 1.4;
-    }
-
+    .job-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .job-company { font-size: 14px; color: var(--accent); margin: 6px 0; }
     .job-btn {
-      background: #f1f5f9;
+      background: var(--input-bg);
       border: none;
-      padding: 8px 16px;
+      padding: 8px 18px;
       border-radius: 40px;
       font-weight: 500;
-      font-size: 13px;
-      color: #1e293b;
+      margin-top: 10px;
       cursor: pointer;
-      transition: 0.2s;
     }
 
-    .job-btn:active {
-      background: #e2e8f0;
-      transform: scale(0.96);
-    }
-
-    /* блок помощи */
-    .help-section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
+    /* помощь */
     .help-card {
-      background: #fefce8;
-      border-left: 5px solid #facc15;
-      background: #fffbeb;
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 18px;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-
-    .help-card:active {
-      background: #fef3c7;
-      transform: scale(0.99);
-    }
-
-    .help-card i {
-      font-size: 22px;
-      color: #eab308;
-      margin-right: 12px;
-      width: 32px;
-    }
-
-    .help-title {
-      font-weight: 700;
-      font-size: 17px;
-      color: #422006;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      border: 1px solid var(--border-light);
     }
+    .help-card i { font-size: 26px; color: var(--accent); width: 40px; }
+    .help-card div { flex: 1; }
+    .help-title { font-weight: 700; color: var(--text-primary); }
 
-    .help-desc {
-      font-size: 14px;
-      color: #5b3e02;
-      margin-top: 8px;
-      padding-left: 44px;
-    }
-
-    /* ---------- нижняя навигация (кнопки) ---------- */
+    /* нижняя навигация */
     .bottom-nav {
-      background: #ffffff;
+      background: var(--nav-bg);
       display: flex;
       align-items: center;
       justify-content: space-around;
-      padding: 10px 12px 14px 12px;
-      border-top: 1px solid #edf2f7;
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.02);
-      backdrop-filter: blur(2px);
+      padding: 8px 12px 12px;
+      border-top: 1px solid var(--border-light);
     }
-
     .nav-item {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       background: transparent;
       border: none;
       font-size: 12px;
       font-weight: 500;
-      color: #8c9ab0;
-      transition: all 0.2s ease;
+      color: var(--text-secondary);
       cursor: pointer;
-      padding: 8px 0 4px 0;
+      padding: 8px 0 4px;
       border-radius: 30px;
-      font-family: inherit;
+      transition: 0.1s;
     }
-
-    .nav-item i {
-      font-size: 24px;
-      margin-bottom: 2px;
-    }
-
-    .nav-item span {
-      font-size: 11px;
-      letter-spacing: 0.3px;
-      font-weight: 500;
-    }
-
+    .nav-item i { font-size: 24px; }
     .nav-item.active {
-      color: #3b82f6;
-      background: #eff6ff;
+      color: var(--nav-active-color);
+      background: var(--nav-active-bg);
       transform: translateY(-2px);
     }
 
-    /* скролл стиль */
-    .main-content::-webkit-scrollbar {
-      width: 4px;
+    /* переключатель темы */
+    .theme-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
     }
-    .main-content::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    .main-content::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
+    .switch-btn {
+      background: var(--input-bg);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-primary);
     }
 
-    /* мелкие адаптивы */
-    @media (max-width: 480px) {
-      .menu-card i {
-        font-size: 28px;
-      }
-      .app-header h1 {
-        font-size: 24px;
-      }
-    }
+    .small-text { font-size: 13px; color: var(--text-secondary); margin-top: 5px; }
   </style>
 </head>
 <body>
 <div class="mobile-app">
-  <!-- шапка с динамическим заголовком -->
   <div class="app-header">
     <h1 id="dynamicTitle">МЕНЮ</h1>
   </div>
 
-  <!-- контейнер сменного контента -->
   <div class="main-content" id="mainContent">
-    <!-- Панель МЕНЮ (id = tab-menu) -->
+    <!-- ========================= МЕНЮ ========================= -->
     <div class="tab-pane active-pane" id="tab-menu">
       <div class="greeting-card">
-        <p>👋 Привет, Андрей!</p>
-        <span>Добро пожаловать в мобильный центр</span>
+        <p>
+          <i class="fas fa-user-astronaut" style="color: var(--accent);"></i> 
+          Привет, <strong id="displayName">Друг</strong>
+          <button class="edit-name-btn" id="editNameBtn"><i class="fas fa-pen"></i> Изменить</button>
+        </p>
+        <span class="small-text">Твой Telegram-аккаунт здесь</span>
       </div>
+
       <div class="menu-grid">
-        <div class="menu-card" data-action="profile">
-          <i class="fas fa-user-circle"></i>
+        <div class="menu-card" id="profileCard">
+          <i class="fas fa-id-card"></i>
           <h4>Мой профиль</h4>
-          <p>Личные данные</p>
+          <p>Изменить имя</p>
         </div>
-        <div class="menu-card" data-action="messages">
-          <i class="fas fa-comment-dots"></i>
-          <h4>Сообщения</h4>
-          <p>Новые уведомления</p>
+        <div class="menu-card" id="statsCard">
+          <i class="fas fa-chart-simple"></i>
+          <h4>Статистика</h4>
+          <p>Прогресс заданий</p>
         </div>
-        <div class="menu-card" data-action="calendar">
-          <i class="fas fa-calendar-alt"></i>
-          <h4>Календарь</h4>
-          <p>Планы на месяц</p>
-        </div>
-        <div class="menu-card" data-action="settings">
-          <i class="fas fa-sliders-h"></i>
-          <h4>Настройки</h4>
-          <p>Тема, язык</p>
+        <div class="menu-card" id="themeCard">
+          <i class="fas fa-palette"></i>
+          <h4>Настройки темы</h4>
+          <p>Светлая / Тёмная</p>
         </div>
       </div>
-      <div style="margin-top: 24px; background: #f1f4f9; border-radius: 20px; padding: 14px 18px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <i class="fas fa-chart-line" style="color:#3b82f6; font-size: 24px;"></i>
-          <div><strong>Активность сегодня</strong><br><span style="font-size:13px; color:#475569">Выполнено 3 из 5 задач</span></div>
+
+      <!-- Блок статистики в меню (дублируется для наглядности) -->
+      <div class="stat-block" id="statsBlockMenu">
+        <div style="display: flex; justify-content: space-between;">
+          <span><i class="fas fa-tasks"></i> <strong>Всего задач:</strong> <span id="totalTasksStat">0</span></span>
+          <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
         </div>
+        <div class="stat-bar">
+          <div class="stat-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        <div class="small-text" style="text-align: center;">Прогресс выполнения</div>
       </div>
     </div>
 
-    <!-- Панель ЗАДАНИЯ -->
+    <!-- ========================= ЗАДАНИЯ ========================= -->
     <div class="tab-pane" id="tab-tasks">
-      <div style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline;">
-        <h3 style="font-size: 20px; font-weight: 600;">📋 Мои задачи</h3>
-        <span style="font-size: 13px; color:#3b82f6;" id="taskCounter">3 активных</span>
+      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">📋 Мои задания</h3>
+      <div class="task-list" id="tasksList"></div>
+      
+      <!-- Форма добавления задания вручную -->
+      <div class="add-task-form">
+        <input type="text" id="newTaskInput" placeholder="Новое задание, например: Сделать отчёт" autocomplete="off">
+        <button id="addTaskBtn">Добавить</button>
       </div>
-      <div class="task-list" id="tasksContainer">
-        <!-- задачи будут динамически через JS, но для наглядности сделаем статику с возможностью отметки -->
-        <div class="task-item" data-task-id="1">
-          <div class="task-check"><i class="fas fa-check" style="font-size: 12px; display: none;"></i></div>
-          <div class="task-text">Сверстать мобильную навигацию</div>
-        </div>
-        <div class="task-item" data-task-id="2">
-          <div class="task-check"><i class="fas fa-check" style="font-size: 12px; display: none;"></i></div>
-          <div class="task-text">Протестировать интерфейс</div>
-        </div>
-        <div class="task-item" data-task-id="3">
-          <div class="task-check"><i class="fas fa-check" style="font-size: 12px; display: none;"></i></div>
-          <div class="task-text">Обновить документацию</div>
-        </div>
-        <div class="task-item" data-task-id="4">
-          <div class="task-check"><i class="fas fa-check" style="font-size: 12px; display: none;"></i></div>
-          <div class="task-text">Подготовить отчет для заказчика</div>
-        </div>
-      </div>
-      <div style="margin-top: 24px; background: #eef2ff; border-radius: 22px; padding: 14px; text-align: center;">
-        <i class="fas fa-plus-circle" style="color:#2563eb;"></i> <span style="font-size: 14px; font-weight: 500;">Добавить новую задачу</span>
-        <p style="font-size: 12px; color:#4b5563; margin-top: 6px;">Нажмите на кружок, чтобы отметить выполнение</p>
-      </div>
+      <div class="small-text" style="margin-top: 12px; text-align: center;">✓ Нажмите на кружок — отметить выполнение. ✖ удалить задачу.</div>
     </div>
 
-    <!-- Панель РАБОТА -->
+    <!-- ========================= РАБОТА ========================= -->
     <div class="tab-pane" id="tab-work">
-      <div style="margin-bottom: 14px;">
-        <h3 style="font-size: 20px; font-weight: 600;">💼 Вакансии и проекты</h3>
-        <p style="color: #475569; font-size: 14px;">Актуальные предложения для вас</p>
-      </div>
+      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary);">💼 Работа и проекты</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">Актуальные предложения</p>
       <div class="job-card">
         <div class="job-title">Frontend-разработчик (React)</div>
-        <div class="job-company"><i class="fas fa-building"></i> ТехноПарк · Удаленно</div>
-        <div class="job-desc">Разработка интерфейсов, работа с современным стеком. Гибкий график.</div>
-        <button class="job-btn" data-job="frontend">Откликнуться →</button>
+        <div class="job-company"><i class="fas fa-building"></i> ТехноПарк · Удалённо</div>
+        <button class="job-btn">Откликнуться →</button>
       </div>
       <div class="job-card">
         <div class="job-title">Менеджер проектов IT</div>
-        <div class="job-company"><i class="fas fa-users"></i> DigitalSolutions · Офис/гибрид</div>
-        <div class="job-desc">Координация команды, спринты, Jira. Опыт от 2х лет.</div>
-        <button class="job-btn" data-job="pm">Подробнее →</button>
+        <div class="job-company"><i class="fas fa-users"></i> DigitalSolutions · Гибрид</div>
+        <button class="job-btn">Подробнее →</button>
       </div>
       <div class="job-card">
         <div class="job-title">UX/UI дизайнер</div>
-        <div class="job-company"><i class="fas fa-paintbrush"></i> CreativeLab · Удаленно</div>
-        <div class="job-desc">Дизайн мобильных приложений, создание прототипов.</div>
-        <button class="job-btn" data-job="design">Отправить портфолио</button>
+        <div class="job-company"><i class="fas fa-paintbrush"></i> CreativeLab · Удалённо</div>
+        <button class="job-btn">Отправить портфолио</button>
       </div>
     </div>
 
-    <!-- Панель ПОМОЩЬ -->
+    <!-- ========================= ПОМОЩЬ ========================= -->
     <div class="tab-pane" id="tab-help">
-      <div style="margin-bottom: 20px;">
-        <h3 style="font-size: 20px; font-weight: 600;">🛟 Центр поддержки</h3>
-        <p style="color:#475569">Ответим на вопросы и поможем с решением</p>
-      </div>
-      <div class="help-section">
-        <div class="help-card" data-help="faq">
-          <div class="help-title"><i class="fas fa-question-circle"></i> Часто задаваемые вопросы</div>
-          <div class="help-desc">Как восстановить пароль, оплата, статус заданий</div>
-        </div>
-        <div class="help-card" data-help="chat">
-          <div class="help-title"><i class="fas fa-headset"></i> Чат с поддержкой 24/7</div>
-          <div class="help-desc">Оперативный онлайн-чат. Ответ в течение 3 минут.</div>
-        </div>
-        <div class="help-card" data-help="email">
-          <div class="help-title"><i class="fas fa-envelope"></i> Написать в техподдержку</div>
-          <div class="help-desc">help@mobileservice.ru или форма обратной связи</div>
-        </div>
-        <div class="help-card" data-help="guide">
-          <div class="help-title"><i class="fas fa-book-open"></i> Инструкция по использованию</div>
-          <div class="help-desc">Видео-гайды и текстовые мануалы</div>
+      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary);">🛟 Помощь и поддержка</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">Оперативная помощь 24/7</p>
+      <div class="help-card" id="telegramSupportBtn">
+        <i class="fab fa-telegram-plane"></i>
+        <div>
+          <div class="help-title">Написать разработчику</div>
+          <div class="small-text">Telegram: @vadymtm90 — перейти в чат</div>
         </div>
       </div>
-      <div style="margin-top: 20px; background:#e6f7e6; border-radius: 20px; padding: 12px; text-align: center; font-size:13px">
-        <i class="fas fa-phone-alt"></i> Горячая линия: 8 800 555 35 35
+      <div class="help-card" id="faqCard">
+        <i class="fas fa-question-circle"></i>
+        <div>
+          <div class="help-title">Часто задаваемые вопросы</div>
+          <div class="small-text">Как работать с заданиями, тема и статистика</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- нижние кнопки -->
+  <!-- Нижние кнопки -->
   <div class="bottom-nav">
-    <button class="nav-item active" data-tab="menu">
-      <i class="fas fa-bars"></i>
-      <span>МЕНЮ</span>
-    </button>
-    <button class="nav-item" data-tab="tasks">
-      <i class="fas fa-tasks"></i>
-      <span>ЗАДАНИЯ</span>
-    </button>
-    <button class="nav-item" data-tab="work">
-      <i class="fas fa-briefcase"></i>
-      <span>РАБОТА</span>
-    </button>
-    <button class="nav-item" data-tab="help">
-      <i class="fas fa-circle-question"></i>
-      <span>ПОМОЩЬ</span>
-    </button>
+    <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
+    <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
+    <button class="nav-item" data-tab="work"><i class="fas fa-briefcase"></i><span>РАБОТА</span></button>
+    <button class="nav-item" data-tab="help"><i class="fas fa-circle-question"></i><span>ПОМОЩЬ</span></button>
   </div>
 </div>
 
 <script>
-  (function() {
-    // -------- элементы навигации ----------
-    const navButtons = document.querySelectorAll('.nav-item');
-    const panes = {
-      menu: document.getElementById('tab-menu'),
-      tasks: document.getElementById('tab-tasks'),
-      work: document.getElementById('tab-work'),
-      help: document.getElementById('tab-help')
-    };
-    const headerTitle = document.getElementById('dynamicTitle');
+  // ------------------- ХРАНИЛИЩЕ И ГЛОБАЛЬНЫЕ ДАННЫЕ -------------------
+  let tasks = [];         // { id, text, completed }
+  let userName = "Андрей";  // по умолчанию, будет изменяться
+  let currentTheme = "light"; // light / dark
 
-    // словарь заголовков
-    const titles = {
-      menu: 'МЕНЮ',
-      tasks: 'ЗАДАНИЯ',
-      work: 'РАБОТА',
-      help: 'ПОМОЩЬ'
-    };
+  // DOM элементы
+  const displayNameSpan = document.getElementById('displayName');
+  const tasksListDiv = document.getElementById('tasksList');
+  const totalTasksSpan = document.getElementById('totalTasksStat');
+  const completedTasksSpan = document.getElementById('completedTasksStat');
+  const progressFill = document.getElementById('progressFill');
+  const newTaskInput = document.getElementById('newTaskInput');
+  const addTaskBtn = document.getElementById('addTaskBtn');
+  const editNameBtn = document.getElementById('editNameBtn');
+  const profileCard = document.getElementById('profileCard');
+  const themeCard = document.getElementById('themeCard');
+  const telegramSupportBtn = document.getElementById('telegramSupportBtn');
+  const faqCard = document.getElementById('faqCard');
 
-    // функция переключения вкладок
-    function switchTab(tabId) {
-      // деактивировать все панели
-      Object.values(panes).forEach(pane => {
-        if (pane) pane.classList.remove('active-pane');
-      });
-      // активировать выбранную
-      if (panes[tabId]) {
-        panes[tabId].classList.add('active-pane');
-      }
-      // обновить активную кнопку
-      navButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-tab') === tabId) {
-          btn.classList.add('active');
-        }
-      });
-      // обновить заголовок
-      if (titles[tabId]) {
-        headerTitle.innerText = titles[tabId];
-      } else {
-        headerTitle.innerText = 'МЕНЮ';
-      }
+  // ------------------- ЗАГРУЗКА / СОХРАНЕНИЕ -------------------
+  function loadData() {
+    const savedTasks = localStorage.getItem('userTasks');
+    if (savedTasks) {
+      tasks = JSON.parse(savedTasks);
+    } else {
+      // стартовые демо-задачи
+      tasks = [
+        { id: Date.now() + 1, text: "Сверстать мобильную навигацию", completed: false },
+        { id: Date.now() + 2, text: "Добавить ручное создание задач", completed: true },
+        { id: Date.now() + 3, text: "Настроить статистику", completed: false }
+      ];
     }
+    const savedName = localStorage.getItem('userTelegramName');
+    if (savedName) userName = savedName;
+    else userName = "Андрей";
+    
+    const savedTheme = localStorage.getItem('appTheme');
+    if (savedTheme === 'dark') currentTheme = 'dark';
+    else currentTheme = 'light';
+    applyTheme();
+  }
 
-    // обработчики кликов по нижним кнопкам
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tab = btn.getAttribute('data-tab');
-        if (tab && panes[tab]) {
-          switchTab(tab);
-        }
-      });
-    });
+  function saveTasks() {
+    localStorage.setItem('userTasks', JSON.stringify(tasks));
+  }
+  function saveUserName() {
+    localStorage.setItem('userTelegramName', userName);
+  }
 
-    // -------- интерактив внутри вкладок (задания + карточки меню + работа + помощь) ----------
-    // 1) Задания: отметка выполнения
-    const tasksContainer = document.getElementById('tasksContainer');
-    if (tasksContainer) {
-      // функция обновления счетчика активных задач
-      function updateTaskCounter() {
-        const allTasks = document.querySelectorAll('.task-item');
-        let incomplete = 0;
-        allTasks.forEach(task => {
-          const checkDiv = task.querySelector('.task-check');
-          const textSpan = task.querySelector('.task-text');
-          if (!checkDiv.classList.contains('completed')) {
-            incomplete++;
-          }
-        });
-        const counterSpan = document.getElementById('taskCounter');
-        if (counterSpan) counterSpan.innerText = incomplete + ' активных';
-      }
-
-      // инициализация задач: проставляем структуру и обработчики
-      const taskItems = document.querySelectorAll('.task-item');
-      taskItems.forEach(item => {
-        const checkBox = item.querySelector('.task-check');
-        const textSpan = item.querySelector('.task-text');
-        const checkIcon = checkBox.querySelector('i');
-        // начальное состояние: все не выполнены
-        if (!checkBox.classList.contains('completed')) {
-          checkBox.style.backgroundColor = 'white';
-          if (checkIcon) checkIcon.style.display = 'none';
-          textSpan.classList.remove('done');
-        }
-        checkBox.addEventListener('click', (e) => {
+  // ------------------- ОТРИСОВКА ЗАДАНИЙ -------------------
+  function renderTasks() {
+    if (!tasksListDiv) return;
+    if (tasks.length === 0) {
+      tasksListDiv.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Нет заданий. Добавьте новое!</div>';
+    } else {
+      tasksListDiv.innerHTML = '';
+      tasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task-item';
+        taskDiv.dataset.id = task.id;
+        
+        const checkDiv = document.createElement('div');
+        checkDiv.className = `task-check ${task.completed ? 'completed' : ''}`;
+        if (task.completed) checkDiv.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
+        else checkDiv.innerHTML = '';
+        checkDiv.addEventListener('click', (e) => {
           e.stopPropagation();
-          const isCompleted = checkBox.classList.contains('completed');
-          if (!isCompleted) {
-            // отметить выполненным
-            checkBox.classList.add('completed');
-            checkBox.style.backgroundColor = '#3b82f6';
-            if (checkIcon) checkIcon.style.display = 'inline-block';
-            textSpan.classList.add('done');
-          } else {
-            // снять отметку
-            checkBox.classList.remove('completed');
-            checkBox.style.backgroundColor = 'white';
-            if (checkIcon) checkIcon.style.display = 'none';
-            textSpan.classList.remove('done');
-          }
-          updateTaskCounter();
+          task.completed = !task.completed;
+          saveTasks();
+          renderTasks();
+          updateStatistics();
         });
+        
+        const textSpan = document.createElement('div');
+        textSpan.className = `task-text ${task.completed ? 'done' : ''}`;
+        textSpan.innerText = task.text;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-task';
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          tasks = tasks.filter(t => t.id !== task.id);
+          saveTasks();
+          renderTasks();
+          updateStatistics();
+        });
+        
+        taskDiv.appendChild(checkDiv);
+        taskDiv.appendChild(textSpan);
+        taskDiv.appendChild(deleteBtn);
+        tasksListDiv.appendChild(taskDiv);
       });
-      updateTaskCounter();
-
-      // дополнительно: можно нажатие на сам таск, но только по кружку, оставляем как есть
     }
+    updateStatistics();
+  }
 
-    // 2) Карточки меню (профиль, сообщения и т.д.) – всплывающее сообщение "В разработке"
-    const menuCards = document.querySelectorAll('.menu-card');
-    menuCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const action = card.getAttribute('data-action') || 'функция';
-        alert(`✨ Раздел «${card.querySelector('h4')?.innerText || action}» в разработке.\nСкоро здесь появится полезный контент!`);
+  // добавление новой задачи
+  function addNewTask() {
+    const text = newTaskInput.value.trim();
+    if (text === "") {
+      alert("Введите текст задания");
+      return;
+    }
+    const newTask = {
+      id: Date.now(),
+      text: text,
+      completed: false
+    };
+    tasks.push(newTask);
+    saveTasks();
+    renderTasks();
+    newTaskInput.value = "";
+    // переключимся на вкладку заданий для наглядности (но не обязательно)
+  }
+
+  // ------------------- СТАТИСТИКА (обновление) -------------------
+  function updateStatistics() {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.completed).length;
+    const percent = total === 0 ? 0 : (completed / total) * 100;
+    if (totalTasksSpan) totalTasksSpan.innerText = total;
+    if (completedTasksSpan) completedTasksSpan.innerText = completed;
+    if (progressFill) progressFill.style.width = `${percent}%`;
+  }
+
+  // ------------------- ИМЯ ПОЛЬЗОВАТЕЛЯ (телеграм имя) -------------------
+  function updateNameUI() {
+    displayNameSpan.innerText = userName;
+  }
+  function promptChangeName() {
+    let newName = prompt("Введите ваше Telegram имя:", userName);
+    if (newName && newName.trim() !== "") {
+      userName = newName.trim();
+      saveUserName();
+      updateNameUI();
+    } else if (newName === "") {
+      alert("Имя не может быть пустым");
+    }
+  }
+
+  // ------------------- ТЕМА (только смена темы в настройках) -------------------
+  function applyTheme() {
+    const body = document.body;
+    if (currentTheme === 'dark') {
+      body.classList.add('dark');
+      document.getElementById('themeColorMeta')?.setAttribute('content', '#1e293b');
+    } else {
+      body.classList.remove('dark');
+      document.getElementById('themeColorMeta')?.setAttribute('content', '#ffffff');
+    }
+    localStorage.setItem('appTheme', currentTheme);
+  }
+  function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme();
+  }
+
+  // ------------------- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК -------------------
+  const navBtns = document.querySelectorAll('.nav-item');
+  const panes = {
+    menu: document.getElementById('tab-menu'),
+    tasks: document.getElementById('tab-tasks'),
+    work: document.getElementById('tab-work'),
+    help: document.getElementById('tab-help')
+  };
+  const headerTitle = document.getElementById('dynamicTitle');
+  const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ' };
+
+  function switchTab(tabId) {
+    Object.values(panes).forEach(pane => pane?.classList.remove('active-pane'));
+    if (panes[tabId]) panes[tabId].classList.add('active-pane');
+    navBtns.forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
+    });
+    headerTitle.innerText = titles[tabId] || 'МЕНЮ';
+  }
+
+  // ------------------- ПОМОЩЬ: ПЕРЕКИДЫВАНИЕ НА ТЕЛЕГРАМ vadymtm90 -------------------
+  function openTelegramSupport() {
+    window.open('https://t.me/vadymtm90', '_blank');
+  }
+  function showFAQ() {
+    alert("📘 Часто задаваемые вопросы:\n• Как добавить задание? Напишите текст и нажмите «Добавить».\n• Отметить выполнение — клик по кружку.\n• Статистика обновляется автоматически.\n• Тема меняется в меню → Настройки темы.");
+  }
+
+  // ------------------- ОБРАБОТЧИКИ ИНТЕРАКТИВА -------------------
+  function initEventListeners() {
+    // нижняя навигация
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        if (tab && panes[tab]) switchTab(tab);
       });
     });
-
-    // 3) Работа: кнопки отклика / подробнее
-    const jobBtns = document.querySelectorAll('.job-btn');
-    jobBtns.forEach(btn => {
+    
+    // добавление задания
+    addTaskBtn.addEventListener('click', addNewTask);
+    newTaskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addNewTask(); });
+    
+    // редактирование имени
+    editNameBtn.addEventListener('click', promptChangeName);
+    profileCard.addEventListener('click', promptChangeName);
+    
+    // настройка темы
+    themeCard.addEventListener('click', () => {
+      toggleTheme();
+      alert(`Тема переключена на ${currentTheme === 'dark' ? 'Тёмную' : 'Светлую'}`);
+    });
+    
+    // помощь: телеграм и faq
+    telegramSupportBtn.addEventListener('click', openTelegramSupport);
+    faqCard.addEventListener('click', showFAQ);
+    
+    // кнопки отклика на работу (просто алерт)
+    document.querySelectorAll('.job-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const jobCard = btn.closest('.job-card');
-        const jobTitle = jobCard?.querySelector('.job-title')?.innerText || 'вакансия';
-        alert(`✅ Вы откликнулись на позицию: "${jobTitle}".\nМенеджер свяжется с вами в ближайшее время.`);
+        alert("✅ Заявка отправлена! С вами свяжутся в ближайшее время.");
       });
     });
 
-    // 4) Помощь: карточки с действиями
-    const helpCards = document.querySelectorAll('.help-card');
-    helpCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const helpType = card.getAttribute('data-help');
-        if (helpType === 'faq') {
-          alert('📘 Часто задаваемые вопросы: \n• Как сменить пароль? \n• Где посмотреть историю заданий? \n• Как связаться с менеджером?');
-        } else if (helpType === 'chat') {
-          alert('💬 Онлайн-чат поддержки: напишите ваш вопрос, и оператор ответит через 1-2 минуты.');
-        } else if (helpType === 'email') {
-          alert('📧 Поддержка: help@mobileservice.ru \nТакже вы можете отправить запрос через форму на сайте.');
-        } else if (helpType === 'guide') {
-          alert('📖 Инструкция: Видеоуроки и статьи доступны в разделе "Обучение". Скоро добавим ссылки.');
-        } else {
-          alert('🛠 Служба поддержки ответит на ваш вопрос в ближайшее время.');
-        }
-      });
-    });
-
-    // дополнительный интерактив: кнопка "Добавить новую задачу" (заглушка)
-    const addTaskHint = document.querySelector('#tab-tasks div[style*="margin-top: 24px; background: #eef2ff"]');
-    if (addTaskHint) {
-      addTaskHint.addEventListener('click', () => {
-        alert('✏️ Функция добавления новых задач появится в следующем обновлении!');
+    // Дополнительно: карточка статистики в меню (для наглядности показывает статистику, но и так обновляется)
+    const statsCardBtn = document.getElementById('statsCard');
+    if (statsCardBtn) {
+      statsCardBtn.addEventListener('click', () => {
+        updateStatistics();
+        alert(`📊 Статистика: ${tasks.filter(t=>t.completed).length} / ${tasks.length} задач выполнено.`);
       });
     }
+  }
 
-    // подстраховка: если активная вкладка не меню по умолчанию — все ок, но стартуем с меню
-    // чтобы точно корректно показать меню
-    const activeTab = document.querySelector('.nav-item.active')?.getAttribute('data-tab');
-    if (activeTab && panes[activeTab]) {
-      switchTab(activeTab);
-    } else {
-      switchTab('menu');
-    }
-  })();
+  // ------------------- СТАРТ ПРИЛОЖЕНИЯ -------------------
+  function init() {
+    loadData();
+    updateNameUI();
+    renderTasks();     // отрисует список + статистику
+    updateStatistics();
+    initEventListeners();
+    // по умолчанию вкладка меню активна
+    switchTab('menu');
+  }
+  init();
 </script>
 </body>
 </html>
