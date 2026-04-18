@@ -631,12 +631,23 @@
   async function addTaskToCloud(text) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!text.trim()) return;
-    await tasksCollection.add({
-      text: text.trim(),
-      completed: false,
-      createdAt: Date.now(),
-      createdBy: currentUser.username
-    });
+    
+    try {
+      // Add the new task to Firestore
+      await tasksCollection.add({
+        text: text.trim(),
+        completed: false,
+        createdAt: Date.now(),
+        createdBy: currentUser.username
+      });
+      
+      // Clear the input field after successful addition
+      const newTaskInput = document.getElementById('newTaskInput');
+      if (newTaskInput) newTaskInput.value = '';
+    } catch (error) {
+      console.error("Error adding task: ", error);
+      // Optionally show an error message to the user
+    }
   }
   
   async function toggleTaskComplete(taskId, currentStatus) {
@@ -799,7 +810,15 @@
     document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
     document.getElementById('faqBtn')?.addEventListener('click', () => {});
     document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => {}));
-    if (addTaskBtn) addTaskBtn.addEventListener('click', () => { const text = newTaskInput.value.trim(); if(text) addTaskToCloud(text); newTaskInput.value = ''; });
+    if (addTaskBtn) {
+      addTaskBtn.addEventListener('click', () => {
+        const text = newTaskInput.value.trim();
+        if(text) {
+          addTaskToCloud(text);
+          newTaskInput.value = ''; // Clear input immediately
+        }
+      });
+    }
     if (logoutCard) logoutCard.addEventListener('click', logout);
     if (forceSaveCloudBtn) forceSaveCloudBtn.addEventListener('click', forceSaveAllToCloud);
   }
