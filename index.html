@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#ffffff" id="themeColorMeta">
-  <title>Мобильный помощник | Задания • Работа • Помощь</title>
+  <title>Мобильный сервис | Вход и задания</title>
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -15,7 +14,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Светлая тема (по умолчанию) */
+    /* Светлая тема (основная) */
     :root {
       --bg-body: #e5e9f0;
       --app-bg: #ffffff;
@@ -23,31 +22,10 @@
       --text-secondary: #475569;
       --border-light: #edf2f7;
       --card-bg: #ffffff;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
-      --nav-bg: #ffffff;
-      --nav-active-bg: #eff6ff;
-      --nav-active-color: #3b82f6;
-      --accent: #3b82f6;
-      --task-bg: #ffffff;
       --input-bg: #f8fafc;
-      --input-border: #e2e8f0;
-    }
-
-    body.dark {
-      --bg-body: #0f172a;
-      --app-bg: #1e293b;
-      --text-primary: #f1f5f9;
-      --text-secondary: #cbd5e1;
-      --border-light: #334155;
-      --card-bg: #334155;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      --nav-bg: #0f172a;
-      --nav-active-bg: #1e293b;
-      --nav-active-color: #60a5fa;
-      --accent: #60a5fa;
-      --task-bg: #334155;
-      --input-bg: #0f172a;
-      --input-border: #475569;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
     }
 
     body {
@@ -58,7 +36,7 @@
       min-height: 100vh;
       font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
       padding: 12px;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.2s;
     }
 
     .mobile-app {
@@ -71,652 +49,566 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
       transition: background 0.2s;
     }
 
     @media (max-height: 720px) {
-      .mobile-app {
-        height: 95vh;
-        border-radius: 28px;
-      }
+      .mobile-app { height: 95vh; border-radius: 28px; }
     }
 
-    .app-header {
-      background: var(--app-bg);
-      padding: 20px 24px 12px 24px;
-      border-bottom: 1px solid var(--border-light);
+    /* Экран авторизации (вход/регистрация) */
+    .auth-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px 24px;
+      overflow-y: auto;
     }
 
-    .app-header h1 {
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .auth-logo i {
+      font-size: 56px;
+      color: var(--accent);
+      background: #eff6ff;
+      padding: 20px;
+      border-radius: 60px;
+    }
+    .auth-title {
       font-size: 28px;
       font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
       background: linear-gradient(135deg, var(--accent), #8b5cf6);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
     }
-
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px 20px 20px;
-      scroll-behavior: smooth;
-    }
-
-    .tab-pane {
-      display: none;
-      animation: fadeIn 0.25s ease-out;
-    }
-
-    .tab-pane.active-pane {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* карточки и элементы */
-    .greeting-card {
-      background: var(--card-bg);
-      border-radius: 28px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-light);
-      box-shadow: var(--card-shadow);
-    }
-
-    .greeting-card p {
-      color: var(--text-primary);
-      font-size: 16px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .edit-name-btn {
-      background: transparent;
-      border: none;
-      color: var(--accent);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 30px;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 8px;
-    }
-
-    .menu-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 18px 12px;
+    .auth-sub {
       text-align: center;
-      border: 1px solid var(--border-light);
-      cursor: pointer;
-      transition: all 0.2s;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      font-size: 14px;
     }
-    .menu-card:active { transform: scale(0.97); background: var(--input-bg); }
-    .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
-    .menu-card h4 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-    .menu-card p { font-size: 12px; color: var(--text-secondary); }
-
-    .stat-block {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 16px;
-      margin-top: 16px;
-      border: 1px solid var(--border-light);
+    .input-group {
+      margin-bottom: 20px;
     }
-    .stat-bar {
-      background: var(--input-bg);
-      border-radius: 30px;
-      height: 8px;
-      margin: 12px 0;
-      overflow: hidden;
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text-primary);
     }
-    .stat-fill {
-      background: var(--accent);
-      width: 0%;
-      height: 100%;
-      border-radius: 30px;
-      transition: width 0.2s;
-    }
-
-    /* задания */
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 16px 0;
-    }
-    .task-item {
-      background: var(--task-bg);
-      border-radius: 20px;
+    .input-group input {
+      width: 100%;
       padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: var(--input-bg);
       border: 1px solid var(--border-light);
-    }
-    .task-check {
-      width: 26px;
-      height: 26px;
       border-radius: 30px;
-      border: 2px solid var(--text-secondary);
-      background: transparent;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s;
+      color: var(--text-primary);
     }
-    .task-check.completed {
-      background: var(--accent);
+    .input-group input:focus {
       border-color: var(--accent);
     }
-    .task-text {
-      flex: 1;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-primary);
-      word-break: break-word;
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: 0.2s;
     }
-    .task-text.done {
-      text-decoration: line-through;
+    .btn-primary:active { background: var(--accent-hover); transform: scale(0.97); }
+    .auth-switch {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 14px;
       color: var(--text-secondary);
     }
-    .delete-task {
-      background: transparent;
-      border: none;
-      color: #ef4444;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 30px;
-    }
-    .add-task-form {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-      background: var(--input-bg);
-      padding: 12px;
-      border-radius: 60px;
-      border: 1px solid var(--border-light);
-    }
-    .add-task-form input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 10px 12px;
-      font-size: 15px;
-      outline: none;
-      color: var(--text-primary);
-    }
-    .add-task-form button {
-      background: var(--accent);
-      border: none;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
+    .auth-switch span {
+      color: var(--accent);
       font-weight: 600;
       cursor: pointer;
     }
-
-    /* работа */
-    .job-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 18px;
+    .error-msg {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 10px;
+      border-radius: 30px;
+      text-align: center;
+      font-size: 13px;
       margin-bottom: 16px;
-      border: 1px solid var(--border-light);
-    }
-    .job-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-    .job-company { font-size: 14px; color: var(--accent); margin: 6px 0; }
-    .job-btn {
-      background: var(--input-bg);
-      border: none;
-      padding: 8px 18px;
-      border-radius: 40px;
-      font-weight: 500;
-      margin-top: 10px;
-      cursor: pointer;
     }
 
-    /* помощь */
-    .help-card {
+    /* Основной интерфейс (после входа) */
+    .main-app {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+    .app-header {
+      background: var(--app-bg);
+      padding: 20px 24px 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .app-header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 20px;
+    }
+    .tab-pane { display: none; animation: fadeIn 0.2s; }
+    .tab-pane.active-pane { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* карточки */
+    .greeting-card, .stat-block, .task-item, .job-card, .help-card {
       background: var(--card-bg);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      cursor: pointer;
       border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
-    .help-card i { font-size: 26px; color: var(--accent); width: 40px; }
-    .help-card div { flex: 1; }
-    .help-title { font-weight: 700; color: var(--text-primary); }
-
-    /* нижняя навигация */
+    .task-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 14px 16px; }
+    .task-check {
+      width: 26px; height: 26px; border-radius: 30px; border: 2px solid var(--text-secondary);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    }
+    .task-check.completed { background: var(--accent); border-color: var(--accent); color: white; }
+    .task-text { flex: 1; font-size: 15px; font-weight: 500; color: var(--text-primary); }
+    .task-text.done { text-decoration: line-through; color: var(--text-secondary); }
+    .delete-task { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--danger); }
+    .add-task-form { display: flex; gap: 10px; margin-top: 8px; background: var(--input-bg); padding: 8px; border-radius: 60px; }
+    .add-task-form input { flex: 1; background: transparent; border: none; padding: 12px; outline: none; color: var(--text-primary); }
+    .add-task-form button { background: var(--accent); border: none; color: white; padding: 8px 20px; border-radius: 40px; cursor: pointer; }
+    .stat-bar { background: var(--input-bg); height: 8px; border-radius: 30px; margin: 12px 0; overflow: hidden; }
+    .stat-fill { background: var(--accent); width: 0%; height: 100%; transition: width 0.2s; }
+    .menu-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin: 16px 0; }
+    .menu-card { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 24px; padding: 16px; text-align: center; cursor: pointer; }
+    .menu-card i { font-size: 28px; color: var(--accent); margin-bottom: 8px; }
+    .job-btn { background: var(--input-bg); border: none; padding: 8px 16px; border-radius: 40px; margin-top: 10px; cursor: pointer; }
     .bottom-nav {
-      background: var(--nav-bg);
+      background: var(--app-bg);
       display: flex;
-      align-items: center;
       justify-content: space-around;
       padding: 8px 12px 12px;
       border-top: 1px solid var(--border-light);
     }
     .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 8px 0 4px;
-      border-radius: 30px;
-      transition: 0.1s;
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: transparent; border: none; font-size: 11px; color: var(--text-secondary); cursor: pointer;
     }
-    .nav-item i { font-size: 24px; }
-    .nav-item.active {
-      color: var(--nav-active-color);
-      background: var(--nav-active-bg);
-      transform: translateY(-2px);
-    }
-
-    /* переключатель темы */
-    .theme-switch {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 8px;
-    }
-    .switch-btn {
-      background: var(--input-bg);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .small-text { font-size: 13px; color: var(--text-secondary); margin-top: 5px; }
+    .nav-item i { font-size: 22px; }
+    .nav-item.active { color: var(--accent); background: #eff6ff; padding: 6px 0; border-radius: 30px; }
+    .small-link { font-size: 12px; text-align: center; margin-top: 20px; }
+    .logout-btn { background: none; border: none; color: var(--danger); font-size: 13px; cursor: pointer; margin-left: 12px; }
   </style>
 </head>
 <body>
 <div class="mobile-app">
-  <div class="app-header">
-    <h1 id="dynamicTitle">МЕНЮ</h1>
-  </div>
-
-  <div class="main-content" id="mainContent">
-    <!-- ========================= МЕНЮ ========================= -->
-    <div class="tab-pane active-pane" id="tab-menu">
-      <div class="greeting-card">
-        <p>
-          <i class="fas fa-user-astronaut" style="color: var(--accent);"></i> 
-          Привет, <strong id="displayName">Друг</strong>
-          <button class="edit-name-btn" id="editNameBtn"><i class="fas fa-pen"></i> Изменить</button>
-        </p>
-        <span class="small-text">Твой Telegram-аккаунт здесь</span>
-      </div>
-
-      <div class="menu-grid">
-        <div class="menu-card" id="profileCard">
-          <i class="fas fa-id-card"></i>
-          <h4>Мой профиль</h4>
-          <p>Изменить имя</p>
-        </div>
-        <div class="menu-card" id="statsCard">
-          <i class="fas fa-chart-simple"></i>
-          <h4>Статистика</h4>
-          <p>Прогресс заданий</p>
-        </div>
-        <div class="menu-card" id="themeCard">
-          <i class="fas fa-palette"></i>
-          <h4>Настройки темы</h4>
-          <p>Светлая / Тёмная</p>
-        </div>
-      </div>
-
-      <!-- Блок статистики в меню (дублируется для наглядности) -->
-      <div class="stat-block" id="statsBlockMenu">
-        <div style="display: flex; justify-content: space-between;">
-          <span><i class="fas fa-tasks"></i> <strong>Всего задач:</strong> <span id="totalTasksStat">0</span></span>
-          <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
-        </div>
-        <div class="stat-bar">
-          <div class="stat-fill" id="progressFill" style="width: 0%;"></div>
-        </div>
-        <div class="small-text" style="text-align: center;">Прогресс выполнения</div>
-      </div>
+  <!-- Экран авторизации (регистрация / вход) -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-logo"><i class="fas fa-cloud-upload-alt"></i></div>
+    <div class="auth-title">Облачный сервис</div>
+    <div class="auth-sub">Задания и данные всегда с вами</div>
+    
+    <div id="authError" class="error-msg" style="display: none;"></div>
+    
+    <!-- Форма регистрации (видна по умолчанию) -->
+    <div id="registerForm">
+      <div class="input-group"><label>👤 Имя пользователя</label><input type="text" id="regUsername" placeholder="например: vadym"></div>
+      <div class="input-group"><label>🔐 Пароль</label><input type="password" id="regPassword" placeholder="минимум 4 символа"></div>
+      <button class="btn-primary" id="registerBtn">Зарегистрироваться</button>
+      <div class="auth-switch">Уже есть аккаунт? <span id="showLoginBtn">Вход</span></div>
     </div>
-
-    <!-- ========================= ЗАДАНИЯ ========================= -->
-    <div class="tab-pane" id="tab-tasks">
-      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">📋 Мои задания</h3>
-      <div class="task-list" id="tasksList"></div>
-      
-      <!-- Форма добавления задания вручную -->
-      <div class="add-task-form">
-        <input type="text" id="newTaskInput" placeholder="Новое задание, например: Сделать отчёт" autocomplete="off">
-        <button id="addTaskBtn">Добавить</button>
-      </div>
-      <div class="small-text" style="margin-top: 12px; text-align: center;">✓ Нажмите на кружок — отметить выполнение. ✖ удалить задачу.</div>
-    </div>
-
-    <!-- ========================= РАБОТА ========================= -->
-    <div class="tab-pane" id="tab-work">
-      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary);">💼 Работа и проекты</h3>
-      <p style="color: var(--text-secondary); margin-bottom: 16px;">Актуальные предложения</p>
-      <div class="job-card">
-        <div class="job-title">Frontend-разработчик (React)</div>
-        <div class="job-company"><i class="fas fa-building"></i> ТехноПарк · Удалённо</div>
-        <button class="job-btn">Откликнуться →</button>
-      </div>
-      <div class="job-card">
-        <div class="job-title">Менеджер проектов IT</div>
-        <div class="job-company"><i class="fas fa-users"></i> DigitalSolutions · Гибрид</div>
-        <button class="job-btn">Подробнее →</button>
-      </div>
-      <div class="job-card">
-        <div class="job-title">UX/UI дизайнер</div>
-        <div class="job-company"><i class="fas fa-paintbrush"></i> CreativeLab · Удалённо</div>
-        <button class="job-btn">Отправить портфолио</button>
-      </div>
-    </div>
-
-    <!-- ========================= ПОМОЩЬ ========================= -->
-    <div class="tab-pane" id="tab-help">
-      <h3 style="font-size: 20px; font-weight: 600; color: var(--text-primary);">🛟 Помощь и поддержка</h3>
-      <p style="color: var(--text-secondary); margin-bottom: 16px;">Оперативная помощь 24/7</p>
-      <div class="help-card" id="telegramSupportBtn">
-        <i class="fab fa-telegram-plane"></i>
-        <div>
-          <div class="help-title">Написать разработчику</div>
-          <div class="small-text">Telegram: @vadymtm90 — перейти в чат</div>
-        </div>
-      </div>
-      <div class="help-card" id="faqCard">
-        <i class="fas fa-question-circle"></i>
-        <div>
-          <div class="help-title">Часто задаваемые вопросы</div>
-          <div class="small-text">Как работать с заданиями, тема и статистика</div>
-        </div>
-      </div>
+    
+    <!-- Форма входа (изначально скрыта) -->
+    <div id="loginForm" style="display: none;">
+      <div class="input-group"><label>👤 Имя пользователя</label><input type="text" id="loginUsername" placeholder="ваш логин"></div>
+      <div class="input-group"><label>🔐 Пароль</label><input type="password" id="loginPassword" placeholder="пароль"></div>
+      <button class="btn-primary" id="loginBtn">Войти</button>
+      <div class="auth-switch">Нет аккаунта? <span id="showRegisterBtn">Регистрация</span></div>
     </div>
   </div>
 
-  <!-- Нижние кнопки -->
-  <div class="bottom-nav">
-    <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
-    <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
-    <button class="nav-item" data-tab="work"><i class="fas fa-briefcase"></i><span>РАБОТА</span></button>
-    <button class="nav-item" data-tab="help"><i class="fas fa-circle-question"></i><span>ПОМОЩЬ</span></button>
+  <!-- Основное приложение (после успешного входа) -->
+  <div id="mainApp" class="main-app">
+    <div class="app-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h1 id="dynamicTitle">МЕНЮ</h1>
+      <button id="logoutMainBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Выход</button>
+    </div>
+    <div class="main-content">
+      <!-- МЕНЮ -->
+      <div class="tab-pane active-pane" id="tab-menu">
+        <div class="greeting-card">
+          <p><i class="fas fa-user-astronaut" style="color:var(--accent)"></i> Привет, <strong id="displayName">Друг</strong>!</p>
+          <span class="small-link" style="font-size:12px">Ваши задания сохраняются в облаке (на устройстве)</span>
+        </div>
+        <div class="menu-grid">
+          <div class="menu-card" id="editProfileCard"><i class="fas fa-user-edit"></i><h4>Профиль</h4><p>Сменить имя</p></div>
+          <div class="menu-card" id="themeToggleCard"><i class="fas fa-moon"></i><h4>Тема</h4><p>Светлая/Тёмная</p></div>
+          <div class="menu-card" id="statsCardMenu"><i class="fas fa-chart-line"></i><h4>Статистика</h4><p>Прогресс</p></div>
+        </div>
+        <div class="stat-block">
+          <div style="display: flex; justify-content: space-between;"><span>✅ Выполнено: <span id="completedStat">0</span></span><span>📋 Всего: <span id="totalStat">0</span></span></div>
+          <div class="stat-bar"><div class="stat-fill" id="progressFillMain"></div></div>
+          <div class="small-link">Прогресс выполнения заданий</div>
+        </div>
+      </div>
+      <!-- ЗАДАНИЯ -->
+      <div class="tab-pane" id="tab-tasks">
+        <h3 style="margin-bottom: 12px;">📋 Мои задания</h3>
+        <div id="tasksList" class="task-list"></div>
+        <div class="add-task-form">
+          <input type="text" id="newTaskInput" placeholder="Новое задание...">
+          <button id="addTaskBtn">+ Добавить</button>
+        </div>
+        <div class="small-link" style="margin-top: 12px;">✓ Нажмите на кружок — выполнить. ✖ Удалить.</div>
+      </div>
+      <!-- РАБОТА -->
+      <div class="tab-pane" id="tab-work">
+        <h3>💼 Вакансии</h3>
+        <div class="job-card"><div class="job-title">Frontend-разработчик</div><div class="job-company">Удаленно / React</div><button class="job-btn">Откликнуться</button></div>
+        <div class="job-card"><div class="job-title">Менеджер проектов</div><div class="job-company">IT-компания</div><button class="job-btn">Подробнее</button></div>
+      </div>
+      <!-- ПОМОЩЬ -->
+      <div class="tab-pane" id="tab-help">
+        <h3>🛟 Поддержка</h3>
+        <div class="help-card" id="telegramHelpBtn"><i class="fab fa-telegram"></i><div><strong>Telegram: @vadymtm90</strong><div class="small-link">Нажмите, чтобы перейти</div></div></div>
+        <div class="help-card" id="faqHelpBtn"><i class="fas fa-question-circle"></i><div><strong>Часто задаваемые вопросы</strong><div class="small-link">Как работают задания и облако</div></div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
+      <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
+      <button class="nav-item" data-tab="work"><i class="fas fa-briefcase"></i><span>РАБОТА</span></button>
+      <button class="nav-item" data-tab="help"><i class="fas fa-circle-question"></i><span>ПОМОЩЬ</span></button>
+    </div>
   </div>
 </div>
 
 <script>
-  // ------------------- ХРАНИЛИЩЕ И ГЛОБАЛЬНЫЕ ДАННЫЕ -------------------
-  let tasks = [];         // { id, text, completed }
-  let userName = "Андрей";  // по умолчанию, будет изменяться
-  let currentTheme = "light"; // light / dark
-
-  // DOM элементы
-  const displayNameSpan = document.getElementById('displayName');
-  const tasksListDiv = document.getElementById('tasksList');
-  const totalTasksSpan = document.getElementById('totalTasksStat');
-  const completedTasksSpan = document.getElementById('completedTasksStat');
-  const progressFill = document.getElementById('progressFill');
-  const newTaskInput = document.getElementById('newTaskInput');
-  const addTaskBtn = document.getElementById('addTaskBtn');
-  const editNameBtn = document.getElementById('editNameBtn');
-  const profileCard = document.getElementById('profileCard');
-  const themeCard = document.getElementById('themeCard');
-  const telegramSupportBtn = document.getElementById('telegramSupportBtn');
-  const faqCard = document.getElementById('faqCard');
-
-  // ------------------- ЗАГРУЗКА / СОХРАНЕНИЕ -------------------
-  function loadData() {
-    const savedTasks = localStorage.getItem('userTasks');
-    if (savedTasks) {
-      tasks = JSON.parse(savedTasks);
-    } else {
-      // стартовые демо-задачи
-      tasks = [
-        { id: Date.now() + 1, text: "Сверстать мобильную навигацию", completed: false },
-        { id: Date.now() + 2, text: "Добавить ручное создание задач", completed: true },
-        { id: Date.now() + 3, text: "Настроить статистику", completed: false }
-      ];
+  // ---------- СИСТЕМА АВТОРИЗАЦИИ И "ОБЛАКО" (localStorage) ----------
+  // Структура: users[username] = { passwordHash, displayName, tasks, theme }
+  // tasks: [{ id, text, completed }]
+  let currentUser = null;
+  
+  // Вспомогательные функции
+  function hashPassword(pwd) {
+    // простое хеширование (для демо, не крипто)
+    let hash = 0;
+    for (let i = 0; i < pwd.length; i++) {
+      hash = ((hash << 5) - hash) + pwd.charCodeAt(i);
+      hash |= 0;
     }
-    const savedName = localStorage.getItem('userTelegramName');
-    if (savedName) userName = savedName;
-    else userName = "Андрей";
-    
-    const savedTheme = localStorage.getItem('appTheme');
-    if (savedTheme === 'dark') currentTheme = 'dark';
-    else currentTheme = 'light';
-    applyTheme();
+    return 'hash_' + hash;
   }
-
-  function saveTasks() {
-    localStorage.setItem('userTasks', JSON.stringify(tasks));
+  
+  function loadUsers() {
+    const stored = localStorage.getItem('app_users');
+    if (stored) return JSON.parse(stored);
+    return {};
   }
-  function saveUserName() {
-    localStorage.setItem('userTelegramName', userName);
+  
+  function saveUsers(users) {
+    localStorage.setItem('app_users', JSON.stringify(users));
   }
-
-  // ------------------- ОТРИСОВКА ЗАДАНИЙ -------------------
-  function renderTasks() {
-    if (!tasksListDiv) return;
-    if (tasks.length === 0) {
-      tasksListDiv.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary);">✨ Нет заданий. Добавьте новое!</div>';
+  
+  // регистрация
+  function registerUser(username, password, displayName) {
+    const users = loadUsers();
+    if (users[username]) return { success: false, error: 'Имя уже занято' };
+    if (password.length < 4) return { success: false, error: 'Пароль минимум 4 символа' };
+    if (!username.trim()) return { success: false, error: 'Введите имя' };
+    const newUser = {
+      passwordHash: hashPassword(password),
+      displayName: displayName || username,
+      tasks: [],     // пустые задачи
+      theme: 'light'
+    };
+    users[username] = newUser;
+    saveUsers(users);
+    return { success: true };
+  }
+  
+  // вход
+  function loginUser(username, password) {
+    const users = loadUsers();
+    const user = users[username];
+    if (!user) return { success: false, error: 'Пользователь не найден' };
+    if (user.passwordHash !== hashPassword(password)) return { success: false, error: 'Неверный пароль' };
+    return { success: true, userData: user, username };
+  }
+  
+  // сохранить данные текущего пользователя (задачи, имя, тему)
+  function saveCurrentUserData() {
+    if (!currentUser) return;
+    const users = loadUsers();
+    if (users[currentUser.username]) {
+      users[currentUser.username].tasks = currentUser.tasks;
+      users[currentUser.username].displayName = currentUser.displayName;
+      users[currentUser.username].theme = currentUser.theme;
+      saveUsers(users);
+    }
+  }
+  
+  // загрузить данные после входа
+  function initUserSession(username, userData) {
+    currentUser = {
+      username: username,
+      displayName: userData.displayName || username,
+      tasks: userData.tasks ? JSON.parse(JSON.stringify(userData.tasks)) : [],
+      theme: userData.theme || 'light'
+    };
+    applyTheme(currentUser.theme);
+    renderAllApp();
+  }
+  
+  // ---------- ТЕМА ----------
+  function applyTheme(theme) {
+    const body = document.body;
+    if (theme === 'dark') {
+      body.style.setProperty('--bg-body', '#0f172a');
+      body.style.setProperty('--app-bg', '#1e293b');
+      body.style.setProperty('--text-primary', '#f1f5f9');
+      body.style.setProperty('--text-secondary', '#cbd5e1');
+      body.style.setProperty('--border-light', '#334155');
+      body.style.setProperty('--card-bg', '#334155');
+      body.style.setProperty('--input-bg', '#0f172a');
+      body.style.setProperty('--accent', '#60a5fa');
     } else {
-      tasksListDiv.innerHTML = '';
+      body.style.setProperty('--bg-body', '#e5e9f0');
+      body.style.setProperty('--app-bg', '#ffffff');
+      body.style.setProperty('--text-primary', '#0f172a');
+      body.style.setProperty('--text-secondary', '#475569');
+      body.style.setProperty('--border-light', '#edf2f7');
+      body.style.setProperty('--card-bg', '#ffffff');
+      body.style.setProperty('--input-bg', '#f8fafc');
+      body.style.setProperty('--accent', '#3b82f6');
+    }
+    if (currentUser) {
+      currentUser.theme = theme;
+      saveCurrentUserData();
+    }
+  }
+  function toggleTheme() {
+    const newTheme = currentUser.theme === 'light' ? 'dark' : 'light';
+    currentUser.theme = newTheme;
+    applyTheme(newTheme);
+    saveCurrentUserData();
+  }
+  
+  // ---------- ОТРИСОВКА ЗАДАНИЙ И СТАТИСТИКИ ----------
+  function renderTasksAndStats() {
+    if (!currentUser) return;
+    const tasksContainer = document.getElementById('tasksList');
+    if (!tasksContainer) return;
+    const tasks = currentUser.tasks;
+    if (tasks.length === 0) {
+      tasksContainer.innerHTML = '<div style="text-align:center;padding:20px;">✨ Нет заданий. Добавьте первое!</div>';
+    } else {
+      tasksContainer.innerHTML = '';
       tasks.forEach(task => {
-        const taskDiv = document.createElement('div');
-        taskDiv.className = 'task-item';
-        taskDiv.dataset.id = task.id;
-        
-        const checkDiv = document.createElement('div');
-        checkDiv.className = `task-check ${task.completed ? 'completed' : ''}`;
-        if (task.completed) checkDiv.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
-        else checkDiv.innerHTML = '';
-        checkDiv.addEventListener('click', (e) => {
+        const div = document.createElement('div');
+        div.className = 'task-item';
+        const check = document.createElement('div');
+        check.className = `task-check ${task.completed ? 'completed' : ''}`;
+        if (task.completed) check.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
+        check.addEventListener('click', (e) => {
           e.stopPropagation();
           task.completed = !task.completed;
-          saveTasks();
-          renderTasks();
-          updateStatistics();
+          saveCurrentUserData();
+          renderTasksAndStats();
         });
-        
         const textSpan = document.createElement('div');
         textSpan.className = `task-text ${task.completed ? 'done' : ''}`;
         textSpan.innerText = task.text;
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-task';
-        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        deleteBtn.addEventListener('click', (e) => {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-task';
+        delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        delBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          tasks = tasks.filter(t => t.id !== task.id);
-          saveTasks();
-          renderTasks();
-          updateStatistics();
+          currentUser.tasks = currentUser.tasks.filter(t => t.id !== task.id);
+          saveCurrentUserData();
+          renderTasksAndStats();
         });
-        
-        taskDiv.appendChild(checkDiv);
-        taskDiv.appendChild(textSpan);
-        taskDiv.appendChild(deleteBtn);
-        tasksListDiv.appendChild(taskDiv);
+        div.appendChild(check);
+        div.appendChild(textSpan);
+        div.appendChild(delBtn);
+        tasksContainer.appendChild(div);
       });
     }
-    updateStatistics();
+    // статистика
+    const total = currentUser.tasks.length;
+    const completed = currentUser.tasks.filter(t => t.completed).length;
+    const percent = total === 0 ? 0 : (completed/total)*100;
+    document.getElementById('totalStat') && (document.getElementById('totalStat').innerText = total);
+    document.getElementById('completedStat') && (document.getElementById('completedStat').innerText = completed);
+    const progressFill = document.getElementById('progressFillMain');
+    if (progressFill) progressFill.style.width = `${percent}%`;
   }
-
-  // добавление новой задачи
+  
   function addNewTask() {
-    const text = newTaskInput.value.trim();
-    if (text === "") {
-      alert("Введите текст задания");
-      return;
-    }
-    const newTask = {
+    const input = document.getElementById('newTaskInput');
+    const text = input.value.trim();
+    if (!text) return alert('Введите задание');
+    currentUser.tasks.push({
       id: Date.now(),
       text: text,
       completed: false
-    };
-    tasks.push(newTask);
-    saveTasks();
-    renderTasks();
-    newTaskInput.value = "";
-    // переключимся на вкладку заданий для наглядности (но не обязательно)
-  }
-
-  // ------------------- СТАТИСТИКА (обновление) -------------------
-  function updateStatistics() {
-    const total = tasks.length;
-    const completed = tasks.filter(t => t.completed).length;
-    const percent = total === 0 ? 0 : (completed / total) * 100;
-    if (totalTasksSpan) totalTasksSpan.innerText = total;
-    if (completedTasksSpan) completedTasksSpan.innerText = completed;
-    if (progressFill) progressFill.style.width = `${percent}%`;
-  }
-
-  // ------------------- ИМЯ ПОЛЬЗОВАТЕЛЯ (телеграм имя) -------------------
-  function updateNameUI() {
-    displayNameSpan.innerText = userName;
-  }
-  function promptChangeName() {
-    let newName = prompt("Введите ваше Telegram имя:", userName);
-    if (newName && newName.trim() !== "") {
-      userName = newName.trim();
-      saveUserName();
-      updateNameUI();
-    } else if (newName === "") {
-      alert("Имя не может быть пустым");
-    }
-  }
-
-  // ------------------- ТЕМА (только смена темы в настройках) -------------------
-  function applyTheme() {
-    const body = document.body;
-    if (currentTheme === 'dark') {
-      body.classList.add('dark');
-      document.getElementById('themeColorMeta')?.setAttribute('content', '#1e293b');
-    } else {
-      body.classList.remove('dark');
-      document.getElementById('themeColorMeta')?.setAttribute('content', '#ffffff');
-    }
-    localStorage.setItem('appTheme', currentTheme);
-  }
-  function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    applyTheme();
-  }
-
-  // ------------------- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК -------------------
-  const navBtns = document.querySelectorAll('.nav-item');
-  const panes = {
-    menu: document.getElementById('tab-menu'),
-    tasks: document.getElementById('tab-tasks'),
-    work: document.getElementById('tab-work'),
-    help: document.getElementById('tab-help')
-  };
-  const headerTitle = document.getElementById('dynamicTitle');
-  const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ' };
-
-  function switchTab(tabId) {
-    Object.values(panes).forEach(pane => pane?.classList.remove('active-pane'));
-    if (panes[tabId]) panes[tabId].classList.add('active-pane');
-    navBtns.forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
     });
-    headerTitle.innerText = titles[tabId] || 'МЕНЮ';
+    saveCurrentUserData();
+    renderTasksAndStats();
+    input.value = '';
   }
-
-  // ------------------- ПОМОЩЬ: ПЕРЕКИДЫВАНИЕ НА ТЕЛЕГРАМ vadymtm90 -------------------
-  function openTelegramSupport() {
-    window.open('https://t.me/vadymtm90', '_blank');
+  
+  function changeDisplayName() {
+    const newName = prompt('Введите ваше отображаемое имя (Telegram имя):', currentUser.displayName);
+    if (newName && newName.trim()) {
+      currentUser.displayName = newName.trim();
+      saveCurrentUserData();
+      document.getElementById('displayName').innerText = currentUser.displayName;
+    }
   }
-  function showFAQ() {
-    alert("📘 Часто задаваемые вопросы:\n• Как добавить задание? Напишите текст и нажмите «Добавить».\n• Отметить выполнение — клик по кружку.\n• Статистика обновляется автоматически.\n• Тема меняется в меню → Настройки темы.");
-  }
-
-  // ------------------- ОБРАБОТЧИКИ ИНТЕРАКТИВА -------------------
-  function initEventListeners() {
-    // нижняя навигация
-    navBtns.forEach(btn => {
+  
+  // ---------- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ----------
+  function initTabs() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const panes = {
+      menu: document.getElementById('tab-menu'),
+      tasks: document.getElementById('tab-tasks'),
+      work: document.getElementById('tab-work'),
+      help: document.getElementById('tab-help')
+    };
+    const titleElem = document.getElementById('dynamicTitle');
+    navItems.forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.getAttribute('data-tab');
-        if (tab && panes[tab]) switchTab(tab);
+        if (!tab || !panes[tab]) return;
+        Object.values(panes).forEach(p => p.classList.remove('active-pane'));
+        panes[tab].classList.add('active-pane');
+        navItems.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        let t = '';
+        if (tab === 'menu') t = 'МЕНЮ';
+        else if (tab === 'tasks') t = 'ЗАДАНИЯ';
+        else if (tab === 'work') t = 'РАБОТА';
+        else t = 'ПОМОЩЬ';
+        titleElem.innerText = t;
       });
     });
-    
-    // добавление задания
-    addTaskBtn.addEventListener('click', addNewTask);
-    newTaskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addNewTask(); });
-    
-    // редактирование имени
-    editNameBtn.addEventListener('click', promptChangeName);
-    profileCard.addEventListener('click', promptChangeName);
-    
-    // настройка темы
-    themeCard.addEventListener('click', () => {
-      toggleTheme();
-      alert(`Тема переключена на ${currentTheme === 'dark' ? 'Тёмную' : 'Светлую'}`);
-    });
-    
-    // помощь: телеграм и faq
-    telegramSupportBtn.addEventListener('click', openTelegramSupport);
-    faqCard.addEventListener('click', showFAQ);
-    
-    // кнопки отклика на работу (просто алерт)
-    document.querySelectorAll('.job-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        alert("✅ Заявка отправлена! С вами свяжутся в ближайшее время.");
-      });
-    });
-
-    // Дополнительно: карточка статистики в меню (для наглядности показывает статистику, но и так обновляется)
-    const statsCardBtn = document.getElementById('statsCard');
-    if (statsCardBtn) {
-      statsCardBtn.addEventListener('click', () => {
-        updateStatistics();
-        alert(`📊 Статистика: ${tasks.filter(t=>t.completed).length} / ${tasks.length} задач выполнено.`);
-      });
+  }
+  
+  // помощь
+  function initHelp() {
+    const telegramBtn = document.getElementById('telegramHelpBtn');
+    if (telegramBtn) telegramBtn.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
+    const faqBtn = document.getElementById('faqHelpBtn');
+    if (faqBtn) faqBtn.addEventListener('click', () => alert('FAQ: Задания сохраняются автоматически. Вы можете добавлять, удалять и отмечать выполнение. Статистика обновляется.'));
+    document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => alert('Отклик принят! С вами свяжутся.')));
+  }
+  
+  function renderAllApp() {
+    document.getElementById('displayName').innerText = currentUser.displayName;
+    renderTasksAndStats();
+    initTabs();
+    initHelp();
+    // навесить обработчики меню
+    document.getElementById('editProfileCard')?.addEventListener('click', changeDisplayName);
+    document.getElementById('themeToggleCard')?.addEventListener('click', toggleTheme);
+    document.getElementById('statsCardMenu')?.addEventListener('click', () => { renderTasksAndStats(); alert(`Статистика: ${currentUser.tasks.filter(t=>t.completed).length}/${currentUser.tasks.length} задач выполнено.`); });
+    const addBtn = document.getElementById('addTaskBtn');
+    if (addBtn) addBtn.onclick = addNewTask;
+    const newInput = document.getElementById('newTaskInput');
+    if (newInput) newInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') addNewTask(); });
+    document.getElementById('logoutMainBtn')?.addEventListener('click', logout);
+  }
+  
+  // logout
+  function logout() {
+    currentUser = null;
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    // очистить формы
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('authError').style.display = 'none';
+  }
+  
+  // переключение между формами
+  function showRegister() {
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('authError').style.display = 'none';
+  }
+  function showLogin() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('authError').style.display = 'none';
+  }
+  
+  // обработчики авторизации
+  function handleRegister() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const errDiv = document.getElementById('authError');
+    const res = registerUser(username, password, username);
+    if (!res.success) {
+      errDiv.style.display = 'block';
+      errDiv.innerText = res.error;
+    } else {
+      // авто вход после регистрации
+      const loginRes = loginUser(username, password);
+      if (loginRes.success) {
+        initUserSession(username, loginRes.userData);
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'flex';
+      } else {
+        showLogin();
+      }
     }
   }
-
-  // ------------------- СТАРТ ПРИЛОЖЕНИЯ -------------------
-  function init() {
-    loadData();
-    updateNameUI();
-    renderTasks();     // отрисует список + статистику
-    updateStatistics();
-    initEventListeners();
-    // по умолчанию вкладка меню активна
-    switchTab('menu');
+  
+  function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errDiv = document.getElementById('authError');
+    const res = loginUser(username, password);
+    if (!res.success) {
+      errDiv.style.display = 'block';
+      errDiv.innerText = res.error;
+    } else {
+      initUserSession(username, res.userData);
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'flex';
+    }
   }
-  init();
+  
+  // инициализация событий экрана входа
+  document.getElementById('registerBtn')?.addEventListener('click', handleRegister);
+  document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+  document.getElementById('showLoginBtn')?.addEventListener('click', showLogin);
+  document.getElementById('showRegisterBtn')?.addEventListener('click', showRegister);
+  
+  // Проверка: если есть сохраненная сессия? нет, требуется явный вход
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+  // начальная тема светлая
+  applyTheme('light');
 </script>
 </body>
 </html>
