@@ -486,11 +486,9 @@
             <button id="addTaskBtn">Добавить</button>
           </div>
           <div class="sync-buttons">
-            <button id="exportTasksBtn" class="sync-btn"><i class="fas fa-download"></i> Экспорт</button>
-            <button id="importTasksBtn" class="sync-btn"><i class="fas fa-upload"></i> Импорт</button>
             <button id="forceSaveCloudBtn" class="sync-btn cloud-save-btn"><i class="fas fa-save"></i> Сохранить в облако</button>
           </div>
-          <div class="small-text" style="text-align:center;">⬆ Экспорт/импорт + ручное сохранение в Firebase</div>
+          <div class="small-text" style="text-align:center;">✓ Изменения сохраняются автоматически. Кнопка — для ручного резервирования.</div>
         </div>
         <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания — изменения сохраняются на всех устройствах</div>
       </div>
@@ -533,13 +531,12 @@
   const db = firebase.firestore();
   const analytics = firebase.analytics();
   
-  // Коллекция задач в Firestore (глобальная, один документ на задачу)
   const tasksCollection = db.collection('global_tasks');
   
-  let tasks = [];          // локальный массив задач, синхронизируется с Firestore
+  let tasks = [];
   let currentUser = null;
   let currentTheme = "light";
-  let unsubscribeTasks = null;  // для отписки от реального времени
+  let unsubscribeTasks = null;
   
   // DOM элементы
   const authOverlay = document.getElementById('authOverlay');
@@ -568,11 +565,9 @@
   const newTaskInput = document.getElementById('newTaskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const logoutCard = document.getElementById('logoutCard');
-  const exportBtn = document.getElementById('exportTasksBtn');
-  const importBtn = document.getElementById('importTasksBtn');
   const forceSaveCloudBtn = document.getElementById('forceSaveCloudBtn');
   
-  // ---------------------------- ЛОКАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ (без изменений) ----------------------------
+  // ---------------------------- ЛОКАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ ----------------------------
   function loadUsers() {
     if (!localStorage.getItem('appUsers')) {
       localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } }));
@@ -595,7 +590,22 @@
   }
   function clearSession() { localStorage.removeItem('currentSession'); }
   
-  // ---------------------------- FIRESTORE: РЕАЛЬНОЕ ВРЕМЯ + ОПЕРАЦИИ ----------------------------
+  // ---------------------------- FIRESTORE: ИНИЦИАЛИЗАЦИЯ ДЕФОЛТНЫХ ЗАДАЧ ----------------------------
+  async function initializeDefaultTasks() {
+    const snapshot = await tasksCollection.limit(1).get();
+    if (snapshot.empty) {
+      const defaultTasks = [
+        { text: "Изучить новый интерфейс", completed: false, createdAt: Date.now() + 1, createdBy: "system" },
+        { text: "Проверить статистику", completed: false, createdAt: Date.now() + 2, createdBy: "system" },
+        { text: "Связаться с поддержкой", completed: false, createdAt: Date.now() + 3, createdBy: "system" }
+      ];
+      for (const task of defaultTasks) {
+        await tasksCollection.add(task);
+      }
+    }
+  }
+  
+  // ---------------------------- FIRESTORE: РЕАЛЬНОЕ ВРЕМЯ ----------------------------
   function attachFirestoreListener() {
     if (unsubscribeTasks) unsubscribeTasks();
     unsubscribeTasks = tasksCollection.orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
@@ -610,19 +620,14 @@
         });
       });
       tasks = newTasks;
-      // Обновляем UI
-      if (document.getElementById('tab-tasks').classList.contains('active-pane') || true) {
-        renderTasksUI();
-      }
+      renderTasksUI();
       updateStatistics();
     }, (error) => {
-      console.error("Ошибка Firestore:", error);
       const statusDiv = document.getElementById('syncStatus');
-      if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка синхронизации, проверьте интернет';
+      if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка синхронизации';
     });
   }
   
-  // Добавить задачу (только для админа)
   async function addTaskToCloud(text) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!text.trim()) return;
@@ -634,44 +639,28 @@
     });
   }
   
-  // Переключить статус (доступно всем)
   async function toggleTaskComplete(taskId, currentStatus) {
-    await tasksCollection.doc(taskId).update({
-      completed: !currentStatus
-    });
+    await tasksCollection.doc(taskId).update({ completed: !currentStatus });
   }
   
-  // Редактировать текст (только админ)
   async function editTaskText(taskId, newText) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!newText.trim()) return;
-    await tasksCollection.doc(taskId).update({
-      text: newText.trim()
-    });
+    await tasksCollection.doc(taskId).update({ text: newText.trim() });
   }
   
-  // Удалить задачу (только админ)
   async function deleteTaskFromCloud(taskId) {
     if (!currentUser || currentUser.role !== 'admin') return;
     await tasksCollection.doc(taskId).delete();
   }
   
-  // Принудительная синхронизация (резервное копирование текущего массива в Firestore)
   async function forceSaveAllToCloud() {
-    if (!currentUser || currentUser.role !== 'admin') {
-      alert('Только администратор может сохранять все задания в облако.');
-      return;
-    }
+    if (!currentUser || currentUser.role !== 'admin') return;
     try {
-      // Получим все существующие документы
       const snapshot = await tasksCollection.get();
       const batch = db.batch();
-      // Удаляем все старые
-      snapshot.forEach(doc => {
-        batch.delete(doc.ref);
-      });
+      snapshot.forEach(doc => batch.delete(doc.ref));
       await batch.commit();
-      // Добавляем заново из текущего массива tasks
       for (const task of tasks) {
         await tasksCollection.add({
           text: task.text,
@@ -680,64 +669,12 @@
           createdBy: currentUser.username
         });
       }
-      alert('✅ Все задания сохранены в облако Firebase. Синхронизация выполнена!');
+      // Без alert
     } catch(e) {
-      alert('Ошибка при сохранении: ' + e.message);
+      // Молча игнорируем ошибки, чтобы не беспокоить пользователя
     }
   }
   
-  // Экспорт / Импорт (работают с локальным массивом, после импорта перезаписываем облако)
-  function exportTasksToFile() {
-    const dataStr = JSON.stringify(tasks, null, 2);
-    const blob = new Blob([dataStr], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tasks_backup_${new Date().toISOString().slice(0,19)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('Задания экспортированы в файл');
-  }
-  
-  async function importTasksFromFile() {
-    if (!currentUser || currentUser.role !== 'admin') {
-      alert('Только администратор может импортировать задания');
-      return;
-    }
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        try {
-          const imported = JSON.parse(ev.target.result);
-          if (Array.isArray(imported) && imported.every(t => typeof t.text === 'string' && typeof t.completed === 'boolean')) {
-            // Очистить Firestore и залить импортированные
-            const snapshot = await tasksCollection.get();
-            const batch = db.batch();
-            snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            for (const task of imported) {
-              await tasksCollection.add({
-                text: task.text,
-                completed: task.completed,
-                createdAt: Date.now(),
-                createdBy: currentUser.username
-              });
-            }
-            alert('Импорт выполнен! Задания синхронизированы в облаке.');
-          } else throw new Error();
-        } catch(err) { alert('Неверный формат файла'); }
-      };
-      reader.readAsText(file);
-    };
-    input.click();
-  }
-  
-  // UI рендер задач (использует глобальный tasks и права currentUser)
   function renderTasksUI() {
     if (!tasksContainer) return;
     if (tasks.length === 0) {
@@ -778,15 +715,16 @@
     if (progressFill) progressFill.style.width = `${percent}%`;
   }
   
-  // ---------------------------- АВТОРИЗАЦИЯ И СТАРТ ----------------------------
+  // ---------------------------- АВТОРИЗАЦИЯ ----------------------------
   function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); currentUser = null; }
   function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
   
-  function afterLogin() {
+  async function afterLogin() {
     hideAuthScreen();
     applyTheme();
     updateUIForUser();
-    attachFirestoreListener();   // Подключаем реальное время из Firestore
+    await initializeDefaultTasks();   // убедимся, что задачи есть в Firestore
+    attachFirestoreListener();
     updateStatistics();
     setupNavAndButtons();
   }
@@ -802,7 +740,7 @@
     } else { loginError.innerText = 'Неверный логин или пароль'; return false; }
   }
   
-  function register(name, password) {
+  async function register(name, password) {
     if (!name.trim()) { regError.innerText = 'Введите имя'; return false; }
     const users = getUsers();
     const newUsername = "user_" + Date.now();
@@ -810,7 +748,7 @@
     saveUsers(users);
     currentUser = { username: newUsername, role: "user", name: name.trim() };
     saveSession(currentUser);
-    afterLogin();
+    await afterLogin();
     return true;
   }
   
@@ -829,7 +767,7 @@
     }
   }
   
-  // ---------------------------- ТЕМА И НАВИГАЦИЯ ----------------------------
+  // ---------------------------- ТЕМА И НАВИГАЦИЯ (БЕЗ ALERT) ----------------------------
   function applyTheme() {
     document.body.classList.toggle('dark', currentTheme === 'dark');
     document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
@@ -850,16 +788,14 @@
       if (tabId === 'tasks') renderTasksUI();
     }
     navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
-    document.getElementById('themeCard')?.addEventListener('click', () => { toggleTheme(); alert(`Тема: ${currentTheme === 'dark' ? 'тёмная' : 'светлая'}`); });
-    document.getElementById('statsCard')?.addEventListener('click', () => { updateStatistics(); alert(`Статистика: ${tasks.filter(t=>t.completed).length}/${tasks.length} выполнено`); });
-    document.getElementById('profileCard')?.addEventListener('click', () => alert(`Вы вошли как: ${currentUser.name}\nРоль: ${currentUser.role === 'admin' ? 'Администратор' : 'Пользователь'}\nСинхронизация через Firebase`));
+    document.getElementById('themeCard')?.addEventListener('click', () => toggleTheme());
+    document.getElementById('statsCard')?.addEventListener('click', () => updateStatistics());
+    document.getElementById('profileCard')?.addEventListener('click', () => {});
     document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
-    document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания хранятся в облаке Firebase. Любые изменения (добавление, отметка, редактирование) мгновенно синхронизируются на всех устройствах. Админ может управлять задачами.'));
-    document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => alert('Заявка отправлена!')));
+    document.getElementById('faqBtn')?.addEventListener('click', () => {});
+    document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => {}));
     if (addTaskBtn) addTaskBtn.addEventListener('click', () => { const text = newTaskInput.value.trim(); if(text) addTaskToCloud(text); newTaskInput.value = ''; });
     if (logoutCard) logoutCard.addEventListener('click', logout);
-    if (exportBtn) exportBtn.addEventListener('click', exportTasksToFile);
-    if (importBtn) importBtn.addEventListener('click', importTasksFromFile);
     if (forceSaveCloudBtn) forceSaveCloudBtn.addEventListener('click', forceSaveAllToCloud);
   }
   
@@ -872,7 +808,7 @@
     doRegisterBtn.addEventListener('click', () => { const name = regName.value.trim(); const pwd = regPassword.value; if (!name) regError.innerText = 'Введите имя'; else register(name, pwd); });
   }
   
-  function start() {
+  async function start() {
     loadUsers();
     const savedTheme = localStorage.getItem('appTheme');
     if (savedTheme === 'dark') currentTheme = 'dark'; else currentTheme = 'light';
@@ -881,8 +817,15 @@
     if (session) {
       const users = getUsers();
       const userData = users[session.username];
-      if (userData) { currentUser = { username: session.username, role: userData.role, name: userData.name }; hideAuthScreen(); updateUIForUser(); attachFirestoreListener(); updateStatistics(); setupNavAndButtons(); }
-      else showAuthScreen();
+      if (userData) {
+        currentUser = { username: session.username, role: userData.role, name: userData.name };
+        hideAuthScreen();
+        updateUIForUser();
+        await initializeDefaultTasks();
+        attachFirestoreListener();
+        updateStatistics();
+        setupNavAndButtons();
+      } else showAuthScreen();
     } else showAuthScreen();
     initAuthUI();
   }
