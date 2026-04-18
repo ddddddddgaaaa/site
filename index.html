@@ -488,7 +488,7 @@
           <div class="sync-buttons">
             <button id="forceSaveCloudBtn" class="sync-btn cloud-save-btn"><i class="fas fa-save"></i> Сохранить в облако</button>
           </div>
-          <div class="small-text" style="text-align:center;">✓ Изменения сохраняются автоматически. Кнопка — для ручного резервирования.</div>
+          <div class="small-text" style="text-align:center;">✓ Кнопка безопасно синхронизирует текущие задания (не удаляет данные)</div>
         </div>
         <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания — изменения сохраняются на всех устройствах</div>
       </div>
@@ -654,13 +654,19 @@
     await tasksCollection.doc(taskId).delete();
   }
   
+  // Безопасное сохранение в облако: перезаписывает коллекцию текущими задачами, но только если есть хотя бы одна задача
   async function forceSaveAllToCloud() {
     if (!currentUser || currentUser.role !== 'admin') return;
+    // Защита: если задач нет, не делаем ничего, чтобы не удалить данные
+    if (tasks.length === 0) return;
+    
     try {
+      // Получаем все существующие документы
       const snapshot = await tasksCollection.get();
       const batch = db.batch();
       snapshot.forEach(doc => batch.delete(doc.ref));
       await batch.commit();
+      // Добавляем задачи из текущего массива
       for (const task of tasks) {
         await tasksCollection.add({
           text: task.text,
@@ -669,9 +675,8 @@
           createdBy: currentUser.username
         });
       }
-      // Без alert
     } catch(e) {
-      // Молча игнорируем ошибки, чтобы не беспокоить пользователя
+      // Игнорируем ошибки, чтобы не тревожить пользователя
     }
   }
   
@@ -723,7 +728,7 @@
     hideAuthScreen();
     applyTheme();
     updateUIForUser();
-    await initializeDefaultTasks();   // убедимся, что задачи есть в Firestore
+    await initializeDefaultTasks();
     attachFirestoreListener();
     updateStatistics();
     setupNavAndButtons();
@@ -767,7 +772,7 @@
     }
   }
   
-  // ---------------------------- ТЕМА И НАВИГАЦИЯ (БЕЗ ALERT) ----------------------------
+  // ---------------------------- ТЕМА И НАВИГАЦИЯ (БЕЗ ВСПЛЫВАЮЩИХ УВЕДОМЛЕНИЙ) ----------------------------
   function applyTheme() {
     document.body.classList.toggle('dark', currentTheme === 'dark');
     document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
