@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#ffffff" id="themeColorMeta">
   <title>Мобильный сервис | Задания • Работа • Помощь</title>
-  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -15,7 +14,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Светлая тема (по умолчанию) */
+    /* Светлая тема */
     :root {
       --bg-body: #e5e9f0;
       --app-bg: #ffffff;
@@ -77,7 +76,6 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: background 0.2s;
       position: relative;
     }
 
@@ -88,7 +86,7 @@
       }
     }
 
-    /* Экран авторизации (поверх основного) */
+    /* Экран авторизации */
     .auth-overlay {
       position: absolute;
       top: 0;
@@ -122,7 +120,6 @@
       color: var(--text-secondary);
       cursor: pointer;
       flex: 1;
-      transition: 0.1s;
     }
     .auth-tab button.active {
       color: var(--accent);
@@ -191,7 +188,6 @@
       flex: 1;
       overflow-y: auto;
       padding: 16px 20px 20px 20px;
-      scroll-behavior: smooth;
     }
     .tab-pane {
       display: none;
@@ -205,14 +201,25 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* карточки */
+    /* карточки и текст — гарантия светлого цвета в тёмной теме */
+    .greeting-card, .greeting-card p, .greeting-card strong, 
+    .stat-block, .stat-block span, .stat-block strong,
+    .menu-card h4, .menu-card p, .task-text, .job-title, .help-title,
+    .nav-item span, .small-text, .add-task-form input, .job-btn {
+      color: var(--text-primary);
+    }
+    .greeting-card p strong, .stat-block strong {
+      color: var(--text-primary);
+    }
+    .task-text.done {
+      color: var(--text-secondary);
+    }
     .greeting-card {
       background: var(--card-bg);
       border-radius: 28px;
       padding: 20px;
       margin-bottom: 24px;
       border: 1px solid var(--border-light);
-      box-shadow: var(--card-shadow);
     }
     .menu-grid {
       display: grid;
@@ -231,10 +238,6 @@
     }
     .menu-card:active { transform: scale(0.97); }
     .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
-    .menu-card h4 { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .menu-card p { font-size: 12px; color: var(--text-secondary); }
-
-    /* статистика */
     .stat-block {
       background: var(--card-bg);
       border-radius: 24px;
@@ -255,8 +258,6 @@
       border-radius: 30px;
       transition: width 0.2s;
     }
-
-    /* задания */
     .task-list {
       display: flex;
       flex-direction: column;
@@ -293,12 +294,7 @@
       flex: 1;
       font-size: 15px;
       font-weight: 500;
-      color: var(--text-primary);
       word-break: break-word;
-    }
-    .task-text.done {
-      text-decoration: line-through;
-      color: var(--text-secondary);
     }
     .delete-task, .edit-task {
       background: transparent;
@@ -310,11 +306,6 @@
     }
     .delete-task { color: #ef4444; }
     .edit-task { color: var(--accent); }
-    .admin-actions {
-      margin-top: 20px;
-      display: flex;
-      gap: 12px;
-    }
     .add-task-form {
       display: flex;
       gap: 10px;
@@ -331,10 +322,6 @@
       padding: 10px 12px;
       font-size: 15px;
       outline: none;
-      color: var(--text-primary);
-    }
-    .add-task-form input::placeholder {
-      color: var(--placeholder-color);
     }
     .add-task-form button {
       background: var(--accent);
@@ -345,6 +332,22 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .sync-buttons {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .sync-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--border-light);
+      padding: 10px 16px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-primary);
+      flex: 1;
+      text-align: center;
+    }
     .job-card {
       background: var(--card-bg);
       border-radius: 24px;
@@ -352,7 +355,7 @@
       margin-bottom: 16px;
       border: 1px solid var(--border-light);
     }
-    .job-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .job-title { font-size: 18px; font-weight: 700; }
     .job-company { font-size: 14px; color: var(--accent); margin: 6px 0; }
     .job-btn {
       background: var(--input-bg);
@@ -362,7 +365,6 @@
       font-weight: 500;
       margin-top: 10px;
       cursor: pointer;
-      color: var(--text-primary);
     }
     .help-card {
       background: var(--card-bg);
@@ -376,8 +378,6 @@
       border: 1px solid var(--border-light);
     }
     .help-card i { font-size: 26px; color: var(--accent); width: 40px; }
-    .help-card div { flex: 1; }
-    .help-title { font-weight: 700; color: var(--text-primary); }
     .bottom-nav {
       background: var(--nav-bg);
       display: flex;
@@ -400,7 +400,6 @@
       cursor: pointer;
       padding: 8px 0 4px;
       border-radius: 30px;
-      transition: 0.1s;
     }
     .nav-item i { font-size: 24px; }
     .nav-item.active {
@@ -408,61 +407,39 @@
       background: var(--nav-active-bg);
       transform: translateY(-2px);
     }
-    .small-text { font-size: 13px; color: var(--text-secondary); margin-top: 5px; }
-    
-    /* дополнительная страховка для тёмной темы: все инпуты, кнопки, текст */
-    body.dark input, body.dark textarea, body.dark button, body.dark select, body.dark .job-btn, body.dark .nav-item {
-      color: var(--text-primary);
-    }
-    body.dark .job-btn, body.dark .nav-item {
-      color: var(--text-secondary);
-    }
-    body.dark .nav-item.active {
-      color: var(--nav-active-color);
-    }
+    .small-text { font-size: 13px; margin-top: 5px; }
   </style>
 </head>
 <body>
 <div class="mobile-app" id="mobileApp">
-  <!-- Экран авторизации / регистрации -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-tab">
       <button id="loginTabBtn" class="active">Вход</button>
       <button id="registerTabBtn">Регистрация</button>
     </div>
-    <!-- Форма входа -->
     <div id="loginForm" class="auth-form">
       <input type="text" id="loginUsername" placeholder="Логин" autocomplete="off">
       <input type="password" id="loginPassword" placeholder="Пароль">
       <button id="doLoginBtn">Войти</button>
       <div id="loginError" class="error-msg"></div>
-      <div class="auth-switch">
-        Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span>
-      </div>
+      <div class="auth-switch">Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span></div>
     </div>
-    <!-- Форма регистрации (только имя, для обычных пользователей) -->
     <div id="registerForm" class="auth-form" style="display: none;">
-      <input type="text" id="regName" placeholder="Ваше имя (как вас называть)" autocomplete="off">
-      <input type="password" id="regPassword" placeholder="Пароль (можно любой)">
+      <input type="text" id="regName" placeholder="Ваше имя" autocomplete="off">
+      <input type="password" id="regPassword" placeholder="Пароль">
       <button id="doRegisterBtn">Зарегистрироваться</button>
       <div id="regError" class="error-msg"></div>
-      <div class="auth-switch">
-        Уже есть аккаунт? <span id="switchToLogin">Войти</span>
-      </div>
+      <div class="auth-switch">Уже есть аккаунт? <span id="switchToLogin">Войти</span></div>
     </div>
   </div>
 
-  <!-- Основной интерфейс (изначально скрыт) -->
   <div id="mainApp" style="display: flex; flex-direction: column; height: 100%;">
-    <div class="app-header">
-      <h1 id="dynamicTitle">МЕНЮ</h1>
-    </div>
+    <div class="app-header"><h1 id="dynamicTitle">МЕНЮ</h1></div>
     <div class="main-content" id="mainContent">
-      <!-- МЕНЮ -->
       <div class="tab-pane active-pane" id="tab-menu">
         <div class="greeting-card">
           <p><i class="fas fa-user-astronaut"></i> Привет, <strong id="displayName"></strong></p>
-          <span class="small-text">Ваша роль: <span id="userRoleSpan"></span></span>
+          <span class="small-text">Роль: <span id="userRoleSpan"></span></span>
         </div>
         <div class="menu-grid">
           <div class="menu-card" id="profileCard"><i class="fas fa-id-card"></i><h4>Мой профиль</h4><p>Информация</p></div>
@@ -475,25 +452,27 @@
             <span><i class="fas fa-tasks"></i> <strong>Всего задач:</strong> <span id="totalTasksStat">0</span></span>
             <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
           </div>
-          <div class="stat-bar"><div class="stat-fill" id="progressFill" style="width:0%"></div></div>
+          <div class="stat-bar"><div class="stat-fill" id="progressFill"></div></div>
         </div>
       </div>
 
-      <!-- ЗАДАНИЯ -->
       <div class="tab-pane" id="tab-tasks">
         <h3 style="font-size:20px; color:var(--text-primary);">📋 Общие задания</h3>
         <div id="tasksContainer"></div>
-        <!-- Админ-панель управления заданиями (видна только админу) -->
         <div id="adminTaskPanel" style="display: none;">
           <div class="add-task-form">
             <input type="text" id="newTaskInput" placeholder="Новое задание...">
             <button id="addTaskBtn">Добавить</button>
           </div>
+          <div class="sync-buttons">
+            <button id="exportTasksBtn" class="sync-btn"><i class="fas fa-download"></i> Экспорт</button>
+            <button id="importTasksBtn" class="sync-btn"><i class="fas fa-upload"></i> Импорт</button>
+          </div>
+          <div class="small-text" style="text-align:center;">⬆ Экспорт/импорт для синхронизации между устройствами</div>
         </div>
         <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания</div>
       </div>
 
-      <!-- РАБОТА -->
       <div class="tab-pane" id="tab-work">
         <h3 style="font-size:20px; color:var(--text-primary);">💼 Работа и проекты</h3>
         <div class="job-card"><div class="job-title">Frontend-разработчик</div><div class="job-company">Удалённо</div><button class="job-btn">Откликнуться</button></div>
@@ -501,14 +480,12 @@
         <div class="job-card"><div class="job-title">UX/UI дизайнер</div><div class="job-company">CreativeLab</div><button class="job-btn">Портфолио</button></div>
       </div>
 
-      <!-- ПОМОЩЬ -->
       <div class="tab-pane" id="tab-help">
         <h3 style="font-size:20px; color:var(--text-primary);">🛟 Помощь</h3>
         <div class="help-card" id="telegramBtn"><i class="fab fa-telegram-plane"></i><div><div class="help-title">Написать разработчику</div><div class="small-text">Telegram: @vadymtm90</div></div></div>
         <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Как работают задания и статистика</div></div></div>
       </div>
     </div>
-
     <div class="bottom-nav">
       <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
       <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
@@ -519,12 +496,11 @@
 </div>
 
 <script>
-  // ---------- ГЛОБАЛЬНЫЕ ДАННЫЕ ----------
-  let tasks = [];               // { id, text, completed }
-  let currentUser = null;      // { username, role, name }
+  let tasks = [];
+  let currentUser = null;
   let currentTheme = "light";
 
-  // DOM элементы
+  // DOM
   const authOverlay = document.getElementById('authOverlay');
   const mainApp = document.getElementById('mainApp');
   const loginFormDiv = document.getElementById('loginForm');
@@ -541,8 +517,6 @@
   const regError = document.getElementById('regError');
   const switchToLogin = document.getElementById('switchToLogin');
   const switchToRegister = document.getElementById('switchToRegister');
-
-  // Основные интерфейсы
   const displayNameSpan = document.getElementById('displayName');
   const userRoleSpan = document.getElementById('userRoleSpan');
   const tasksContainer = document.getElementById('tasksContainer');
@@ -553,121 +527,70 @@
   const newTaskInput = document.getElementById('newTaskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const logoutCard = document.getElementById('logoutCard');
+  const exportBtn = document.getElementById('exportTasksBtn');
+  const importBtn = document.getElementById('importTasksBtn');
 
-  // ---------- ХРАНИЛИЩЕ ЗАДАНИЙ (общее облако) ----------
+  // Хранилище
   function loadTasks() {
     const stored = localStorage.getItem('globalTasks');
-    if (stored) {
-      tasks = JSON.parse(stored);
-    } else {
-      tasks = [
-        { id: Date.now()+1, text: "Изучить новый интерфейс", completed: false },
-        { id: Date.now()+2, text: "Проверить статистику", completed: false },
-        { id: Date.now()+3, text: "Связаться с поддержкой", completed: false }
-      ];
-      saveTasks();
-    }
+    if (stored) tasks = JSON.parse(stored);
+    else tasks = [
+      { id: Date.now()+1, text: "Изучить новый интерфейс", completed: false },
+      { id: Date.now()+2, text: "Проверить статистику", completed: false },
+      { id: Date.now()+3, text: "Связаться с поддержкой", completed: false }
+    ];
+    saveTasks();
   }
-  function saveTasks() {
-    localStorage.setItem('globalTasks', JSON.stringify(tasks));
-  }
+  function saveTasks() { localStorage.setItem('globalTasks', JSON.stringify(tasks)); }
   function loadUsers() {
-    const stored = localStorage.getItem('appUsers');
-    if (!stored) {
-      const defaultUsers = {
-        "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" }
-      };
-      localStorage.setItem('appUsers', JSON.stringify(defaultUsers));
+    if (!localStorage.getItem('appUsers')) {
+      localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } }));
     }
   }
-  function getUsers() {
-    return JSON.parse(localStorage.getItem('appUsers') || '{}');
-  }
-  function saveUsers(users) {
-    localStorage.setItem('appUsers', JSON.stringify(users));
-  }
+  function getUsers() { return JSON.parse(localStorage.getItem('appUsers') || '{}'); }
+  function saveUsers(users) { localStorage.setItem('appUsers', JSON.stringify(users)); }
 
-  // ---------- СЕССИЯ (сохранение на неделю) ----------
+  // Сессия (7 дней)
   function saveSession(user) {
-    const session = {
-      username: user.username,
-      role: user.role,
-      name: user.name,
-      loginTime: Date.now()
-    };
-    localStorage.setItem('currentSession', JSON.stringify(session));
+    localStorage.setItem('currentSession', JSON.stringify({ username: user.username, role: user.role, name: user.name, loginTime: Date.now() }));
   }
   function getSession() {
     const raw = localStorage.getItem('currentSession');
     if (!raw) return null;
     try {
-      const session = JSON.parse(raw);
-      if (session.loginTime && (Date.now() - session.loginTime) > 7 * 24 * 60 * 60 * 1000) {
-        localStorage.removeItem('currentSession');
-        return null;
-      }
-      return session;
+      const s = JSON.parse(raw);
+      if (Date.now() - s.loginTime > 7*24*3600000) { localStorage.removeItem('currentSession'); return null; }
+      return s;
     } catch(e) { return null; }
   }
-  function clearSession() {
-    localStorage.removeItem('currentSession');
-  }
+  function clearSession() { localStorage.removeItem('currentSession'); }
 
-  // ---------- АВТОРИЗАЦИЯ И ВЫХОД ----------
-  function showAuthScreen() {
-    authOverlay.classList.remove('hidden');
-    mainApp.style.display = 'none';
-    currentUser = null;
-  }
-  function hideAuthScreen() {
-    authOverlay.classList.add('hidden');
-    mainApp.style.display = 'flex';
-  }
+  // Авторизация
+  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; currentUser = null; }
+  function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
   function login(username, password) {
     const users = getUsers();
     const user = users[username];
     if (user && user.password === password) {
       currentUser = { username, role: user.role, name: user.name };
       saveSession(currentUser);
-      afterLoginSuccess();
+      afterLogin();
       return true;
-    } else {
-      loginError.innerText = 'Неверный логин или пароль';
-      return false;
-    }
+    } else { loginError.innerText = 'Неверный логин или пароль'; return false; }
   }
   function register(name, password) {
-    if (!name.trim()) {
-      regError.innerText = 'Введите имя';
-      return false;
-    }
+    if (!name.trim()) { regError.innerText = 'Введите имя'; return false; }
     const users = getUsers();
     const newUsername = "user_" + Date.now();
-    users[newUsername] = {
-      username: newUsername,
-      password: password || "",
-      role: "user",
-      name: name.trim()
-    };
+    users[newUsername] = { username: newUsername, password: password || "", role: "user", name: name.trim() };
     saveUsers(users);
     currentUser = { username: newUsername, role: "user", name: name.trim() };
     saveSession(currentUser);
-    afterLoginSuccess();
+    afterLogin();
     return true;
   }
-  function logout() {
-    clearSession();
-    currentUser = null;
-    showAuthScreen();
-    // Сброс полей входа
-    loginUsername.value = '';
-    loginPassword.value = '';
-    regName.value = '';
-    regPassword.value = '';
-    loginError.innerText = '';
-    regError.innerText = '';
-  }
-  function afterLoginSuccess() {
+  function logout() { clearSession(); currentUser = null; showAuthScreen(); }
+  function afterLogin() {
     hideAuthScreen();
     applyTheme();
     updateUIForUser();
@@ -679,206 +602,141 @@
     if (currentUser) {
       displayNameSpan.innerText = currentUser.name || currentUser.username;
       userRoleSpan.innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
-      if (currentUser.role === 'admin') {
-        adminPanel.style.display = 'block';
-      } else {
-        adminPanel.style.display = 'none';
-      }
+      adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
     }
   }
 
-  // ---------- ОТРИСОВКА ЗАДАНИЙ (для всех) ----------
+  // UI задач
   function renderTasksUI() {
     if (!tasksContainer) return;
-    if (tasks.length === 0) {
-      tasksContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет заданий. Админ добавит позже.</div>';
-      return;
-    }
+    if (tasks.length === 0) { tasksContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет заданий. Админ добавит позже.</div>'; return; }
     tasksContainer.innerHTML = '';
     tasks.forEach(task => {
-      const taskDiv = document.createElement('div');
-      taskDiv.className = 'task-item';
-      const checkDiv = document.createElement('div');
-      checkDiv.className = `task-check ${task.completed ? 'completed' : ''}`;
-      if (task.completed) checkDiv.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
-      else checkDiv.innerHTML = '';
-      // Отметка о выполнении доступна всем
-      checkDiv.addEventListener('click', () => {
-        task.completed = !task.completed;
-        saveTasks();
-        renderTasksUI();
-        updateStatistics();
-      });
-      const textSpan = document.createElement('div');
-      textSpan.className = `task-text ${task.completed ? 'done' : ''}`;
-      textSpan.innerText = task.text;
-      taskDiv.appendChild(checkDiv);
-      taskDiv.appendChild(textSpan);
-      // Кнопки редактирования/удаления только для админа
-      if (currentUser && currentUser.role === 'admin') {
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-task';
-        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-        editBtn.addEventListener('click', () => {
-          const newText = prompt('Редактировать задание:', task.text);
-          if (newText && newText.trim()) {
-            task.text = newText.trim();
-            saveTasks();
-            renderTasksUI();
-            updateStatistics();
-          }
-        });
-        const delBtn = document.createElement('button');
-        delBtn.className = 'delete-task';
-        delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        delBtn.addEventListener('click', () => {
-          if (confirm('Удалить задание?')) {
-            tasks = tasks.filter(t => t.id !== task.id);
-            saveTasks();
-            renderTasksUI();
-            updateStatistics();
-          }
-        });
-        taskDiv.appendChild(editBtn);
-        taskDiv.appendChild(delBtn);
+      const div = document.createElement('div'); div.className = 'task-item';
+      const check = document.createElement('div'); check.className = `task-check ${task.completed ? 'completed' : ''}`;
+      if (task.completed) check.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
+      check.addEventListener('click', () => { task.completed = !task.completed; saveTasks(); renderTasksUI(); updateStatistics(); });
+      const textSpan = document.createElement('div'); textSpan.className = `task-text ${task.completed ? 'done' : ''}`; textSpan.innerText = task.text;
+      div.appendChild(check); div.appendChild(textSpan);
+      if (currentUser?.role === 'admin') {
+        const edit = document.createElement('button'); edit.className = 'edit-task'; edit.innerHTML = '<i class="fas fa-edit"></i>';
+        edit.addEventListener('click', () => { const newText = prompt('Редактировать:', task.text); if (newText?.trim()) { task.text = newText.trim(); saveTasks(); renderTasksUI(); updateStatistics(); } });
+        const del = document.createElement('button'); del.className = 'delete-task'; del.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        del.addEventListener('click', () => { if (confirm('Удалить?')) { tasks = tasks.filter(t => t.id !== task.id); saveTasks(); renderTasksUI(); updateStatistics(); } });
+        div.appendChild(edit); div.appendChild(del);
       }
-      tasksContainer.appendChild(taskDiv);
+      tasksContainer.appendChild(div);
     });
   }
-
   function updateStatistics() {
-    const total = tasks.length;
-    const completed = tasks.filter(t => t.completed).length;
+    const total = tasks.length, completed = tasks.filter(t => t.completed).length;
     if (totalTasksStat) totalTasksStat.innerText = total;
     if (completedTasksStat) completedTasksStat.innerText = completed;
     const percent = total === 0 ? 0 : (completed / total) * 100;
     if (progressFill) progressFill.style.width = `${percent}%`;
   }
-
-  // админ: добавление задания
   function addTaskByAdmin() {
     if (currentUser?.role !== 'admin') return;
     const text = newTaskInput.value.trim();
-    if (!text) { alert('Введите текст задания'); return; }
+    if (!text) { alert('Введите текст'); return; }
     tasks.push({ id: Date.now(), text, completed: false });
-    saveTasks();
-    renderTasksUI();
-    updateStatistics();
-    newTaskInput.value = '';
+    saveTasks(); renderTasksUI(); updateStatistics(); newTaskInput.value = '';
   }
 
-  // ---------- ТЕМА ----------
+  // Синхронизация: экспорт/импорт
+  function exportTasks() {
+    const dataStr = JSON.stringify(tasks, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tasks_backup_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('Задания экспортированы в файл');
+  }
+  function importTasks() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (Array.isArray(imported) && imported.every(t => typeof t.id === 'number' && typeof t.text === 'string' && typeof t.completed === 'boolean')) {
+            tasks = imported;
+            saveTasks();
+            renderTasksUI();
+            updateStatistics();
+            alert('Задания успешно импортированы!');
+          } else throw new Error();
+        } catch(err) { alert('Неверный формат файла'); }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  // Тема
   function applyTheme() {
-    const body = document.body;
-    if (currentTheme === 'dark') {
-      body.classList.add('dark');
-      document.getElementById('themeColorMeta')?.setAttribute('content', '#1e293b');
-    } else {
-      body.classList.remove('dark');
-      document.getElementById('themeColorMeta')?.setAttribute('content', '#ffffff');
-    }
+    document.body.classList.toggle('dark', currentTheme === 'dark');
+    document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
     localStorage.setItem('appTheme', currentTheme);
   }
-  function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    applyTheme();
-  }
+  function toggleTheme() { currentTheme = currentTheme === 'light' ? 'dark' : 'light'; applyTheme(); }
 
-  // ---------- НАВИГАЦИЯ И ОБРАБОТЧИКИ ----------
+  // Навигация
   function setupNavAndButtons() {
     const navBtns = document.querySelectorAll('.nav-item');
-    const panes = {
-      menu: document.getElementById('tab-menu'),
-      tasks: document.getElementById('tab-tasks'),
-      work: document.getElementById('tab-work'),
-      help: document.getElementById('tab-help')
-    };
+    const panes = { menu: document.getElementById('tab-menu'), tasks: document.getElementById('tab-tasks'), work: document.getElementById('tab-work'), help: document.getElementById('tab-help') };
     const headerTitle = document.getElementById('dynamicTitle');
     const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ' };
     function switchTab(tabId) {
       Object.values(panes).forEach(p => p?.classList.remove('active-pane'));
       if (panes[tabId]) panes[tabId].classList.add('active-pane');
-      navBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
-      });
+      navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
       headerTitle.innerText = titles[tabId];
     }
-    navBtns.forEach(btn => {
-      btn.removeEventListener('click', () => {});
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab');
-        if (tab) switchTab(tab);
-      });
-    });
+    navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     document.getElementById('themeCard')?.addEventListener('click', () => { toggleTheme(); alert(`Тема: ${currentTheme === 'dark' ? 'тёмная' : 'светлая'}`); });
     document.getElementById('statsCard')?.addEventListener('click', () => { updateStatistics(); alert(`Статистика: ${tasks.filter(t=>t.completed).length}/${tasks.length} выполнено`); });
-    document.getElementById('profileCard')?.addEventListener('click', () => { alert(`Вы вошли как: ${currentUser.name}\nРоль: ${currentUser.role === 'admin' ? 'Администратор' : 'Пользователь'}`); });
+    document.getElementById('profileCard')?.addEventListener('click', () => alert(`Вы вошли как: ${currentUser.name}\nРоль: ${currentUser.role === 'admin' ? 'Администратор' : 'Пользователь'}`));
     document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
-    document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания общие. Админ может добавлять/удалять. Статистика обновляется автоматически.'));
+    document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания общие. Админ может добавлять/удалять. Синхронизация через экспорт/импорт.'));
     document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => alert('Заявка отправлена!')));
     if (addTaskBtn) addTaskBtn.addEventListener('click', addTaskByAdmin);
     if (logoutCard) logoutCard.addEventListener('click', logout);
+    if (exportBtn) exportBtn.addEventListener('click', exportTasks);
+    if (importBtn) importBtn.addEventListener('click', importTasks);
   }
 
-  // ---------- АВТОРИЗАЦИОННЫЕ ВКЛАДКИ ----------
   function initAuthUI() {
-    loginTab.addEventListener('click', () => {
-      loginTab.classList.add('active');
-      registerTab.classList.remove('active');
-      loginFormDiv.style.display = 'flex';
-      registerFormDiv.style.display = 'none';
-    });
-    registerTab.addEventListener('click', () => {
-      registerTab.classList.add('active');
-      loginTab.classList.remove('active');
-      loginFormDiv.style.display = 'none';
-      registerFormDiv.style.display = 'flex';
-    });
+    loginTab.addEventListener('click', () => { loginTab.classList.add('active'); registerTab.classList.remove('active'); loginFormDiv.style.display = 'flex'; registerFormDiv.style.display = 'none'; });
+    registerTab.addEventListener('click', () => { registerTab.classList.add('active'); loginTab.classList.remove('active'); loginFormDiv.style.display = 'none'; registerFormDiv.style.display = 'flex'; });
     if (switchToLogin) switchToLogin.addEventListener('click', () => loginTab.click());
     if (switchToRegister) switchToRegister.addEventListener('click', () => registerTab.click());
-    doLoginBtn.addEventListener('click', () => {
-      const uname = loginUsername.value.trim();
-      const pwd = loginPassword.value;
-      if (!uname) { loginError.innerText = 'Введите логин'; return; }
-      login(uname, pwd);
-    });
-    doRegisterBtn.addEventListener('click', () => {
-      const name = regName.value.trim();
-      const pwd = regPassword.value;
-      if (!name) { regError.innerText = 'Введите имя'; return; }
-      register(name, pwd);
-    });
+    doLoginBtn.addEventListener('click', () => { const uname = loginUsername.value.trim(); const pwd = loginPassword.value; if (!uname) loginError.innerText = 'Введите логин'; else login(uname, pwd); });
+    doRegisterBtn.addEventListener('click', () => { const name = regName.value.trim(); const pwd = regPassword.value; if (!name) regError.innerText = 'Введите имя'; else register(name, pwd); });
   }
 
-  // ---------- СТАРТ ----------
-  function startApp() {
-    loadTasks();
-    loadUsers();
+  function start() {
+    loadTasks(); loadUsers();
     const savedTheme = localStorage.getItem('appTheme');
-    if (savedTheme === 'dark') currentTheme = 'dark';
-    else currentTheme = 'light';
+    if (savedTheme === 'dark') currentTheme = 'dark'; else currentTheme = 'light';
     applyTheme();
     const session = getSession();
     if (session) {
       const users = getUsers();
       const userData = users[session.username];
-      if (userData) {
-        currentUser = { username: session.username, role: userData.role, name: userData.name };
-        hideAuthScreen();
-        updateUIForUser();
-        renderTasksUI();
-        updateStatistics();
-        setupNavAndButtons();
-      } else {
-        showAuthScreen();
-      }
-    } else {
-      showAuthScreen();
-    }
+      if (userData) { currentUser = { username: session.username, role: userData.role, name: userData.name }; hideAuthScreen(); updateUIForUser(); renderTasksUI(); updateStatistics(); setupNavAndButtons(); }
+      else showAuthScreen();
+    } else showAuthScreen();
     initAuthUI();
   }
-  startApp();
+  start();
 </script>
 </body>
 </html>
