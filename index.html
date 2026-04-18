@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#ffffff" id="themeColorMeta">
-  <title>Мобильный сервис | Задания и работа</title>
+  <title>Мобильный сервис | Задания • Работа • Помощь</title>
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -33,6 +33,7 @@
       --input-border: #e2e8f0;
       --error-color: #ef4444;
       --success-color: #10b981;
+      --placeholder-color: #94a3b8;
     }
 
     body.dark {
@@ -52,6 +53,7 @@
       --input-border: #475569;
       --error-color: #f87171;
       --success-color: #34d399;
+      --placeholder-color: #94a3b8;
     }
 
     body {
@@ -141,6 +143,9 @@
       color: var(--text-primary);
       outline: none;
     }
+    .auth-form input::placeholder {
+      color: var(--placeholder-color);
+    }
     .auth-form button {
       background: var(--accent);
       border: none;
@@ -207,6 +212,7 @@
       padding: 20px;
       margin-bottom: 24px;
       border: 1px solid var(--border-light);
+      box-shadow: var(--card-shadow);
     }
     .menu-grid {
       display: grid;
@@ -297,10 +303,10 @@
     .delete-task, .edit-task {
       background: transparent;
       border: none;
-      color: var(--text-secondary);
       font-size: 18px;
       cursor: pointer;
       padding: 6px;
+      color: var(--text-secondary);
     }
     .delete-task { color: #ef4444; }
     .edit-task { color: var(--accent); }
@@ -326,6 +332,9 @@
       font-size: 15px;
       outline: none;
       color: var(--text-primary);
+    }
+    .add-task-form input::placeholder {
+      color: var(--placeholder-color);
     }
     .add-task-form button {
       background: var(--accent);
@@ -391,6 +400,7 @@
       cursor: pointer;
       padding: 8px 0 4px;
       border-radius: 30px;
+      transition: 0.1s;
     }
     .nav-item i { font-size: 24px; }
     .nav-item.active {
@@ -399,6 +409,17 @@
       transform: translateY(-2px);
     }
     .small-text { font-size: 13px; color: var(--text-secondary); margin-top: 5px; }
+    
+    /* дополнительная страховка для тёмной темы: все инпуты, кнопки, текст */
+    body.dark input, body.dark textarea, body.dark button, body.dark select, body.dark .job-btn, body.dark .nav-item {
+      color: var(--text-primary);
+    }
+    body.dark .job-btn, body.dark .nav-item {
+      color: var(--text-secondary);
+    }
+    body.dark .nav-item.active {
+      color: var(--nav-active-color);
+    }
   </style>
 </head>
 <body>
@@ -415,6 +436,9 @@
       <input type="password" id="loginPassword" placeholder="Пароль">
       <button id="doLoginBtn">Войти</button>
       <div id="loginError" class="error-msg"></div>
+      <div class="auth-switch">
+        Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span>
+      </div>
     </div>
     <!-- Форма регистрации (только имя, для обычных пользователей) -->
     <div id="registerForm" class="auth-form" style="display: none;">
@@ -444,6 +468,7 @@
           <div class="menu-card" id="profileCard"><i class="fas fa-id-card"></i><h4>Мой профиль</h4><p>Информация</p></div>
           <div class="menu-card" id="statsCard"><i class="fas fa-chart-simple"></i><h4>Статистика</h4><p>Прогресс заданий</p></div>
           <div class="menu-card" id="themeCard"><i class="fas fa-palette"></i><h4>Тема</h4><p>Светлая / Тёмная</p></div>
+          <div class="menu-card" id="logoutCard"><i class="fas fa-sign-out-alt"></i><h4>Выйти</h4><p>Завершить сеанс</p></div>
         </div>
         <div class="stat-block">
           <div style="display: flex; justify-content: space-between;">
@@ -496,7 +521,7 @@
 <script>
   // ---------- ГЛОБАЛЬНЫЕ ДАННЫЕ ----------
   let tasks = [];               // { id, text, completed }
-  let currentUser = null;      // { username, role, loginTime }
+  let currentUser = null;      // { username, role, name }
   let currentTheme = "light";
 
   // DOM элементы
@@ -515,6 +540,7 @@
   const loginError = document.getElementById('loginError');
   const regError = document.getElementById('regError');
   const switchToLogin = document.getElementById('switchToLogin');
+  const switchToRegister = document.getElementById('switchToRegister');
 
   // Основные интерфейсы
   const displayNameSpan = document.getElementById('displayName');
@@ -526,14 +552,14 @@
   const adminPanel = document.getElementById('adminTaskPanel');
   const newTaskInput = document.getElementById('newTaskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
+  const logoutCard = document.getElementById('logoutCard');
 
-  // ---------- ИНИЦИАЛИЗАЦИЯ ХРАНИЛИЩА ----------
+  // ---------- ХРАНИЛИЩЕ ЗАДАНИЙ (общее облако) ----------
   function loadTasks() {
     const stored = localStorage.getItem('globalTasks');
     if (stored) {
       tasks = JSON.parse(stored);
     } else {
-      // задачи по умолчанию
       tasks = [
         { id: Date.now()+1, text: "Изучить новый интерфейс", completed: false },
         { id: Date.now()+2, text: "Проверить статистику", completed: false },
@@ -577,7 +603,6 @@
     try {
       const session = JSON.parse(raw);
       if (session.loginTime && (Date.now() - session.loginTime) > 7 * 24 * 60 * 60 * 1000) {
-        // сессия старше недели
         localStorage.removeItem('currentSession');
         return null;
       }
@@ -588,10 +613,11 @@
     localStorage.removeItem('currentSession');
   }
 
-  // ---------- АВТОРИЗАЦИЯ ----------
+  // ---------- АВТОРИЗАЦИЯ И ВЫХОД ----------
   function showAuthScreen() {
     authOverlay.classList.remove('hidden');
     mainApp.style.display = 'none';
+    currentUser = null;
   }
   function hideAuthScreen() {
     authOverlay.classList.add('hidden');
@@ -616,8 +642,7 @@
       return false;
     }
     const users = getUsers();
-    // обычный пользователь (не админ)
-    const newUsername = "user_" + Date.now(); // уникальный логин
+    const newUsername = "user_" + Date.now();
     users[newUsername] = {
       username: newUsername,
       password: password || "",
@@ -625,11 +650,22 @@
       name: name.trim()
     };
     saveUsers(users);
-    // автоматический вход
     currentUser = { username: newUsername, role: "user", name: name.trim() };
     saveSession(currentUser);
     afterLoginSuccess();
     return true;
+  }
+  function logout() {
+    clearSession();
+    currentUser = null;
+    showAuthScreen();
+    // Сброс полей входа
+    loginUsername.value = '';
+    loginPassword.value = '';
+    regName.value = '';
+    regPassword.value = '';
+    loginError.innerText = '';
+    regError.innerText = '';
   }
   function afterLoginSuccess() {
     hideAuthScreen();
@@ -655,7 +691,7 @@
   function renderTasksUI() {
     if (!tasksContainer) return;
     if (tasks.length === 0) {
-      tasksContainer.innerHTML = '<div style="text-align:center; padding:30px;">Нет заданий. Админ добавит позже.</div>';
+      tasksContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет заданий. Админ добавит позже.</div>';
       return;
     }
     tasksContainer.innerHTML = '';
@@ -769,7 +805,7 @@
       headerTitle.innerText = titles[tabId];
     }
     navBtns.forEach(btn => {
-      btn.removeEventListener('click', (e) => {});
+      btn.removeEventListener('click', () => {});
       btn.addEventListener('click', () => {
         const tab = btn.getAttribute('data-tab');
         if (tab) switchTab(tab);
@@ -782,6 +818,7 @@
     document.getElementById('faqBtn')?.addEventListener('click', () => alert('Задания общие. Админ может добавлять/удалять. Статистика обновляется автоматически.'));
     document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => alert('Заявка отправлена!')));
     if (addTaskBtn) addTaskBtn.addEventListener('click', addTaskByAdmin);
+    if (logoutCard) logoutCard.addEventListener('click', logout);
   }
 
   // ---------- АВТОРИЗАЦИОННЫЕ ВКЛАДКИ ----------
@@ -798,9 +835,8 @@
       loginFormDiv.style.display = 'none';
       registerFormDiv.style.display = 'flex';
     });
-    switchToLogin.addEventListener('click', () => {
-      loginTab.click();
-    });
+    if (switchToLogin) switchToLogin.addEventListener('click', () => loginTab.click());
+    if (switchToRegister) switchToRegister.addEventListener('click', () => registerTab.click());
     doLoginBtn.addEventListener('click', () => {
       const uname = loginUsername.value.trim();
       const pwd = loginPassword.value;
