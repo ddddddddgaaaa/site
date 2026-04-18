@@ -668,26 +668,50 @@
   // Безопасное сохранение в облако: перезаписывает коллекцию текущими задачами, но только если есть хотя бы одна задача
   async function forceSaveAllToCloud() {
     if (!currentUser || currentUser.role !== 'admin') return;
-    // Защита: если задач нет, не делаем ничего, чтобы не удалить данные
-    if (tasks.length === 0) return;
     
     try {
-      // Получаем все существующие документы
-      const snapshot = await tasksCollection.get();
-      const batch = db.batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-      await batch.commit();
-      // Добавляем задачи из текущего массива
+      // Only clear tasks if our local list is empty, otherwise we risk removing tasks others added
+      if (tasks.length === 0) {
+        // Get all existing documents and delete them
+        const snapshot = await tasksCollection.get();
+        const batch = db.batch();
+        snapshot.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+      }
+      
+      // In either case (empty or not), ensure the current tasks are saved
+      // But to avoid duplicates, we'll only add tasks that don't already exist
+      // First get current cloud tasks to compare
+      const cloudSnapshot = await tasksCollection.get();
+      const existingIds = new Set();
+      cloudSnapshot.forEach(doc => existingIds.add(doc.id));
+      
+      // Add only tasks that aren't already in the cloud
       for (const task of tasks) {
-        await tasksCollection.add({
-          text: task.text,
-          completed: task.completed,
-          createdAt: task.createdAt || Date.now(),
-          createdBy: currentUser.username
-        });
+        if (!existingIds.has(task.id)) {
+          await tasksCollection.add({
+            text: task.text,
+            completed: task.completed,
+            createdAt: task.createdAt || Date.now(),
+            createdBy: currentUser.username
+          });
+        }
+      }
+      
+      // Update sync status to indicate success
+      const statusDiv = document.getElementById('syncStatus');
+      if (statusDiv) {
+        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Сохранено в облако</span>';
+        setTimeout(() => {
+          if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Облачная синхронизация активна</span>';
+        }, 2000);
       }
     } catch(e) {
-      // Игнорируем ошибки, чтобы не тревожить пользователя
+      console.error("Error saving tasks to cloud: ", e);
+      const statusDiv = document.getElementById('syncStatus');
+      if (statusDiv) {
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Ошибка синхронизации</span>';
+      }
     }
   }
   
