@@ -20,7 +20,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Светлая тема */
     :root {
       --bg-body: #e5e9f0;
       --app-bg: #ffffff;
@@ -96,13 +95,10 @@
       }
     }
 
-    /* Экран авторизации */
     .auth-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: var(--app-bg);
       z-index: 100;
       display: flex;
@@ -112,501 +108,227 @@
       border-radius: 36px;
       transition: 0.2s;
     }
-    .auth-overlay.hidden {
-      display: none;
-    }
+    .auth-overlay.hidden { display: none; }
     .auth-tab {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 28px;
+      display: flex; gap: 16px; margin-bottom: 28px;
       border-bottom: 2px solid var(--border-light);
     }
     .auth-tab button {
-      background: none;
-      border: none;
-      font-size: 18px;
-      font-weight: 600;
-      padding: 10px 0;
-      color: var(--text-secondary);
-      cursor: pointer;
-      flex: 1;
+      background: none; border: none; font-size: 18px; font-weight: 600;
+      padding: 10px 0; color: var(--text-secondary); cursor: pointer; flex: 1;
     }
     .auth-tab button.active {
-      color: var(--accent);
-      border-bottom: 2px solid var(--accent);
-      margin-bottom: -2px;
+      color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px;
     }
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+    .auth-form { display: flex; flex-direction: column; gap: 20px; }
     .auth-form input {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      padding: 14px 16px;
-      border-radius: 28px;
-      font-size: 16px;
-      color: var(--text-primary);
-      outline: none;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      padding: 14px 16px; border-radius: 28px; font-size: 16px;
+      color: var(--text-primary); outline: none;
     }
-    .auth-form input::placeholder {
-      color: var(--placeholder-color);
-    }
+    .auth-form input::placeholder { color: var(--placeholder-color); }
     .auth-form button {
-      background: var(--accent);
-      border: none;
-      padding: 14px;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 16px;
-      color: white;
-      cursor: pointer;
+      background: var(--accent); border: none; padding: 14px; border-radius: 40px;
+      font-weight: 700; font-size: 16px; color: white; cursor: pointer;
     }
-    .auth-switch {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-    .auth-switch span {
-      color: var(--accent);
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .error-msg {
-      color: var(--error-color);
-      font-size: 13px;
-      text-align: center;
-    }
+    .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+    .auth-switch span { color: var(--accent); cursor: pointer; font-weight: 500; }
+    .error-msg { color: var(--error-color); font-size: 13px; text-align: center; }
 
-    /* Основной интерфейс */
     .app-header {
-      background: var(--app-bg);
-      padding: 16px 20px 12px 20px;
+      background: var(--app-bg); padding: 16px 20px 12px 20px;
       border-bottom: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .app-header h1 {
-      font-size: 24px;
-      font-weight: 700;
+      font-size: 24px; font-weight: 700;
       background: linear-gradient(135deg, var(--accent), #8b5cf6);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      margin: 0;
+      background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0;
     }
     .bell-icon {
-      position: relative;
-      cursor: pointer;
-      font-size: 24px;
-      color: var(--text-secondary);
-      background: transparent;
-      border: none;
-      padding: 8px;
+      position: relative; cursor: pointer; font-size: 24px;
+      color: var(--text-secondary); background: transparent; border: none; padding: 8px;
     }
     .bell-badge {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: var(--badge-bg);
-      color: white;
-      font-size: 10px;
-      font-weight: bold;
-      min-width: 16px;
-      height: 16px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-      transform: translate(30%, -30%);
+      position: absolute; top: 0; right: 0; background: var(--badge-bg); color: white;
+      font-size: 10px; font-weight: bold; min-width: 16px; height: 16px;
+      border-radius: 20px; display: flex; align-items: center; justify-content: center;
+      padding: 0 4px; transform: translate(30%, -30%);
     }
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px 20px 20px;
-    }
-    .tab-pane {
-      display: none;
-      animation: fadeIn 0.25s ease-out;
-    }
-    .tab-pane.active-pane {
-      display: block;
-    }
+    .main-content { flex: 1; overflow-y: auto; padding: 16px 20px 20px 20px; }
+    .tab-pane { display: none; animation: fadeIn 0.25s ease-out; }
+    .tab-pane.active-pane { display: block; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .greeting-card, .greeting-card p, .greeting-card strong, 
+    .greeting-card, .greeting-card p, .greeting-card strong,
     .stat-block, .stat-block span, .stat-block strong,
     .menu-card h4, .menu-card p, .task-text, .job-title, .help-title,
     .nav-item span, .small-text, .add-task-form input, .job-btn,
-    .request-card, .request-card p {
-      color: var(--text-primary);
-    }
-    .greeting-card p strong, .stat-block strong {
-      color: var(--text-primary);
-    }
-    .task-text.done {
-      color: var(--text-secondary);
-    }
+    .request-card, .request-card p { color: var(--text-primary); }
+    .greeting-card p strong, .stat-block strong { color: var(--text-primary); }
+    .task-text.done { color: var(--text-secondary); }
+
     .greeting-card {
-      background: var(--card-bg);
-      border-radius: 28px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-light);
+      background: var(--card-bg); border-radius: 28px; padding: 20px;
+      margin-bottom: 24px; border: 1px solid var(--border-light);
     }
     .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 8px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px;
     }
     .menu-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 18px 12px;
-      text-align: center;
-      border: 1px solid var(--border-light);
-      cursor: pointer;
-      transition: 0.2s;
+      background: var(--card-bg); border-radius: 24px; padding: 18px 12px;
+      text-align: center; border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s;
     }
     .menu-card:active { transform: scale(0.97); }
     .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
+
+    /* === STAT BLOCK: линия по балансу === */
     .stat-block {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 16px;
-      margin-top: 16px;
-      border: 1px solid var(--border-light);
-      cursor: pointer;
+      background: var(--card-bg); border-radius: 24px; padding: 16px;
+      margin-top: 16px; border: 1px solid var(--border-light); cursor: pointer;
     }
     .stat-bar {
-      background: var(--input-bg);
-      border-radius: 30px;
-      height: 8px;
-      margin: 12px 0;
+      background: var(--input-bg); border-radius: 30px; height: 8px; margin: 12px 0;
     }
     .stat-fill {
-      background: var(--accent);
-      width: 0%;
-      height: 100%;
-      border-radius: 30px;
-      transition: width 0.2s;
+      background: var(--accent); width: 0%; height: 100%;
+      border-radius: 30px; transition: width 0.4s ease;
     }
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 16px 0;
-    }
+
+    .task-list { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
     .task-item {
-      background: var(--task-bg);
-      border-radius: 20px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 1px solid var(--border-light);
+      background: var(--task-bg); border-radius: 20px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-light);
     }
     .task-check {
-      width: 26px;
-      height: 26px;
-      border-radius: 30px;
-      border: 2px solid var(--text-secondary);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      background: transparent;
+      width: 26px; height: 26px; border-radius: 30px; border: 2px solid var(--text-secondary);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; background: transparent;
     }
-    .task-check.completed {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-    }
-    .task-text {
-      flex: 1;
-      font-size: 15px;
-      font-weight: 500;
-      word-break: break-word;
-    }
+    .task-check.completed { background: var(--accent); border-color: var(--accent); color: white; }
+    .task-text { flex: 1; font-size: 15px; font-weight: 500; word-break: break-word; }
     .delete-task, .edit-task, .delete-job, .edit-job, .delete-request {
-      background: transparent;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 6px;
-      color: var(--text-secondary);
+      background: transparent; border: none; font-size: 18px; cursor: pointer;
+      padding: 6px; color: var(--text-secondary);
     }
     .delete-task, .delete-job, .delete-request { color: #ef4444; }
     .edit-task, .edit-job { color: var(--accent); }
     .add-task-form, .add-job-form {
-      display: flex;
-      gap: 10px;
-      background: var(--input-bg);
-      padding: 12px;
-      border-radius: 60px;
-      border: 1px solid var(--border-light);
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      display: flex; gap: 10px; background: var(--input-bg); padding: 12px;
+      border-radius: 60px; border: 1px solid var(--border-light); margin-bottom: 20px; flex-wrap: wrap;
     }
     .add-task-form input, .add-job-form input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 10px 12px;
-      font-size: 15px;
-      outline: none;
+      flex: 1; background: transparent; border: none; padding: 10px 12px; font-size: 15px; outline: none;
     }
     .add-task-form button, .add-job-form button {
-      background: var(--accent);
-      border: none;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
+      background: var(--accent); border: none; color: white; padding: 8px 20px;
+      border-radius: 40px; font-weight: 600; cursor: pointer;
     }
-    .sync-buttons {
-      display: flex;
-      gap: 12px;
-      margin: 16px 0;
-    }
+    .sync-buttons { display: flex; gap: 12px; margin: 16px 0; }
     .sync-btn {
-      background: var(--input-bg);
-      border: 1px solid var(--border-light);
-      padding: 10px 16px;
-      border-radius: 40px;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-primary);
-      flex: 1;
-      text-align: center;
+      background: var(--input-bg); border: 1px solid var(--border-light); padding: 10px 16px;
+      border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--text-primary); flex: 1; text-align: center;
     }
-    .cloud-save-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-    }
+    .cloud-save-btn { background: var(--accent); color: white; border: none; }
     .job-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 18px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border-light);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      background: var(--card-bg); border-radius: 24px; padding: 18px; margin-bottom: 16px;
+      border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px;
     }
-    .job-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .job-header { display: flex; justify-content: space-between; align-items: center; }
     .job-title { font-size: 18px; font-weight: 700; }
     .job-company { font-size: 14px; color: var(--accent); margin: 4px 0; }
     .job-btn {
-      background: var(--input-bg);
-      border: none;
-      padding: 8px 18px;
-      border-radius: 40px;
-      font-weight: 500;
-      margin-top: 8px;
-      cursor: pointer;
-      align-self: flex-start;
+      background: var(--input-bg); border: none; padding: 8px 18px; border-radius: 40px;
+      font-weight: 500; margin-top: 8px; cursor: pointer; align-self: flex-start;
     }
-    .job-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
+    .job-actions { display: flex; gap: 8px; justify-content: flex-end; }
     .request-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-light);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 14px;
+      border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px;
     }
     .request-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
     }
     .request-title {
-      font-size: 14px;
-      background: var(--accent);
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      color: white;
-      background: var(--accent);
+      font-size: 14px; background: var(--accent); display: inline-block;
+      padding: 2px 10px; border-radius: 20px; color: white;
     }
-    .request-meta {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-    .request-user {
-      font-weight: 600;
-      font-size: 14px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .request-meta { font-size: 12px; color: var(--text-secondary); }
+    .request-user { font-weight: 600; font-size: 14px; display: flex; gap: 12px; flex-wrap: wrap; }
     .request-comment {
-      margin-top: 6px;
-      font-size: 14px;
-      background: var(--input-bg);
-      padding: 10px;
-      border-radius: 16px;
+      margin-top: 6px; font-size: 14px; background: var(--input-bg); padding: 10px; border-radius: 16px;
     }
-    .request-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 8px;
-    }
+    .request-actions { display: flex; gap: 12px; margin-top: 8px; }
     .accept-btn, .reject-btn {
-      padding: 8px 16px;
-      border-radius: 40px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 8px 16px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer;
     }
     .accept-btn { background: var(--success-color); color: white; }
     .reject-btn { background: var(--error-color); color: white; }
     .help-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-light);
+      background: var(--card-bg); border-radius: 20px; padding: 18px;
+      margin-bottom: 14px; border: 1px solid var(--border-light);
     }
     .help-question {
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 6px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
+      font-weight: 700; font-size: 16px; margin-bottom: 6px; cursor: pointer;
+      display: flex; justify-content: space-between;
     }
     .help-answer {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      padding-left: 12px;
-      border-left: 2px solid var(--accent);
-      display: none;
+      font-size: 14px; color: var(--text-secondary); margin-top: 6px;
+      padding-left: 12px; border-left: 2px solid var(--accent); display: none;
     }
-    .help-answer.show {
-      display: block;
-    }
+    .help-answer.show { display: block; }
     .bottom-nav {
-      background: var(--nav-bg);
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 8px 12px 12px;
-      border-top: 1px solid var(--border-light);
+      background: var(--nav-bg); display: flex; align-items: center; justify-content: space-around;
+      padding: 8px 12px 12px; border-top: 1px solid var(--border-light);
     }
     .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 8px 0 4px;
-      border-radius: 30px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: transparent; border: none; font-size: 12px; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer; padding: 8px 0 4px; border-radius: 30px;
     }
     .nav-item i { font-size: 24px; }
-    .nav-item.active {
-      color: var(--nav-active-color);
-      background: var(--nav-active-bg);
-      transform: translateY(-2px);
-    }
+    .nav-item.active { color: var(--nav-active-color); background: var(--nav-active-bg); transform: translateY(-2px); }
     .small-text { font-size: 13px; margin-top: 5px; }
-    .jobs-container, .requests-container {
-      margin-top: 12px;
-    }
+    .jobs-container, .requests-container { margin-top: 12px; }
 
-    /* Модальные окна */
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--modal-overlay);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      visibility: hidden;
-      opacity: 0;
-      transition: 0.2s;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--modal-overlay); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; visibility: hidden; opacity: 0; transition: 0.2s;
     }
-    .modal-overlay.active {
-      visibility: visible;
-      opacity: 1;
-    }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
     .modal-container {
-      background: var(--app-bg);
-      border-radius: 32px;
-      width: calc(100% - 48px);
-      max-width: 360px;
-      padding: 24px;
-      box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-      transform: scale(0.95);
-      transition: transform 0.2s;
+      background: var(--app-bg); border-radius: 32px; width: calc(100% - 48px);
+      max-width: 360px; padding: 24px; box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s;
     }
-    .modal-overlay.active .modal-container {
-      transform: scale(1);
-    }
-    .modal-container h3 {
-      font-size: 20px;
-      margin-bottom: 16px;
-      color: var(--text-primary);
-    }
+    .modal-overlay.active .modal-container { transform: scale(1); }
+    .modal-container h3 { font-size: 20px; margin-bottom: 16px; color: var(--text-primary); }
     .balance-value {
-      font-size: 32px;
-      font-weight: 700;
-      text-align: center;
-      margin: 20px 0;
-      color: var(--accent);
+      font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent);
     }
     .modal-container button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 40px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent);
-      color: white;
+      width: 100%; padding: 12px; border-radius: 40px; border: none;
+      font-weight: 600; cursor: pointer; background: var(--accent); color: white;
     }
     .notify-item {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-light);
-      cursor: pointer;
+      padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer;
     }
     .notify-item:last-child { border-bottom: none; }
+
+    /* Модалка подтверждения суммы */
+    #amountModal .modal-container input {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+      padding: 12px 16px; border-radius: 28px; font-size: 18px; font-weight: 600;
+      color: var(--text-primary); outline: none; text-align: center; margin-bottom: 16px;
+    }
+    #amountModal .modal-btns { display: flex; gap: 10px; }
+    #amountModal .modal-btns button { flex: 1; }
+    #amountModal .cancel-btn { background: var(--input-bg); color: var(--text-primary); border: 1px solid var(--input-border); }
   </style>
 </head>
 <body>
@@ -649,12 +371,18 @@
           <div class="menu-card" id="themeCard"><i class="fas fa-palette"></i><h4>Тема</h4><p>Светлая / Тёмная</p></div>
           <div class="menu-card" id="logoutCard"><i class="fas fa-sign-out-alt"></i><h4>Выйти</h4><p>Завершить сеанс</p></div>
         </div>
+        <!-- ИЗМЕНЕНО: убрали "Всего задач", линия теперь по балансу -->
         <div class="stat-block" id="statBlockClick">
-          <div style="display: flex; justify-content: space-between;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
+            <span style="font-size:13px; color: var(--text-secondary);">Баланс до выплаты</span>
           </div>
+          <!-- Линия прогресса заполняется по балансу / maxBalance -->
           <div class="stat-bar"><div class="stat-fill" id="progressFill"></div></div>
-          <div style="margin-top: 12px; text-align: center;"><i class="fas fa-ruble-sign"></i> <strong>Баланс:</strong> <span id="userBalanceSpan">0</span> / <span id="maxBalance">500</span> ₽</div>
+          <div style="margin-top: 12px; text-align: center;">
+            <i class="fas fa-ruble-sign"></i> <strong>Баланс:</strong>
+            <span id="userBalanceSpan">0</span> / <span id="maxBalance">500</span> ₽
+          </div>
         </div>
       </div>
 
@@ -737,6 +465,19 @@
   </div>
 </div>
 
+<!-- НОВАЯ модалка: ввод суммы при одобрении -->
+<div id="amountModal" class="modal-overlay">
+  <div class="modal-container">
+    <h3>💸 Сумма зачисления</h3>
+    <p style="font-size:14px; color:var(--text-secondary); margin-bottom:16px;" id="amountModalDesc">Введите сумму для зачисления пользователю:</p>
+    <input type="number" id="amountInput" min="1" placeholder="500" value="500">
+    <div class="modal-btns">
+      <button class="cancel-btn" id="cancelAmountBtn">Отмена</button>
+      <button id="confirmAmountBtn">✅ Принять</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ---------------------------- FIREBASE ----------------------------
   const firebaseConfig = {
@@ -763,8 +504,14 @@
   let currentTheme = "light";
   let unsubscribeTasks = null, unsubscribeJobs = null, unsubscribeRequests = null;
   let currentBalance = 0;
+
+  // Для модалки суммы
+  let pendingAcceptReqId = null;
+  let pendingAcceptUserId = null;
+
+  const MAX_BALANCE = 500;
   
-  // DOM элементы
+  // DOM
   const authOverlay = document.getElementById('authOverlay');
   const mainApp = document.getElementById('mainApp');
   const loginFormDiv = document.getElementById('loginForm');
@@ -784,7 +531,6 @@
   const displayNameSpan = document.getElementById('displayName');
   const userRoleSpan = document.getElementById('userRoleSpan');
   const tasksContainer = document.getElementById('tasksContainer');
-  const totalTasksStat = document.getElementById('totalTasksStat');
   const completedTasksStat = document.getElementById('completedTasksStat');
   const progressFill = document.getElementById('progressFill');
   const adminPanel = document.getElementById('adminTaskPanel');
@@ -810,25 +556,31 @@
   const notifyModal = document.getElementById('notifyModal');
   const notifyList = document.getElementById('notifyList');
   const closeNotifyModal = document.getElementById('closeNotifyModal');
-  
-  // ---------------------------- РАБОТА С БАЛАНСОМ ----------------------------
+  const amountModal = document.getElementById('amountModal');
+  const amountInput = document.getElementById('amountInput');
+  const amountModalDesc = document.getElementById('amountModalDesc');
+  const confirmAmountBtn = document.getElementById('confirmAmountBtn');
+  const cancelAmountBtn = document.getElementById('cancelAmountBtn');
+
+  // ---------------------------- БАЛАНС ----------------------------
   async function initUserBalance(userId) {
     const doc = await balancesCollection.doc(userId).get();
-    if (!doc.exists) {
-      await balancesCollection.doc(userId).set({ balance: 0 });
-      return 0;
-    }
+    if (!doc.exists) { await balancesCollection.doc(userId).set({ balance: 0 }); return 0; }
     return doc.data().balance;
   }
-  
+
+  // ИЗМЕНЕНО: линия прогресса = баланс / MAX_BALANCE
   async function updateBalanceUI() {
     if (!currentUser) return;
     const doc = await balancesCollection.doc(currentUser.username).get();
     const balance = doc.exists ? doc.data().balance : 0;
     currentBalance = balance;
     if (userBalanceSpan) userBalanceSpan.innerText = balance;
+    // Линия заполняется по балансу
+    const pct = Math.min(100, (balance / MAX_BALANCE) * 100);
+    if (progressFill) progressFill.style.width = pct + '%';
   }
-  
+
   async function addBalance(userId, amount) {
     const userRef = balancesCollection.doc(userId);
     await db.runTransaction(async (transaction) => {
@@ -838,42 +590,48 @@
     });
     if (currentUser && currentUser.username === userId) await updateBalanceUI();
   }
-  
+
   // ---------------------------- ЗАПРОСЫ ----------------------------
-  async function acceptRequest(reqId, userId) {
-    await addBalance(userId, 500);
-    await requestsCollection.doc(reqId).delete();
-    alert("Запрос принят, пользователю зачислено 500 ₽");
+
+  // ИЗМЕНЕНО: acceptRequest теперь открывает модалку с вводом суммы
+  function showAcceptModal(reqId, userId, userName, jobTitle) {
+    pendingAcceptReqId = reqId;
+    pendingAcceptUserId = userId;
+    amountInput.value = '500';
+    amountModalDesc.innerText = `Пользователь: ${userName}\nВакансия: ${jobTitle}\n\nВведите сумму для зачисления:`;
+    amountModal.classList.add('active');
   }
-  
+
+  async function doAcceptRequest() {
+    const amount = parseInt(amountInput.value);
+    if (!amount || amount <= 0) { alert('Введите корректную сумму'); return; }
+    amountModal.classList.remove('active');
+    await addBalance(pendingAcceptUserId, amount);
+    await requestsCollection.doc(pendingAcceptReqId).delete();
+    alert(`Запрос принят, пользователю зачислено ${amount} ₽`);
+    pendingAcceptReqId = null;
+    pendingAcceptUserId = null;
+  }
+
   async function rejectRequest(reqId) {
     await requestsCollection.doc(reqId).delete();
     alert("Запрос отклонён");
   }
-  
+
   function updateUnreadCount() {
     if (!currentUser || currentUser.role !== 'admin') return;
     const unread = requests.filter(r => !r.isRead).length;
-    if (unread > 0) {
-      bellBadge.style.display = 'flex';
-      bellBadge.innerText = unread > 9 ? '9+' : unread;
-    } else {
-      bellBadge.style.display = 'none';
-    }
+    if (unread > 0) { bellBadge.style.display = 'flex'; bellBadge.innerText = unread > 9 ? '9+' : unread; }
+    else { bellBadge.style.display = 'none'; }
   }
-  
+
   async function markAllAsRead() {
     if (!currentUser || currentUser.role !== 'admin') return;
     const batch = db.batch();
-    requests.forEach(req => {
-      if (!req.isRead) {
-        const ref = requestsCollection.doc(req.id);
-        batch.update(ref, { isRead: true });
-      }
-    });
+    requests.forEach(req => { if (!req.isRead) { const ref = requestsCollection.doc(req.id); batch.update(ref, { isRead: true }); } });
     await batch.commit();
   }
-  
+
   function renderRequestsUI() {
     if (!requestsContainer) return;
     if (requests.length === 0) {
@@ -895,8 +653,9 @@
       card.appendChild(commentDiv);
       if (currentUser?.role === 'admin') {
         const actions = document.createElement('div'); actions.className = 'request-actions';
-        const acceptBtn = document.createElement('button'); acceptBtn.className = 'accept-btn'; acceptBtn.innerText = '✅ Принять (+500₽)';
-        acceptBtn.onclick = () => acceptRequest(req.id, req.userLogin);
+        const acceptBtn = document.createElement('button'); acceptBtn.className = 'accept-btn'; acceptBtn.innerText = '✅ Принять';
+        // ИЗМЕНЕНО: открываем модалку ввода суммы
+        acceptBtn.onclick = () => showAcceptModal(req.id, req.userLogin, req.userName, req.jobTitle);
         const rejectBtn = document.createElement('button'); rejectBtn.className = 'reject-btn'; rejectBtn.innerText = '❌ Отклонить';
         rejectBtn.onclick = () => rejectRequest(req.id);
         actions.appendChild(acceptBtn); actions.appendChild(rejectBtn);
@@ -906,10 +665,8 @@
     });
     updateUnreadCount();
   }
-  
-  // Остальные функции (задачи, работы) остаются аналогичными, но сокращены для читаемости
-  
-  // ---------------------------- ЗАДАЧИ И РАБОТА (сокращённо, без изменений логики) ----------------------------
+
+  // ---------------------------- ЗАДАЧИ И РАБОТА ----------------------------
   async function initializeDefaultTasks() {
     const snapshot = await tasksCollection.limit(1).get();
     if (snapshot.empty) {
@@ -951,63 +708,221 @@
     if (currentUser && currentUser.role === 'admin') {
       unsubscribeRequests = requestsCollection.orderBy('timestamp', 'desc').onSnapshot(snapshot => {
         requests = []; snapshot.forEach(doc => requests.push({ id: doc.id, ...doc.data(), isRead: doc.data().isRead || false }));
-        renderRequestsUI();
-        updateUnreadCount();
+        renderRequestsUI(); updateUnreadCount();
       });
-    } else if (currentUser) {
-      // для пользователя слушаем свои запросы? не нужно
     }
   }
-  async function addTaskToCloud(text) { if(currentUser?.role==='admin' && text.trim()) await tasksCollection.add({ text:text.trim(), completed:false, createdAt:Date.now() }); newTaskInput.value=''; }
+
+  async function addTaskToCloud(text) {
+    if (currentUser?.role === 'admin' && text.trim()) await tasksCollection.add({ text: text.trim(), completed: false, createdAt: Date.now() });
+    newTaskInput.value = '';
+  }
   async function toggleTaskComplete(id, status) { await tasksCollection.doc(id).update({ completed: !status }); }
-  async function editTaskText(id, newText) { if(currentUser?.role==='admin' && newText.trim()) await tasksCollection.doc(id).update({ text: newText.trim() }); }
-  async function deleteTaskFromCloud(id) { if(currentUser?.role==='admin') await tasksCollection.doc(id).delete(); }
-  async function forceSaveAllToCloud() { /* аналогично */ }
-  async function addJobToCloud(title, company, btnText) { if(currentUser?.role==='admin' && title.trim()) await jobsCollection.add({ title: title.trim(), company: company.trim()||"Не указана", buttonText: btnText.trim()||"Откликнуться", createdAt:Date.now() }); newJobTitle.value=''; newJobCompany.value=''; newJobButtonText.value='Откликнуться'; }
-  async function editJob(id, title, company, btnText) { if(currentUser?.role==='admin') await jobsCollection.doc(id).update({ title: title.trim(), company: company.trim()||"Не указана", buttonText: btnText.trim()||"Откликнуться" }); }
-  async function deleteJob(id) { if(currentUser?.role==='admin') await jobsCollection.doc(id).delete(); }
-  function renderTasksUI() { /* аналогично предыдущей версии */ tasksContainer.innerHTML = tasks.map(task => `<div class="task-item"><div class="task-check ${task.completed ? 'completed' : ''}" onclick="window.toggleTaskComplete('${task.id}', ${task.completed})">${task.completed ? '<i class=\"fas fa-check\"></i>' : ''}</div><div class="task-text ${task.completed ? 'done' : ''}">${escapeHtml(task.text)}</div>${currentUser?.role==='admin' ? `<button class="edit-task" onclick="window.editTaskText('${task.id}', prompt('Редактировать:', '${task.text.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="window.deleteTaskFromCloud('${task.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}</div>`).join(''); }
-  function renderJobsUI() { jobsContainer.innerHTML = jobs.map(job => `<div class="job-card"><div class="job-header"><div class="job-title">${escapeHtml(job.title)}</div>${currentUser?.role==='admin' ? `<div class="job-actions"><button class="edit-job" onclick="window.editJob('${job.id}', prompt('Название:', '${job.title.replace(/'/g, "\\'")}'), prompt('Компания:', '${job.company.replace(/'/g, "\\'")}'), prompt('Текст кнопки:', '${job.buttonText.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="window.deleteJob('${job.id}')"><i class="fas fa-trash-alt"></i></button></div>` : ''}</div><div class="job-company">${escapeHtml(job.company)}</div><button class="job-btn" onclick="showRequestModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')">${escapeHtml(job.buttonText)}</button></div>`).join(''); }
-  function updateStatistics() { const total=tasks.length, completed=tasks.filter(t=>t.completed).length; totalTasksStat.innerText=total; completedTasksStat.innerText=completed; progressFill.style.width = total===0?0:(completed/total)*100+'%'; }
-  
-  function showRequestModal(jobId, jobTitle) { if(!currentUser) return; const comment = prompt(`Отклик на вакансию: ${jobTitle}\n\nВаше имя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nВведите комментарий (минимум 5 слов):`); if(comment && comment.trim().split(/\s+/).length>=5) { requestsCollection.add({ jobId, jobTitle, userName: currentUser.name, userLogin: currentUser.username, comment: comment.trim(), timestamp: Date.now(), isRead: false }); alert("Отклик отправлен!"); } else if(comment) alert("Минимум 5 слов!"); }
-  function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-  
+  async function editTaskText(id, newText) { if (currentUser?.role === 'admin' && newText && newText.trim()) await tasksCollection.doc(id).update({ text: newText.trim() }); }
+  async function deleteTaskFromCloud(id) { if (currentUser?.role === 'admin') await tasksCollection.doc(id).delete(); }
+  async function addJobToCloud(title, company, btnText) {
+    if (currentUser?.role === 'admin' && title.trim()) await jobsCollection.add({ title: title.trim(), company: company.trim() || "Не указана", buttonText: btnText.trim() || "Откликнуться", createdAt: Date.now() });
+    newJobTitle.value = ''; newJobCompany.value = ''; newJobButtonText.value = 'Откликнуться';
+  }
+  async function editJob(id, title, company, btnText) { if (currentUser?.role === 'admin' && title && title.trim()) await jobsCollection.doc(id).update({ title: title.trim(), company: (company || '').trim() || "Не указана", buttonText: (btnText || '').trim() || "Откликнуться" }); }
+  async function deleteJob(id) { if (currentUser?.role === 'admin') await jobsCollection.doc(id).delete(); }
+
+  function renderTasksUI() {
+    tasksContainer.innerHTML = tasks.map(task =>
+      `<div class="task-item">
+        <div class="task-check ${task.completed ? 'completed' : ''}" onclick="window.toggleTaskComplete('${task.id}', ${task.completed})">${task.completed ? '<i class="fas fa-check"></i>' : ''}</div>
+        <div class="task-text ${task.completed ? 'done' : ''}">${escapeHtml(task.text)}</div>
+        ${currentUser?.role === 'admin' ? `<button class="edit-task" onclick="window.editTaskText('${task.id}', prompt('Редактировать:', '${task.text.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="window.deleteTaskFromCloud('${task.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}
+      </div>`
+    ).join('');
+  }
+
+  function renderJobsUI() {
+    jobsContainer.innerHTML = jobs.map(job =>
+      `<div class="job-card">
+        <div class="job-header">
+          <div class="job-title">${escapeHtml(job.title)}</div>
+          ${currentUser?.role === 'admin' ? `<div class="job-actions"><button class="edit-job" onclick="window.editJob('${job.id}', prompt('Название:', '${job.title.replace(/'/g, "\\'")}'), prompt('Компания:', '${job.company.replace(/'/g, "\\'")}'), prompt('Текст кнопки:', '${job.buttonText.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="window.deleteJob('${job.id}')"><i class="fas fa-trash-alt"></i></button></div>` : ''}
+        </div>
+        <div class="job-company">${escapeHtml(job.company)}</div>
+        <button class="job-btn" onclick="showRequestModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')">${escapeHtml(job.buttonText)}</button>
+      </div>`
+    ).join('');
+  }
+
+  // ИЗМЕНЕНО: updateStatistics больше не считает "всего задач", не трогает линию (линия = баланс)
+  function updateStatistics() {
+    const completed = tasks.filter(t => t.completed).length;
+    completedTasksStat.innerText = completed;
+    // Линия НЕ обновляется здесь — она обновляется только через updateBalanceUI()
+  }
+
+  function showRequestModal(jobId, jobTitle) {
+    if (!currentUser) return;
+    const comment = prompt(`Отклик на вакансию: ${jobTitle}\n\nВаше имя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nВведите комментарий (минимум 5 слов):`);
+    if (comment && comment.trim().split(/\s+/).length >= 5) {
+      requestsCollection.add({ jobId, jobTitle, userName: currentUser.name, userLogin: currentUser.username, comment: comment.trim(), timestamp: Date.now(), isRead: false });
+      alert("Отклик отправлен!");
+    } else if (comment) alert("Минимум 5 слов!");
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m;
+    });
+  }
+
   // ---------------------------- АВТОРИЗАЦИЯ ----------------------------
-  function loadUsers() { if(!localStorage.getItem('appUsers')) localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } })); }
+  function loadUsers() {
+    if (!localStorage.getItem('appUsers')) localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } }));
+  }
   function getUsers() { return JSON.parse(localStorage.getItem('appUsers') || '{}'); }
   function saveUsers(users) { localStorage.setItem('appUsers', JSON.stringify(users)); }
   function saveSession(user) { localStorage.setItem('currentSession', JSON.stringify({ username: user.username, role: user.role, name: user.name, loginTime: Date.now() })); }
-  function getSession() { const raw = localStorage.getItem('currentSession'); if(!raw) return null; try { const s = JSON.parse(raw); if(Date.now()-s.loginTime>7*24*3600000){ localStorage.removeItem('currentSession'); return null; } return s; } catch(e){ return null; } }
+  function getSession() {
+    const raw = localStorage.getItem('currentSession'); if (!raw) return null;
+    try { const s = JSON.parse(raw); if (Date.now() - s.loginTime > 7 * 24 * 3600000) { localStorage.removeItem('currentSession'); return null; } return s; } catch(e) { return null; }
+  }
   function clearSession() { localStorage.removeItem('currentSession'); }
-  
+
   async function afterLogin() {
-    hideAuthScreen(); applyTheme(); updateUIForUser(); await initializeDefaultTasks(); await initializeDefaultJobs(); await initUserBalance(currentUser.username); await updateBalanceUI(); attachFirestoreListener(); attachJobsListener(); attachRequestsListener(); updateStatistics(); setupNavAndButtons();
+    hideAuthScreen(); applyTheme(); updateUIForUser();
+    await initializeDefaultTasks(); await initializeDefaultJobs();
+    await initUserBalance(currentUser.username); await updateBalanceUI();
+    attachFirestoreListener(); attachJobsListener(); attachRequestsListener();
+    updateStatistics(); setupNavAndButtons();
   }
-  function login(username, password) { const users=getUsers(); const user=users[username]; if(user && user.password===password){ currentUser={ username, role:user.role, name:user.name }; saveSession(currentUser); afterLogin(); return true; } else { loginError.innerText='Неверный логин или пароль'; return false; } }
-  async function register(name, password) { if(!name.trim()){ regError.innerText='Введите имя'; return false; } const users=getUsers(); const newUsername="user_"+Date.now(); users[newUsername]={ username:newUsername, password:password||"", role:"user", name:name.trim() }; saveUsers(users); currentUser={ username:newUsername, role:"user", name:name.trim() }; saveSession(currentUser); await balancesCollection.doc(newUsername).set({ balance:0 }); afterLogin(); return true; }
-  function logout() { clearSession(); if(unsubscribeTasks) unsubscribeTasks(); if(unsubscribeJobs) unsubscribeJobs(); if(unsubscribeRequests) unsubscribeRequests(); currentUser=null; showAuthScreen(); }
-  function updateUIForUser() { if(currentUser){ displayNameSpan.innerText=currentUser.name||currentUser.username; userRoleSpan.innerText=currentUser.role==='admin'?'Администратор':'Пользователь'; adminPanel.style.display=currentUser.role==='admin'?'block':'none'; if(adminJobsPanel) adminJobsPanel.style.display=currentUser.role==='admin'?'block':'none'; const existing=document.querySelector('.nav-item[data-tab="requests"]'); if(currentUser.role==='admin' && !existing){ const btn=document.createElement('button'); btn.className='nav-item'; btn.setAttribute('data-tab','requests'); btn.innerHTML='<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>'; const helpBtn=document.querySelector('.nav-item[data-tab="help"]'); bottomNav.insertBefore(btn, helpBtn); setupNavAndButtons(); } else if(currentUser.role!=='admin' && existing) existing.remove(); } }
-  
-  function applyTheme() { document.body.classList.toggle('dark', currentTheme==='dark'); document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme==='dark'?'#1e293b':'#ffffff'); localStorage.setItem('appTheme', currentTheme); }
-  function toggleTheme() { currentTheme=currentTheme==='light'?'dark':'light'; applyTheme(); }
-  function setupNavAndButtons() { const navBtns=document.querySelectorAll('.nav-item'); const panes={ menu:document.getElementById('tab-menu'), tasks:document.getElementById('tab-tasks'), work:document.getElementById('tab-work'), help:document.getElementById('tab-help'), requests:document.getElementById('tab-requests') }; const titles={ menu:'МЕНЮ', tasks:'ЗАДАНИЯ', work:'РАБОТА', help:'ПОМОЩЬ', requests:'ЗАПРОСЫ' }; function switchTab(tabId){ Object.values(panes).forEach(p=>p?.classList.remove('active-pane')); if(panes[tabId]) panes[tabId].classList.add('active-pane'); navBtns.forEach(btn=>btn.classList.toggle('active', btn.getAttribute('data-tab')===tabId)); document.getElementById('dynamicTitle').innerText=titles[tabId]||'МЕНЮ'; if(tabId==='tasks') renderTasksUI(); if(tabId==='work') renderJobsUI(); if(tabId==='requests' && currentUser?.role==='admin') { markAllAsRead(); renderRequestsUI(); } } navBtns.forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.getAttribute('data-tab')))); document.getElementById('themeCard')?.addEventListener('click',toggleTheme); document.getElementById('statsCard')?.addEventListener('click',()=>{}); document.getElementById('profileCard')?.addEventListener('click',()=>{}); document.getElementById('telegramBtn')?.addEventListener('click',()=>window.open('https://t.me/vadymtm90','_blank')); document.getElementById('logoutCard')?.addEventListener('click',logout); addTaskBtn?.addEventListener('click',()=>addTaskToCloud(newTaskInput.value)); addJobBtn?.addEventListener('click',()=>addJobToCloud(newJobTitle.value, newJobCompany.value, newJobButtonText.value)); forceSaveCloudBtn?.addEventListener('click',forceSaveAllToCloud); statBlockClick?.addEventListener('click',async()=>{ await updateBalanceUI(); modalBalance.innerText=currentBalance; balanceModal.classList.add('active'); }); closeBalanceModal?.addEventListener('click',()=>balanceModal.classList.remove('active')); bellButton?.addEventListener('click',()=>{ if(currentUser?.role!=='admin') return; const unreadReqs=requests.filter(r=>!r.isRead); if(unreadReqs.length===0){ alert('Нет новых уведомлений'); return; } notifyList.innerHTML=unreadReqs.map(r=>`<div class="notify-item" onclick="window.location.href='#'; document.querySelector('.nav-item[data-tab=\\'requests\\']').click(); notifyModal.classList.remove('active');">📌 ${escapeHtml(r.jobTitle)} — ${escapeHtml(r.userName)}</div>`).join(''); notifyModal.classList.add('active'); }); closeNotifyModal?.addEventListener('click',()=>notifyModal.classList.remove('active')); }
-  
+
+  function login(username, password) {
+    const users = getUsers(); const user = users[username];
+    if (user && user.password === password) {
+      currentUser = { username, role: user.role, name: user.name }; saveSession(currentUser); afterLogin(); return true;
+    } else { loginError.innerText = 'Неверный логин или пароль'; return false; }
+  }
+
+  async function register(name, password) {
+    if (!name.trim()) { regError.innerText = 'Введите имя'; return false; }
+    const users = getUsers(); const newUsername = "user_" + Date.now();
+    users[newUsername] = { username: newUsername, password: password || "", role: "user", name: name.trim() };
+    saveUsers(users); currentUser = { username: newUsername, role: "user", name: name.trim() };
+    saveSession(currentUser); await balancesCollection.doc(newUsername).set({ balance: 0 }); afterLogin(); return true;
+  }
+
+  function logout() {
+    clearSession();
+    if (unsubscribeTasks) unsubscribeTasks(); if (unsubscribeJobs) unsubscribeJobs(); if (unsubscribeRequests) unsubscribeRequests();
+    currentUser = null; showAuthScreen();
+  }
+
+  function updateUIForUser() {
+    if (currentUser) {
+      displayNameSpan.innerText = currentUser.name || currentUser.username;
+      userRoleSpan.innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
+      adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+      if (adminJobsPanel) adminJobsPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+      const existing = document.querySelector('.nav-item[data-tab="requests"]');
+      if (currentUser.role === 'admin' && !existing) {
+        const btn = document.createElement('button'); btn.className = 'nav-item'; btn.setAttribute('data-tab', 'requests');
+        btn.innerHTML = '<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';
+        const helpBtn = document.querySelector('.nav-item[data-tab="help"]');
+        bottomNav.insertBefore(btn, helpBtn); setupNavAndButtons();
+      } else if (currentUser.role !== 'admin' && existing) existing.remove();
+    }
+  }
+
+  function applyTheme() {
+    document.body.classList.toggle('dark', currentTheme === 'dark');
+    document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
+    localStorage.setItem('appTheme', currentTheme);
+  }
+  function toggleTheme() { currentTheme = currentTheme === 'light' ? 'dark' : 'light'; applyTheme(); }
+
+  function setupNavAndButtons() {
+    const navBtns = document.querySelectorAll('.nav-item');
+    const panes = { menu: document.getElementById('tab-menu'), tasks: document.getElementById('tab-tasks'), work: document.getElementById('tab-work'), help: document.getElementById('tab-help'), requests: document.getElementById('tab-requests') };
+    const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ', requests: 'ЗАПРОСЫ' };
+    function switchTab(tabId) {
+      Object.values(panes).forEach(p => p?.classList.remove('active-pane'));
+      if (panes[tabId]) panes[tabId].classList.add('active-pane');
+      navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
+      document.getElementById('dynamicTitle').innerText = titles[tabId] || 'МЕНЮ';
+      if (tabId === 'tasks') renderTasksUI();
+      if (tabId === 'work') renderJobsUI();
+      if (tabId === 'requests' && currentUser?.role === 'admin') { markAllAsRead(); renderRequestsUI(); }
+    }
+    navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+    document.getElementById('themeCard')?.addEventListener('click', toggleTheme);
+    document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
+    document.getElementById('logoutCard')?.addEventListener('click', logout);
+    addTaskBtn?.addEventListener('click', () => addTaskToCloud(newTaskInput.value));
+    addJobBtn?.addEventListener('click', () => addJobToCloud(newJobTitle.value, newJobCompany.value, newJobButtonText.value));
+    forceSaveCloudBtn?.addEventListener('click', () => {});
+    statBlockClick?.addEventListener('click', async () => {
+      await updateBalanceUI(); modalBalance.innerText = currentBalance; balanceModal.classList.add('active');
+    });
+    closeBalanceModal?.addEventListener('click', () => balanceModal.classList.remove('active'));
+    bellButton?.addEventListener('click', () => {
+      if (currentUser?.role !== 'admin') return;
+      const unreadReqs = requests.filter(r => !r.isRead);
+      if (unreadReqs.length === 0) { alert('Нет новых уведомлений'); return; }
+      notifyList.innerHTML = unreadReqs.map(r =>
+        `<div class="notify-item">📌 ${escapeHtml(r.jobTitle)} — ${escapeHtml(r.userName)}</div>`
+      ).join('');
+      notifyModal.classList.add('active');
+    });
+    closeNotifyModal?.addEventListener('click', () => notifyModal.classList.remove('active'));
+
+    // Кнопки модалки суммы
+    confirmAmountBtn?.addEventListener('click', doAcceptRequest);
+    cancelAmountBtn?.addEventListener('click', () => { amountModal.classList.remove('active'); pendingAcceptReqId = null; pendingAcceptUserId = null; });
+  }
+
   function initAuthUI() {
-    loginTab.addEventListener('click',()=>{ loginTab.classList.add('active'); registerTab.classList.remove('active'); loginFormDiv.style.display='flex'; registerFormDiv.style.display='none'; });
-    registerTab.addEventListener('click',()=>{ registerTab.classList.add('active'); loginTab.classList.remove('active'); loginFormDiv.style.display='none'; registerFormDiv.style.display='flex'; });
-    switchToLogin?.addEventListener('click',()=>loginTab.click()); switchToRegister?.addEventListener('click',()=>registerTab.click());
-    doLoginBtn.addEventListener('click',()=>{ const uname=loginUsername.value.trim(); const pwd=loginPassword.value; if(!uname) loginError.innerText='Введите логин'; else login(uname,pwd); });
-    doRegisterBtn.addEventListener('click',()=>{ const name=regName.value.trim(); const pwd=regPassword.value; if(!name) regError.innerText='Введите имя'; else register(name,pwd); });
-    document.getElementById('faq1')?.querySelector('.help-question')?.addEventListener('click', function(){ this.nextElementSibling.classList.toggle('show'); });
-    document.getElementById('faq2')?.querySelector('.help-question')?.addEventListener('click', function(){ this.nextElementSibling.classList.toggle('show'); });
-    document.getElementById('telegramBtn')?.querySelector('.help-question')?.addEventListener('click', function(){ this.nextElementSibling.classList.toggle('show'); });
+    loginTab.addEventListener('click', () => { loginTab.classList.add('active'); registerTab.classList.remove('active'); loginFormDiv.style.display = 'flex'; registerFormDiv.style.display = 'none'; });
+    registerTab.addEventListener('click', () => { registerTab.classList.add('active'); loginTab.classList.remove('active'); loginFormDiv.style.display = 'none'; registerFormDiv.style.display = 'flex'; });
+    switchToLogin?.addEventListener('click', () => loginTab.click());
+    switchToRegister?.addEventListener('click', () => registerTab.click());
+    doLoginBtn.addEventListener('click', () => { const uname = loginUsername.value.trim(); const pwd = loginPassword.value; if (!uname) loginError.innerText = 'Введите логин'; else login(uname, pwd); });
+    doRegisterBtn.addEventListener('click', () => { const name = regName.value.trim(); const pwd = regPassword.value; if (!name) regError.innerText = 'Введите имя'; else register(name, pwd); });
+    document.getElementById('faq1')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
+    document.getElementById('faq2')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
+    document.getElementById('telegramBtn')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
   }
-  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display='none'; if(unsubscribeTasks) unsubscribeTasks(); if(unsubscribeJobs) unsubscribeJobs(); if(unsubscribeRequests) unsubscribeRequests(); currentUser=null; }
-  function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display='flex'; }
-  async function start() { loadUsers(); const savedTheme=localStorage.getItem('appTheme'); if(savedTheme==='dark') currentTheme='dark'; else currentTheme='light'; applyTheme(); const session=getSession(); if(session){ const users=getUsers(); const userData=users[session.username]; if(userData){ currentUser={ username:session.username, role:userData.role, name:userData.name }; hideAuthScreen(); updateUIForUser(); await initializeDefaultTasks(); await initializeDefaultJobs(); await initUserBalance(currentUser.username); await updateBalanceUI(); attachFirestoreListener(); attachJobsListener(); attachRequestsListener(); updateStatistics(); setupNavAndButtons(); } else showAuthScreen(); } else showAuthScreen(); initAuthUI(); }
+
+  function showAuthScreen() {
+    authOverlay.classList.remove('hidden'); mainApp.style.display = 'none';
+    if (unsubscribeTasks) unsubscribeTasks(); if (unsubscribeJobs) unsubscribeJobs(); if (unsubscribeRequests) unsubscribeRequests();
+    currentUser = null;
+  }
+  function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
+
+  async function start() {
+    loadUsers();
+    const savedTheme = localStorage.getItem('appTheme');
+    currentTheme = savedTheme === 'dark' ? 'dark' : 'light';
+    applyTheme();
+    const session = getSession();
+    if (session) {
+      const users = getUsers(); const userData = users[session.username];
+      if (userData) {
+        currentUser = { username: session.username, role: userData.role, name: userData.name };
+        hideAuthScreen(); updateUIForUser();
+        await initializeDefaultTasks(); await initializeDefaultJobs();
+        await initUserBalance(currentUser.username); await updateBalanceUI();
+        attachFirestoreListener(); attachJobsListener(); attachRequestsListener();
+        updateStatistics(); setupNavAndButtons();
+      } else showAuthScreen();
+    } else showAuthScreen();
+    initAuthUI();
+  }
+
   start();
-  window.toggleTaskComplete = toggleTaskComplete; window.editTaskText = editTaskText; window.deleteTaskFromCloud = deleteTaskFromCloud; window.editJob = editJob; window.deleteJob = deleteJob; window.showRequestModal = showRequestModal;
+  window.toggleTaskComplete = toggleTaskComplete;
+  window.editTaskText = editTaskText;
+  window.deleteTaskFromCloud = deleteTaskFromCloud;
+  window.editJob = editJob;
+  window.deleteJob = deleteJob;
+  window.showRequestModal = showRequestModal;
 </script>
 </body>
 </html>
