@@ -301,7 +301,7 @@
       font-weight: 500;
       word-break: break-word;
     }
-    .delete-task, .edit-task {
+    .delete-task, .edit-task, .delete-job, .edit-job {
       background: transparent;
       border: none;
       font-size: 18px;
@@ -309,9 +309,9 @@
       padding: 6px;
       color: var(--text-secondary);
     }
-    .delete-task { color: #ef4444; }
-    .edit-task { color: var(--accent); }
-    .add-task-form {
+    .delete-task, .delete-job { color: #ef4444; }
+    .edit-task, .edit-job { color: var(--accent); }
+    .add-task-form, .add-job-form {
       display: flex;
       gap: 10px;
       background: var(--input-bg);
@@ -319,8 +319,9 @@
       border-radius: 60px;
       border: 1px solid var(--border-light);
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .add-task-form input {
+    .add-task-form input, .add-job-form input {
       flex: 1;
       background: transparent;
       border: none;
@@ -328,7 +329,7 @@
       font-size: 15px;
       outline: none;
     }
-    .add-task-form button {
+    .add-task-form button, .add-job-form button {
       background: var(--accent);
       border: none;
       color: white;
@@ -364,17 +365,31 @@
       padding: 18px;
       margin-bottom: 16px;
       border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .job-title { font-size: 18px; font-weight: 700; }
-    .job-company { font-size: 14px; color: var(--accent); margin: 6px 0; }
+    .job-company { font-size: 14px; color: var(--accent); margin: 4px 0; }
     .job-btn {
       background: var(--input-bg);
       border: none;
       padding: 8px 18px;
       border-radius: 40px;
       font-weight: 500;
-      margin-top: 10px;
+      margin-top: 8px;
       cursor: pointer;
+      align-self: flex-start;
+    }
+    .job-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
     }
     .help-card {
       background: var(--card-bg);
@@ -418,15 +433,8 @@
       transform: translateY(-2px);
     }
     .small-text { font-size: 13px; margin-top: 5px; }
-    .sync-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      background: var(--input-bg);
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 12px;
+    .jobs-container {
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -439,14 +447,14 @@
     </div>
     <div id="loginForm" class="auth-form">
       <input type="text" id="loginUsername" placeholder="Логин" autocomplete="off">
-      <input type="password" id="loginPassword" placeholder="Пароль (НЕ ПИШИ СВОЙ ПАРОЛЬ ОТ ТГ)">
+      <input type="password" id="loginPassword" placeholder="Пароль">
       <button id="doLoginBtn">Войти</button>
       <div id="loginError" class="error-msg"></div>
       <div class="auth-switch">Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span></div>
     </div>
     <div id="registerForm" class="auth-form" style="display: none;">
       <input type="text" id="regName" placeholder="Ваше имя" autocomplete="off">
-      <input type="password" id="regPassword" placeholder="Пароль (НЕ ПИШИ СВОЙ ПАРОЛЬ ОТ ТГ)">
+      <input type="password" id="regPassword" placeholder="Пароль">
       <button id="doRegisterBtn">Зарегистрироваться</button>
       <div id="regError" class="error-msg"></div>
       <div class="auth-switch">Уже есть аккаунт? <span id="switchToLogin">Войти</span></div>
@@ -478,7 +486,6 @@
 
       <div class="tab-pane" id="tab-tasks">
         <h3 style="font-size:20px; color:var(--text-primary);">📋 Общие задания</h3>
-        <div id="syncStatus" class="sync-status"><i class="fas fa-cloud-upload-alt"></i> <span>Облачная синхронизация активна</span></div>
         <div id="tasksContainer"></div>
         <div id="adminTaskPanel" style="display: none;">
           <div class="add-task-form">
@@ -488,22 +495,29 @@
           <div class="sync-buttons">
             <button id="forceSaveCloudBtn" class="sync-btn cloud-save-btn"><i class="fas fa-save"></i> Сохранить в облако</button>
           </div>
-          <div class="small-text" style="text-align:center;">✓ Кнопка безопасно синхронизирует текущие задания (не удаляет данные)</div>
+          <div class="small-text" style="text-align:center;">✓ Управление заданиями — изменения сразу в облаке</div>
         </div>
         <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания — изменения сохраняются на всех устройствах</div>
       </div>
 
       <div class="tab-pane" id="tab-work">
-        <h3 style="font-size:20px; color:var(--text-primary);">💼 Работа и проекты</h3>
-        <div class="job-card"><div class="job-title">Frontend-разработчик</div><div class="job-company">Удалённо</div><button class="job-btn">Откликнуться</button></div>
-        <div class="job-card"><div class="job-title">Менеджер проектов</div><div class="job-company">Гибрид</div><button class="job-btn">Подробнее</button></div>
-        <div class="job-card"><div class="job-title">UX/UI дизайнер</div><div class="job-company">CreativeLab</div><button class="job-btn">Портфолио</button></div>
+        <h3 style="font-size:20px; color:var(--text-primary); margin-bottom:12px;">💼 Работа и проекты</h3>
+        <div id="adminJobsPanel" style="display: none; margin-bottom: 20px;">
+          <div class="add-job-form">
+            <input type="text" id="newJobTitle" placeholder="Название вакансии" style="min-width: 120px;">
+            <input type="text" id="newJobCompany" placeholder="Компания">
+            <input type="text" id="newJobButtonText" placeholder="Текст кнопки" value="Откликнуться">
+            <button id="addJobBtn">Добавить</button>
+          </div>
+          <div class="small-text" style="text-align:center;">➕ Добавьте новую вакансию — она появится у всех пользователей</div>
+        </div>
+        <div id="jobsContainer" class="jobs-container"></div>
       </div>
 
       <div class="tab-pane" id="tab-help">
         <h3 style="font-size:20px; color:var(--text-primary);">🛟 Помощь</h3>
         <div class="help-card" id="telegramBtn"><i class="fab fa-telegram-plane"></i><div><div class="help-title">Написать разработчику</div><div class="small-text">Telegram: @vadymtm90</div></div></div>
-        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Как работают задания и статистика (облачная синхронизация)</div></div></div>
+        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Облачная синхронизация заданий и вакансий</div></div></div>
       </div>
     </div>
     <div class="bottom-nav">
@@ -532,11 +546,14 @@
   const analytics = firebase.analytics();
   
   const tasksCollection = db.collection('global_tasks');
+  const jobsCollection = db.collection('work_jobs');
   
   let tasks = [];
+  let jobs = [];
   let currentUser = null;
   let currentTheme = "light";
   let unsubscribeTasks = null;
+  let unsubscribeJobs = null;
   
   // DOM элементы
   const authOverlay = document.getElementById('authOverlay');
@@ -562,10 +579,16 @@
   const completedTasksStat = document.getElementById('completedTasksStat');
   const progressFill = document.getElementById('progressFill');
   const adminPanel = document.getElementById('adminTaskPanel');
+  const adminJobsPanel = document.getElementById('adminJobsPanel');
   const newTaskInput = document.getElementById('newTaskInput');
   const addTaskBtn = document.getElementById('addTaskBtn');
   const logoutCard = document.getElementById('logoutCard');
   const forceSaveCloudBtn = document.getElementById('forceSaveCloudBtn');
+  const jobsContainer = document.getElementById('jobsContainer');
+  const addJobBtn = document.getElementById('addJobBtn');
+  const newJobTitle = document.getElementById('newJobTitle');
+  const newJobCompany = document.getElementById('newJobCompany');
+  const newJobButtonText = document.getElementById('newJobButtonText');
   
   // ---------------------------- ЛОКАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ ----------------------------
   function loadUsers() {
@@ -590,7 +613,7 @@
   }
   function clearSession() { localStorage.removeItem('currentSession'); }
   
-  // ---------------------------- FIRESTORE: ИНИЦИАЛИЗАЦИЯ ДЕФОЛТНЫХ ЗАДАЧ ----------------------------
+  // ---------------------------- FIRESTORE: ЗАДАЧИ ----------------------------
   async function initializeDefaultTasks() {
     const snapshot = await tasksCollection.limit(1).get();
     if (snapshot.empty) {
@@ -599,55 +622,48 @@
         { text: "Проверить статистику", completed: false, createdAt: Date.now() + 2, createdBy: "system" },
         { text: "Связаться с поддержкой", completed: false, createdAt: Date.now() + 3, createdBy: "system" }
       ];
-      for (const task of defaultTasks) {
-        await tasksCollection.add(task);
-      }
+      for (const task of defaultTasks) await tasksCollection.add(task);
     }
   }
   
-  // ---------------------------- FIRESTORE: РЕАЛЬНОЕ ВРЕМЯ ----------------------------
+  async function initializeDefaultJobs() {
+    const snapshot = await jobsCollection.limit(1).get();
+    if (snapshot.empty) {
+      const defaultJobs = [
+        { title: "Frontend-разработчик", company: "Удалённо", buttonText: "Откликнуться", createdAt: Date.now() + 1, createdBy: "system" },
+        { title: "Менеджер проектов", company: "Гибрид", buttonText: "Подробнее", createdAt: Date.now() + 2, createdBy: "system" },
+        { title: "UX/UI дизайнер", company: "CreativeLab", buttonText: "Портфолио", createdAt: Date.now() + 3, createdBy: "system" }
+      ];
+      for (const job of defaultJobs) await jobsCollection.add(job);
+    }
+  }
+  
   function attachFirestoreListener() {
     if (unsubscribeTasks) unsubscribeTasks();
     unsubscribeTasks = tasksCollection.orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
       const newTasks = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        newTasks.push({
-          id: doc.id,
-          text: data.text,
-          completed: data.completed || false,
-          createdAt: data.createdAt || 0
-        });
-      });
+      snapshot.forEach(doc => newTasks.push({ id: doc.id, ...doc.data() }));
       tasks = newTasks;
       renderTasksUI();
       updateStatistics();
-    }, (error) => {
-      const statusDiv = document.getElementById('syncStatus');
-      if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка синхронизации';
-    });
+    }, () => {});
+  }
+  
+  function attachJobsListener() {
+    if (unsubscribeJobs) unsubscribeJobs();
+    unsubscribeJobs = jobsCollection.orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
+      const newJobs = [];
+      snapshot.forEach(doc => newJobs.push({ id: doc.id, ...doc.data() }));
+      jobs = newJobs;
+      renderJobsUI();
+    }, () => {});
   }
   
   async function addTaskToCloud(text) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!text.trim()) return;
-    
-    try {
-      // Add the new task to Firestore
-      await tasksCollection.add({
-        text: text.trim(),
-        completed: false,
-        createdAt: Date.now(),
-        createdBy: currentUser.username
-      });
-      
-      // Clear the input field after successful addition
-      const newTaskInput = document.getElementById('newTaskInput');
-      if (newTaskInput) newTaskInput.value = '';
-    } catch (error) {
-      console.error("Error adding task: ", error);
-      // Optionally show an error message to the user
-    }
+    await tasksCollection.add({ text: text.trim(), completed: false, createdAt: Date.now(), createdBy: currentUser.username });
+    if (newTaskInput) newTaskInput.value = '';
   }
   
   async function toggleTaskComplete(taskId, currentStatus) {
@@ -665,54 +681,94 @@
     await tasksCollection.doc(taskId).delete();
   }
   
-  // Безопасное сохранение в облако: перезаписывает коллекцию текущими задачами, но только если есть хотя бы одна задача
   async function forceSaveAllToCloud() {
     if (!currentUser || currentUser.role !== 'admin') return;
-    
     try {
-      // Only clear tasks if our local list is empty, otherwise we risk removing tasks others added
-      if (tasks.length === 0) {
-        // Get all existing documents and delete them
-        const snapshot = await tasksCollection.get();
-        const batch = db.batch();
-        snapshot.forEach(doc => batch.delete(doc.ref));
-        await batch.commit();
-      }
-      
-      // In either case (empty or not), ensure the current tasks are saved
-      // But to avoid duplicates, we'll only add tasks that don't already exist
-      // First get current cloud tasks to compare
       const cloudSnapshot = await tasksCollection.get();
       const existingIds = new Set();
       cloudSnapshot.forEach(doc => existingIds.add(doc.id));
-      
-      // Add only tasks that aren't already in the cloud
       for (const task of tasks) {
         if (!existingIds.has(task.id)) {
-          await tasksCollection.add({
-            text: task.text,
-            completed: task.completed,
-            createdAt: task.createdAt || Date.now(),
-            createdBy: currentUser.username
-          });
+          await tasksCollection.add({ text: task.text, completed: task.completed, createdAt: task.createdAt || Date.now(), createdBy: currentUser.username });
         }
       }
-      
-      // Update sync status to indicate success
-      const statusDiv = document.getElementById('syncStatus');
-      if (statusDiv) {
-        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Сохранено в облако</span>';
-        setTimeout(() => {
-          if (statusDiv) statusDiv.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Облачная синхронизация активна</span>';
-        }, 2000);
-      }
-    } catch(e) {
-      console.error("Error saving tasks to cloud: ", e);
-      const statusDiv = document.getElementById('syncStatus');
-      if (statusDiv) {
-        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Ошибка синхронизации</span>';
-      }
+    } catch(e) { console.error(e); }
+  }
+  
+  // ---------------------------- FIRESTORE: РАБОТА (ВАКАНСИИ) ----------------------------
+  async function addJobToCloud(title, company, buttonText) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    if (!title.trim()) return;
+    await jobsCollection.add({
+      title: title.trim(),
+      company: company.trim() || "Не указана",
+      buttonText: buttonText.trim() || "Откликнуться",
+      createdAt: Date.now(),
+      createdBy: currentUser.username
+    });
+    if (newJobTitle) newJobTitle.value = '';
+    if (newJobCompany) newJobCompany.value = '';
+    if (newJobButtonText) newJobButtonText.value = 'Откликнуться';
+  }
+  
+  async function editJob(jobId, newTitle, newCompany, newButtonText) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    if (!newTitle.trim()) return;
+    await jobsCollection.doc(jobId).update({
+      title: newTitle.trim(),
+      company: newCompany.trim() || "Не указана",
+      buttonText: newButtonText.trim() || "Откликнуться"
+    });
+  }
+  
+  async function deleteJob(jobId) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    await jobsCollection.doc(jobId).delete();
+  }
+  
+  function renderJobsUI() {
+    if (!jobsContainer) return;
+    if (jobs.length === 0) {
+      jobsContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет вакансий. Админ добавит позже.</div>';
+      return;
     }
+    jobsContainer.innerHTML = '';
+    jobs.forEach(job => {
+      const card = document.createElement('div'); card.className = 'job-card';
+      const headerDiv = document.createElement('div'); headerDiv.className = 'job-header';
+      const titleSpan = document.createElement('div'); titleSpan.className = 'job-title'; titleSpan.innerText = job.title;
+      headerDiv.appendChild(titleSpan);
+      
+      if (currentUser?.role === 'admin') {
+        const actionsDiv = document.createElement('div'); actionsDiv.className = 'job-actions';
+        const editBtn = document.createElement('button'); editBtn.className = 'edit-job'; editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+        editBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const newTitle = prompt('Название вакансии:', job.title);
+          const newCompany = prompt('Компания:', job.company);
+          const newBtnText = prompt('Текст кнопки:', job.buttonText);
+          if (newTitle?.trim()) await editJob(job.id, newTitle, newCompany || '', newBtnText || 'Откликнуться');
+        });
+        const delBtn = document.createElement('button'); delBtn.className = 'delete-job'; delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        delBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (confirm('Удалить вакансию?')) await deleteJob(job.id);
+        });
+        actionsDiv.appendChild(editBtn); actionsDiv.appendChild(delBtn);
+        headerDiv.appendChild(actionsDiv);
+      }
+      card.appendChild(headerDiv);
+      
+      const companySpan = document.createElement('div'); companySpan.className = 'job-company'; companySpan.innerText = job.company;
+      card.appendChild(companySpan);
+      
+      const actionBtn = document.createElement('button'); actionBtn.className = 'job-btn'; actionBtn.innerText = job.buttonText;
+      actionBtn.addEventListener('click', () => {
+        alert(`Вы откликнулись на "${job.title}" в компании ${job.company}. Функция в разработке.`);
+      });
+      card.appendChild(actionBtn);
+      jobsContainer.appendChild(card);
+    });
   }
   
   function renderTasksUI() {
@@ -726,9 +782,7 @@
       const div = document.createElement('div'); div.className = 'task-item';
       const check = document.createElement('div'); check.className = `task-check ${task.completed ? 'completed' : ''}`;
       if (task.completed) check.innerHTML = '<i class="fas fa-check" style="font-size:12px;"></i>';
-      check.addEventListener('click', async () => {
-        await toggleTaskComplete(task.id, task.completed);
-      });
+      check.addEventListener('click', async () => await toggleTaskComplete(task.id, task.completed));
       const textSpan = document.createElement('div'); textSpan.className = `task-text ${task.completed ? 'done' : ''}`; textSpan.innerText = task.text;
       div.appendChild(check); div.appendChild(textSpan);
       if (currentUser?.role === 'admin') {
@@ -738,9 +792,7 @@
           if (newText?.trim()) await editTaskText(task.id, newText);
         });
         const del = document.createElement('button'); del.className = 'delete-task'; del.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        del.addEventListener('click', async () => {
-          if (confirm('Удалить задание?')) await deleteTaskFromCloud(task.id);
-        });
+        del.addEventListener('click', async () => { if (confirm('Удалить задание?')) await deleteTaskFromCloud(task.id); });
         div.appendChild(edit); div.appendChild(del);
       }
       tasksContainer.appendChild(div);
@@ -756,7 +808,7 @@
   }
   
   // ---------------------------- АВТОРИЗАЦИЯ ----------------------------
-  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); currentUser = null; }
+  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); if(unsubscribeJobs) unsubscribeJobs(); currentUser = null; }
   function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
   
   async function afterLogin() {
@@ -764,7 +816,9 @@
     applyTheme();
     updateUIForUser();
     await initializeDefaultTasks();
+    await initializeDefaultJobs();
     attachFirestoreListener();
+    attachJobsListener();
     updateStatistics();
     setupNavAndButtons();
   }
@@ -795,6 +849,7 @@
   function logout() { 
     clearSession(); 
     if (unsubscribeTasks) unsubscribeTasks();
+    if (unsubscribeJobs) unsubscribeJobs();
     currentUser = null; 
     showAuthScreen(); 
   }
@@ -804,10 +859,11 @@
       displayNameSpan.innerText = currentUser.name || currentUser.username;
       userRoleSpan.innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
       adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+      if (adminJobsPanel) adminJobsPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
     }
   }
   
-  // ---------------------------- ТЕМА И НАВИГАЦИЯ (БЕЗ ВСПЛЫВАЮЩИХ УВЕДОМЛЕНИЙ) ----------------------------
+  // ---------------------------- ТЕМА И НАВИГАЦИЯ ----------------------------
   function applyTheme() {
     document.body.classList.toggle('dark', currentTheme === 'dark');
     document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
@@ -826,6 +882,7 @@
       navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
       headerTitle.innerText = titles[tabId];
       if (tabId === 'tasks') renderTasksUI();
+      if (tabId === 'work') renderJobsUI();
     }
     navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     document.getElementById('themeCard')?.addEventListener('click', () => toggleTheme());
@@ -833,16 +890,8 @@
     document.getElementById('profileCard')?.addEventListener('click', () => {});
     document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
     document.getElementById('faqBtn')?.addEventListener('click', () => {});
-    document.querySelectorAll('.job-btn').forEach(btn => btn.addEventListener('click', () => {}));
-    if (addTaskBtn) {
-      addTaskBtn.addEventListener('click', () => {
-        const text = newTaskInput.value.trim();
-        if(text) {
-          addTaskToCloud(text);
-          newTaskInput.value = ''; // Clear input immediately
-        }
-      });
-    }
+    if (addTaskBtn) addTaskBtn.addEventListener('click', () => { const text = newTaskInput.value.trim(); if(text) addTaskToCloud(text); });
+    if (addJobBtn) addJobBtn.addEventListener('click', () => { addJobToCloud(newJobTitle.value, newJobCompany.value, newJobButtonText.value); });
     if (logoutCard) logoutCard.addEventListener('click', logout);
     if (forceSaveCloudBtn) forceSaveCloudBtn.addEventListener('click', forceSaveAllToCloud);
   }
@@ -870,7 +919,9 @@
         hideAuthScreen();
         updateUIForUser();
         await initializeDefaultTasks();
+        await initializeDefaultJobs();
         attachFirestoreListener();
+        attachJobsListener();
         updateStatistics();
         setupNavAndButtons();
       } else showAuthScreen();
