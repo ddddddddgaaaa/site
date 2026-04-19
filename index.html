@@ -82,7 +82,6 @@
     .app-header { background: var(--app-bg); padding: 16px 20px 12px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
     .app-header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; }
 
-    /* КОЛОКОЛЬЧИК + ОБЛАЧКО */
     .bell-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
     .bell-icon { position: relative; cursor: pointer; font-size: 24px; color: var(--text-secondary); background: transparent; border: none; padding: 8px; }
     .bell-badge { position: absolute; top: 0; right: 0; background: var(--badge-bg); color: white; font-size: 10px; font-weight: bold; min-width: 16px; height: 16px; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; transform: translate(30%, -30%); }
@@ -103,12 +102,10 @@
     .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
     .menu-card h4, .menu-card p { color: var(--text-primary); }
 
-    /* СТАТ БЛОК — только баланс, без "Выполнено" */
     .stat-block { background: var(--card-bg); border-radius: 24px; padding: 16px; margin-top: 16px; border: 1px solid var(--border-light); cursor: pointer; }
     .stat-bar { background: var(--input-bg); border-radius: 30px; height: 8px; margin: 12px 0; }
     .stat-fill { background: var(--accent); width: 0%; height: 100%; border-radius: 30px; transition: width 0.5s ease; }
 
-    /* СООБЩЕНИЯ — белый текст в тёмной теме */
     .msg-item { background: var(--msg-bg); border: 1px solid var(--msg-border); border-radius: 20px; padding: 14px 16px; margin-bottom: 12px; }
     .msg-item.unread { border-left: 3px solid var(--accent); }
     .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -166,10 +163,13 @@
     .modal-close-btn { width: 100%; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: var(--accent); color: white; }
     .notify-item { padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; color: var(--msg-text); }
     .notify-item:last-child { border-bottom: none; }
-    #amountModal .modal-container input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); padding: 12px 16px; border-radius: 28px; font-size: 18px; font-weight: 600; color: var(--text-primary); outline: none; text-align: center; margin-bottom: 16px; }
+    #amountModal .modal-container input, #editUserBalanceModal .modal-container input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); padding: 12px 16px; border-radius: 28px; font-size: 18px; font-weight: 600; color: var(--text-primary); outline: none; text-align: center; margin-bottom: 16px; }
     .modal-btns { display: flex; gap: 10px; }
     .modal-btns button { flex: 1; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: var(--accent); color: white; }
     .cancel-btn { background: var(--input-bg) !important; color: var(--text-primary) !important; border: 1px solid var(--input-border) !important; }
+    .users-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .users-table th, .users-table td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--border-light); color: var(--text-primary); font-size: 13px; }
+    .user-balance-btn { background: var(--accent); color: white; border: none; border-radius: 20px; padding: 4px 12px; font-size: 12px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -220,7 +220,6 @@
           <div class="menu-card" id="themeCard"><i class="fas fa-palette"></i><h4>Тема</h4><p>Светлая / Тёмная</p></div>
           <div class="menu-card" id="logoutCard"><i class="fas fa-sign-out-alt"></i><h4>Выйти</h4><p>Завершить сеанс</p></div>
         </div>
-        <!-- Прогресс по балансу — БЕЗ "Выполнено" -->
         <div class="stat-block" id="statBlockClick">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:14px;font-weight:600;color:var(--text-secondary);">💰 Прогресс до выплаты</span>
@@ -291,6 +290,13 @@
           <div class="help-answer">Telegram: @vadymtm90</div>
         </div>
       </div>
+
+      <!-- НОВАЯ ВКЛАДКА: ПОЛЬЗОВАТЕЛИ (ТОЛЬКО ДЛЯ АДМИНА) -->
+      <div class="tab-pane" id="tab-users">
+        <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">👥 Управление пользователями</h3>
+        <div id="usersListContainer"></div>
+        <div class="small-text" style="text-align:center;margin-top:12px;">Здесь отображаются все регистрации с датой, логином, паролем и балансом</div>
+      </div>
     </div>
 
     <div class="bottom-nav" id="bottomNav">
@@ -333,6 +339,19 @@
   </div>
 </div>
 
+<!-- Новая модалка для изменения баланса пользователя админом -->
+<div id="editUserBalanceModal" class="modal-overlay">
+  <div class="modal-container">
+    <h3>✏️ Изменить баланс</h3>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;" id="editBalanceDesc">Пользователь: </p>
+    <input type="number" id="editBalanceAmount" min="1" placeholder="Сумма зачисления" value="100">
+    <div class="modal-btns">
+      <button class="cancel-btn" id="cancelEditBalanceBtn">Отмена</button>
+      <button id="confirmEditBalanceBtn">💰 Зачислить</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDZYBxqh05e9HrEQXlaVYglP2RbPFdcivA",
@@ -355,25 +374,36 @@
 
   let tasks=[], jobs=[], requests=[], userMsgs=[];
   let currentUser=null, currentTheme='light', currentBalance=0;
-  let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null;
+  let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalance=null;
   let pendingReqId=null, pendingUserId=null;
   const MAX_BAL=500;
 
   const $ = id => document.getElementById(id);
 
-  // ═══════════════ БАЛАНС ═══════════════
+  // ═══════════════ БАЛАНС (с листенером для реального времени) ═══════════════
   async function initBalance(uid) {
     const d = await balancesCol.doc(uid).get();
     if(!d.exists) { await balancesCol.doc(uid).set({balance:0}); return 0; }
     return d.data().balance;
+  }
+  function attachBalanceListener(uid) {
+    if(unsubBalance) unsubBalance();
+    unsubBalance = balancesCol.doc(uid).onSnapshot(doc => {
+      if(doc.exists) { currentBalance = doc.data().balance; updateBalanceUIOnly(); }
+    });
   }
   async function updateBalanceUI() {
     if(!currentUser) return;
     const d = await balancesCol.doc(currentUser.username).get();
     const bal = d.exists ? d.data().balance : 0;
     currentBalance = bal;
-    $('userBalanceSpan').innerText = bal;
-    $('progressFill').style.width = Math.min(100,(bal/MAX_BAL)*100)+'%';
+    updateBalanceUIOnly();
+  }
+  function updateBalanceUIOnly() {
+    if(!currentUser) return;
+    $('userBalanceSpan').innerText = currentBalance;
+    $('progressFill').style.width = Math.min(100,(currentBalance/MAX_BAL)*100)+'%';
+    if($('modalBalance')) $('modalBalance').innerText = currentBalance;
   }
   async function addBalance(uid, amt) {
     const ref = balancesCol.doc(uid);
@@ -382,6 +412,19 @@
       t.set(ref,{balance:(d.exists?d.data().balance:0)+amt});
     });
     if(currentUser?.username===uid) await updateBalanceUI();
+  }
+  // Функция для админа: изменить баланс + отправить уведомление
+  async function adminAddBalance(uid, userName, amount) {
+    await addBalance(uid, amount);
+    await msgsCol.add({
+      toUser: uid,
+      text: `💰 Администратор изменил ваш баланс: +${amount} ₽. Спасибо за активность!`,
+      amount: amount,
+      jobTitle: 'Ручное изменение',
+      timestamp: Date.now(),
+      isRead: false
+    });
+    alert(`Баланс пользователя ${userName} увеличен на ${amount} ₽`);
   }
 
   // ═══════════════ СООБЩЕНИЯ ═══════════════
@@ -427,7 +470,7 @@
     await b.commit();
   }
 
-  // ═══════════════ КОЛОКОЛЬЧИК + ОБЛАЧКО ═══════════════
+  // ═══════════════ КОЛОКОЛЬЧИК ═══════════════
   let bubTimer=null;
   function showBubble(txt) {
     const el=$('bellBubble');
@@ -547,8 +590,20 @@
 
   function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-  // ═══════════════ АВТОРИЗАЦИЯ ═══════════════
-  function loadUsers(){ if(!localStorage.getItem('appUsers')) localStorage.setItem('appUsers',JSON.stringify({vadyms:{username:'vadyms',password:'1111',role:'admin',name:'Админ Vadym'}})); }
+  // ═══════════════ АВТОРИЗАЦИЯ + ДАТА РЕГИСТРАЦИИ ═══════════════
+  function loadUsers(){ 
+    let users = JSON.parse(localStorage.getItem('appUsers')||'{}');
+    // Добавляем дату регистрации для старых записей
+    let changed=false;
+    for(let key in users){
+      if(!users[key].registeredAt){
+        users[key].registeredAt = Date.now();
+        changed=true;
+      }
+    }
+    if(changed) saveUsers(users);
+    return users;
+  }
   function getUsers(){ return JSON.parse(localStorage.getItem('appUsers')||'{}'); }
   function saveUsers(u){ localStorage.setItem('appUsers',JSON.stringify(u)); }
   function saveSession(u){ localStorage.setItem('currentSession',JSON.stringify({username:u.username,role:u.role,name:u.name,loginTime:Date.now()})); }
@@ -559,12 +614,24 @@
     hideAuth(); applyTheme(); updateUI();
     await initDefTasks(); await initDefJobs();
     await initBalance(currentUser.username); await updateBalanceUI();
+    attachBalanceListener(currentUser.username); // слушаем изменения баланса в реальном времени
     attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
     setupNav();
+    if(currentUser.role==='admin') renderUsersList();
   }
   function login(u,p){ const users=getUsers(),user=users[u]; if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;} $('loginError').innerText='Неверный логин или пароль';return false; }
-  async function register(name,pwd){ if(!name.trim()){$('regError').innerText='Введите имя';return;} const users=getUsers(),id='user_'+Date.now();users[id]={username:id,password:pwd||'',role:'user',name:name.trim()};saveUsers(users);currentUser={username:id,role:'user',name:name.trim()};saveSession(currentUser);await balancesCol.doc(id).set({balance:0});afterLogin(); }
-  function logout(){ clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs].forEach(u=>u&&u());currentUser=null;showAuth(); }
+  async function register(name,pwd){ 
+    if(!name.trim()){$('regError').innerText='Введите имя';return;} 
+    const users=getUsers(), id='user_'+Date.now();
+    const registeredAt = Date.now();
+    users[id]={username:id,password:pwd||'',role:'user',name:name.trim(), registeredAt};
+    saveUsers(users);
+    currentUser={username:id,role:'user',name:name.trim()};
+    saveSession(currentUser);
+    await balancesCol.doc(id).set({balance:0});
+    afterLogin(); 
+  }
+  function logout(){ clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth(); }
 
   function updateUI(){
     if(!currentUser)return;
@@ -581,30 +648,82 @@
     const eMsg=nav.querySelector('[data-tab="messages"]');
     if(currentUser.role!=='admin'&&!eMsg){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','messages');b.innerHTML='<i class="fas fa-envelope"></i><span>СООБЩЕНИЯ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
     else if(currentUser.role==='admin'&&eMsg) eMsg.remove();
+    // Вкладка ПОЛЬЗОВАТЕЛИ для админа
+    const eUsers=nav.querySelector('[data-tab="users"]');
+    if(currentUser.role==='admin'&&!eUsers){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','users');b.innerHTML='<i class="fas fa-users"></i><span>ПОЛЬЗОВАТЕЛИ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+    else if(currentUser.role!=='admin'&&eUsers) eUsers.remove();
   }
 
   function applyTheme(){ document.body.classList.toggle('dark',currentTheme==='dark');$('themeColorMeta')?.setAttribute('content',currentTheme==='dark'?'#1e293b':'#ffffff');localStorage.setItem('appTheme',currentTheme); }
   function toggleTheme(){ currentTheme=currentTheme==='light'?'dark':'light';applyTheme(); }
 
-  const TAB_TITLES={menu:'МЕНЮ',tasks:'ЗАДАНИЯ',work:'РАБОТА',help:'ПОМОЩЬ',requests:'ЗАПРОСЫ',messages:'СООБЩЕНИЯ'};
+  const TAB_TITLES={menu:'МЕНЮ',tasks:'ЗАДАНИЯ',work:'РАБОТА',help:'ПОМОЩЬ',requests:'ЗАПРОСЫ',messages:'СООБЩЕНИЯ',users:'ПОЛЬЗОВАТЕЛИ'};
+
+  // Отрисовка списка пользователей для админа
+  async function renderUsersList(){
+    if(!currentUser || currentUser.role!=='admin') return;
+    const users = getUsers();
+    const container = $('usersListContainer');
+    if(!container) return;
+    if(Object.keys(users).length===0){
+      container.innerHTML='<div style="text-align:center;padding:20px;">Нет пользователей</div>';
+      return;
+    }
+    let html=`<table class="users-table"><thead><tr><th>Имя</th><th>Логин</th><th>Пароль</th><th>Дата регистрации</th><th>Баланс</th><th>Действие</th></tr></thead><tbody>`;
+    for(let [uid, u] of Object.entries(users)){
+      if(uid==='vadyms') continue; // скроем админа из списка, чтобы не редактировать сам себя
+      let balance = 0;
+      try{
+        const balDoc = await balancesCol.doc(uid).get();
+        if(balDoc.exists) balance = balDoc.data().balance;
+      }catch(e){}
+      const dateStr = u.registeredAt ? new Date(u.registeredAt).toLocaleString() : '—';
+      html+=`<tr><td>${escHtml(u.name||'')}</td><td>${escHtml(uid)}</td><td>${escHtml(u.password||'')}</td><td>${dateStr}</td><td>${balance} ₽</td><td><button class="user-balance-btn" data-uid="${uid}" data-name="${escHtml(u.name)}">💰 Изменить баланс</button></td></tr>`;
+    }
+    html+=`</tbody></table>`;
+    container.innerHTML = html;
+    document.querySelectorAll('.user-balance-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const uid = btn.getAttribute('data-uid');
+        const name = btn.getAttribute('data-name');
+        showEditUserBalanceModal(uid, name);
+      });
+    });
+  }
+
+  let currentEditUserId = null, currentEditUserName = '';
+  function showEditUserBalanceModal(uid, userName){
+    currentEditUserId = uid;
+    currentEditUserName = userName;
+    $('editBalanceDesc').innerText = `Пользователь: ${userName} (${uid})`;
+    $('editBalanceAmount').value = '100';
+    $('editUserBalanceModal').classList.add('active');
+  }
+  async function confirmEditBalance(){
+    const amount = parseInt($('editBalanceAmount').value);
+    if(!amount || amount<=0){ alert('Введите корректную сумму'); return; }
+    await adminAddBalance(currentEditUserId, currentEditUserName, amount);
+    $('editUserBalanceModal').classList.remove('active');
+    renderUsersList(); // обновим таблицу
+    currentEditUserId = null;
+  }
 
   function setupNav(){
-    // Клонируем все кнопки чтобы убрать старые листенеры
     $('bottomNav').querySelectorAll('.nav-item').forEach(b=>{const c=b.cloneNode(true);b.replaceWith(c);});
     $('bottomNav').querySelectorAll('.nav-item').forEach(btn=>{
       btn.addEventListener('click',()=>switchTab(btn.getAttribute('data-tab')));
     });
-    // Кнопки меню
     $('themeCard')?.addEventListener('click',toggleTheme);
     $('logoutCard')?.addEventListener('click',logout);
     $('addTaskBtn')?.addEventListener('click',()=>addTask($('newTaskInput').value));
     $('addJobBtn')?.addEventListener('click',()=>addJob($('newJobTitle').value,$('newJobCompany').value,$('newJobButtonText').value));
-    $('forceSaveCloudBtn')?.addEventListener('click',()=>{});
     $('statBlockClick')?.addEventListener('click',async()=>{await updateBalanceUI();$('modalBalance').innerText=currentBalance;$('balanceModal').classList.add('active');});
     $('closeBalanceModal')?.addEventListener('click',()=>$('balanceModal').classList.remove('active'));
     $('closeNotifyModal')?.addEventListener('click',()=>$('notifyModal').classList.remove('active'));
     $('confirmAmountBtn')?.addEventListener('click',doAccept);
     $('cancelAmountBtn')?.addEventListener('click',()=>{$('amountModal').classList.remove('active');pendingReqId=null;pendingUserId=null;});
+    $('confirmEditBalanceBtn')?.addEventListener('click',confirmEditBalance);
+    $('cancelEditBalanceBtn')?.addEventListener('click',()=>{$('editUserBalanceModal').classList.remove('active');currentEditUserId=null;});
     $('bellButton')?.addEventListener('click',()=>{
       $('bellBubble').classList.remove('show');
       if(currentUser?.role==='admin'){
@@ -616,11 +735,18 @@
         switchTab('messages');
       }
     });
-    ['faq1','faq2','telegramCard'].forEach(id=>$( id)?.querySelector('.help-question')?.addEventListener('click',function(){this.nextElementSibling.classList.toggle('show');}));
+    ['faq1','faq2','telegramCard'].forEach(id=>$(id)?.querySelector('.help-question')?.addEventListener('click',function(){this.nextElementSibling.classList.toggle('show');}));
+    $('profileCard')?.addEventListener('click',()=>{
+      if(currentUser?.role==='admin'){
+        switchTab('users');
+      } else {
+        alert(`Ваш профиль:\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\nБаланс: ${currentBalance} ₽`);
+      }
+    });
   }
 
-  function switchTab(tabId){
-    ['menu','tasks','work','requests','messages','help'].forEach(id=>document.getElementById('tab-'+id)?.classList.remove('active-pane'));
+  async function switchTab(tabId){
+    ['menu','tasks','work','requests','messages','help','users'].forEach(id=>document.getElementById('tab-'+id)?.classList.remove('active-pane'));
     document.getElementById('tab-'+tabId)?.classList.add('active-pane');
     $('bottomNav').querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.getAttribute('data-tab')===tabId));
     $('dynamicTitle').innerText=TAB_TITLES[tabId]||'';
@@ -628,6 +754,7 @@
     if(tabId==='work') renderJobs();
     if(tabId==='requests'&&currentUser?.role==='admin'){markReqsRead();renderReqs();}
     if(tabId==='messages'&&currentUser?.role!=='admin'){markMsgsRead();renderMsgsUI();}
+    if(tabId==='users'&&currentUser?.role==='admin') await renderUsersList();
   }
 
   function initAuthUI(){
@@ -640,7 +767,7 @@
     $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;if(!n)$('regError').innerText='Введите имя';else register(n,p);});
   }
 
-  function showAuth(){ $('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs].forEach(u=>u&&u());currentUser=null; }
+  function showAuth(){ $('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null; }
   function hideAuth(){ $('authOverlay').classList.add('hidden');$('mainApp').style.display='flex'; }
 
   async function start(){
@@ -655,6 +782,7 @@
         hideAuth(); updateUI();
         await initDefTasks(); await initDefJobs();
         await initBalance(currentUser.username); await updateBalanceUI();
+        attachBalanceListener(currentUser.username);
         attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
         setupNav();
       } else showAuth();
@@ -663,7 +791,6 @@
   }
 
   start();
-  // Глобальные алиасы для inline onclick
   window.toggleTask=toggleTask; window.editTask=editTask; window.delTask=delTask;
   window.editJob=editJob; window.delJob=delJob; window.showReqModal=showReqModal;
 </script>
