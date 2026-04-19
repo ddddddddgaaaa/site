@@ -651,11 +651,10 @@
         </div>
         <div class="stat-block" id="statBlockClick">
           <div style="display: flex; justify-content: space-between;">
-            <span><i class="fas fa-tasks"></i> <strong>Всего задач:</strong> <span id="totalTasksStat">0</span></span>
             <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
           </div>
           <div class="stat-bar"><div class="stat-fill" id="progressFill"></div></div>
-          <div style="margin-top: 12px; text-align: center;"><i class="fas fa-ruble-sign"></i> <strong>Баланс:</strong> <span id="userBalanceSpan">0</span> / 500 ₽</div>
+          <div style="margin-top: 12px; text-align: center;"><i class="fas fa-ruble-sign"></i> <strong>Баланс:</strong> <span id="userBalanceSpan">0</span> / <span id="maxBalance">500</span> ₽</div>
         </div>
       </div>
 
@@ -765,6 +764,53 @@
   let unsubscribeTasks = null, unsubscribeJobs = null, unsubscribeRequests = null;
   let currentBalance = 0;
   
+  // DOM элементы
+  const authOverlay = document.getElementById('authOverlay');
+  const mainApp = document.getElementById('mainApp');
+  const loginFormDiv = document.getElementById('loginForm');
+  const registerFormDiv = document.getElementById('registerForm');
+  const loginTab = document.getElementById('loginTabBtn');
+  const registerTab = document.getElementById('registerTabBtn');
+  const doLoginBtn = document.getElementById('doLoginBtn');
+  const doRegisterBtn = document.getElementById('doRegisterBtn');
+  const loginUsername = document.getElementById('loginUsername');
+  const loginPassword = document.getElementById('loginPassword');
+  const regName = document.getElementById('regName');
+  const regPassword = document.getElementById('regPassword');
+  const loginError = document.getElementById('loginError');
+  const regError = document.getElementById('regError');
+  const switchToLogin = document.getElementById('switchToLogin');
+  const switchToRegister = document.getElementById('switchToRegister');
+  const displayNameSpan = document.getElementById('displayName');
+  const userRoleSpan = document.getElementById('userRoleSpan');
+  const tasksContainer = document.getElementById('tasksContainer');
+  const totalTasksStat = document.getElementById('totalTasksStat');
+  const completedTasksStat = document.getElementById('completedTasksStat');
+  const progressFill = document.getElementById('progressFill');
+  const adminPanel = document.getElementById('adminTaskPanel');
+  const adminJobsPanel = document.getElementById('adminJobsPanel');
+  const newTaskInput = document.getElementById('newTaskInput');
+  const addTaskBtn = document.getElementById('addTaskBtn');
+  const logoutCard = document.getElementById('logoutCard');
+  const forceSaveCloudBtn = document.getElementById('forceSaveCloudBtn');
+  const jobsContainer = document.getElementById('jobsContainer');
+  const addJobBtn = document.getElementById('addJobBtn');
+  const newJobTitle = document.getElementById('newJobTitle');
+  const newJobCompany = document.getElementById('newJobCompany');
+  const newJobButtonText = document.getElementById('newJobButtonText');
+  const requestsContainer = document.getElementById('requestsContainer');
+  const bottomNav = document.getElementById('bottomNav');
+  const userBalanceSpan = document.getElementById('userBalanceSpan');
+  const statBlockClick = document.getElementById('statBlockClick');
+  const bellButton = document.getElementById('bellButton');
+  const bellBadge = document.getElementById('bellBadge');
+  const balanceModal = document.getElementById('balanceModal');
+  const modalBalance = document.getElementById('modalBalance');
+  const closeBalanceModal = document.getElementById('closeBalanceModal');
+  const notifyModal = document.getElementById('notifyModal');
+  const notifyList = document.getElementById('notifyList');
+  const closeNotifyModal = document.getElementById('closeNotifyModal');
+  
   // ---------------------------- РАБОТА С БАЛАНСОМ ----------------------------
   async function initUserBalance(userId) {
     const doc = await balancesCollection.doc(userId).get();
@@ -795,18 +841,9 @@
   
   // ---------------------------- ЗАПРОСЫ ----------------------------
   async function acceptRequest(reqId, userId) {
-    const amount = prompt("Введите сумму зачисления:", "500");
-    if (amount === null) return; // User cancelled
-    
-    const parsedAmount = parseInt(amount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      alert("Неверная сумма");
-      return;
-    }
-    
-    await addBalance(userId, parsedAmount);
+    await addBalance(userId, 500);
     await requestsCollection.doc(reqId).delete();
-    alert(`Запрос принят, пользователю зачислено ${parsedAmount} ₽`);
+    alert("Запрос принят, пользователю зачислено 500 ₽");
   }
   
   async function rejectRequest(reqId) {
@@ -858,7 +895,7 @@
       card.appendChild(commentDiv);
       if (currentUser?.role === 'admin') {
         const actions = document.createElement('div'); actions.className = 'request-actions';
-        const acceptBtn = document.createElement('button'); acceptBtn.className = 'accept-btn'; acceptBtn.innerText = '✅ Принять';
+        const acceptBtn = document.createElement('button'); acceptBtn.className = 'accept-btn'; acceptBtn.innerText = '✅ Принять (+500₽)';
         acceptBtn.onclick = () => acceptRequest(req.id, req.userLogin);
         const rejectBtn = document.createElement('button'); rejectBtn.className = 'reject-btn'; rejectBtn.innerText = '❌ Отклонить';
         rejectBtn.onclick = () => rejectRequest(req.id);
@@ -929,17 +966,9 @@
   async function addJobToCloud(title, company, btnText) { if(currentUser?.role==='admin' && title.trim()) await jobsCollection.add({ title: title.trim(), company: company.trim()||"Не указана", buttonText: btnText.trim()||"Откликнуться", createdAt:Date.now() }); newJobTitle.value=''; newJobCompany.value=''; newJobButtonText.value='Откликнуться'; }
   async function editJob(id, title, company, btnText) { if(currentUser?.role==='admin') await jobsCollection.doc(id).update({ title: title.trim(), company: company.trim()||"Не указана", buttonText: btnText.trim()||"Откликнуться" }); }
   async function deleteJob(id) { if(currentUser?.role==='admin') await jobsCollection.doc(id).delete(); }
-  function renderTasksUI() { /* аналогично предыдущей версии */ tasksContainer.innerHTML = tasks.map(task => `<div class="task-item"><div class="task-check ${task.completed ? 'completed' : ''}" onclick="window.toggleTaskComplete('${task.id}', ${task.completed})">${task.completed ? '<i class="fas fa-check"></i>' : ''}</div><div class="task-text ${task.completed ? 'done' : ''}">${escapeHtml(task.text)}</div>${currentUser?.role==='admin' ? `<button class="edit-task" onclick="window.editTaskText('${task.id}', prompt('Редактировать:', '${task.text.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="window.deleteTaskFromCloud('${task.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}</div>`).join(''); }
+  function renderTasksUI() { /* аналогично предыдущей версии */ tasksContainer.innerHTML = tasks.map(task => `<div class="task-item"><div class="task-check ${task.completed ? 'completed' : ''}" onclick="window.toggleTaskComplete('${task.id}', ${task.completed})">${task.completed ? '<i class=\"fas fa-check\"></i>' : ''}</div><div class="task-text ${task.completed ? 'done' : ''}">${escapeHtml(task.text)}</div>${currentUser?.role==='admin' ? `<button class="edit-task" onclick="window.editTaskText('${task.id}', prompt('Редактировать:', '${task.text.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="window.deleteTaskFromCloud('${task.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}</div>`).join(''); }
   function renderJobsUI() { jobsContainer.innerHTML = jobs.map(job => `<div class="job-card"><div class="job-header"><div class="job-title">${escapeHtml(job.title)}</div>${currentUser?.role==='admin' ? `<div class="job-actions"><button class="edit-job" onclick="window.editJob('${job.id}', prompt('Название:', '${job.title.replace(/'/g, "\\'")}'), prompt('Компания:', '${job.company.replace(/'/g, "\\'")}'), prompt('Текст кнопки:', '${job.buttonText.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="window.deleteJob('${job.id}')"><i class="fas fa-trash-alt"></i></button></div>` : ''}</div><div class="job-company">${escapeHtml(job.company)}</div><button class="job-btn" onclick="showRequestModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')">${escapeHtml(job.buttonText)}</button></div>`).join(''); }
-  function updateStatistics() { 
-    const total=tasks.length, completed=tasks.filter(t=>t.completed).length; 
-    // Убираем обновление общего количества задач
-    completedTasksStat.innerText=completed; 
-    // Изменяем логику прогресса - теперь он зависит от баланса
-    const maxPossibleBalance = 500; // максимальный возможный баланс для отображения прогресса
-    const progressPercentage = maxPossibleBalance > 0 ? Math.min(100, (currentBalance / maxPossibleBalance) * 100) : 0;
-    progressFill.style.width = progressPercentage + '%'; 
-  }
+  function updateStatistics() { const total=tasks.length, completed=tasks.filter(t=>t.completed).length; totalTasksStat.innerText=total; completedTasksStat.innerText=completed; progressFill.style.width = total===0?0:(completed/total)*100+'%'; }
   
   function showRequestModal(jobId, jobTitle) { if(!currentUser) return; const comment = prompt(`Отклик на вакансию: ${jobTitle}\n\nВаше имя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nВведите комментарий (минимум 5 слов):`); if(comment && comment.trim().split(/\s+/).length>=5) { requestsCollection.add({ jobId, jobTitle, userName: currentUser.name, userLogin: currentUser.username, comment: comment.trim(), timestamp: Date.now(), isRead: false }); alert("Отклик отправлен!"); } else if(comment) alert("Минимум 5 слов!"); }
   function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
