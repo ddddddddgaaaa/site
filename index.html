@@ -6,19 +6,12 @@
   <meta name="theme-color" content="#ffffff" id="themeColorMeta">
   <title>Мобильный сервис | Облачная синхронизация</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
       --bg-body: #e5e9f0;
@@ -27,7 +20,6 @@
       --text-secondary: #475569;
       --border-light: #edf2f7;
       --card-bg: #ffffff;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
       --nav-bg: #ffffff;
       --nav-active-bg: #eff6ff;
       --nav-active-color: #3b82f6;
@@ -40,6 +32,9 @@
       --placeholder-color: #94a3b8;
       --modal-overlay: rgba(0,0,0,0.5);
       --badge-bg: #ef4444;
+      --msg-text: #0f172a;
+      --msg-bg: #f8fafc;
+      --msg-border: #e2e8f0;
     }
 
     body.dark {
@@ -49,7 +44,6 @@
       --text-secondary: #cbd5e1;
       --border-light: #334155;
       --card-bg: #334155;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       --nav-bg: #0f172a;
       --nav-active-bg: #1e293b;
       --nav-active-color: #60a5fa;
@@ -62,273 +56,120 @@
       --placeholder-color: #94a3b8;
       --modal-overlay: rgba(0,0,0,0.7);
       --badge-bg: #ef4444;
+      --msg-text: #ffffff;
+      --msg-bg: #263348;
+      --msg-border: #475569;
     }
 
-    body {
-      background: var(--bg-body);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
-      padding: 12px;
-      transition: background 0.2s, color 0.2s;
-    }
+    body { background: var(--bg-body); display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif; padding: 12px; transition: background 0.2s, color 0.2s; }
 
-    .mobile-app {
-      max-width: 450px;
-      width: 100%;
-      height: 700px;
-      background: var(--app-bg);
-      border-radius: 36px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
-    }
+    .mobile-app { max-width: 450px; width: 100%; height: 700px; background: var(--app-bg); border-radius: 36px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    @media (max-height: 720px) { .mobile-app { height: 95vh; border-radius: 28px; } }
 
-    @media (max-height: 720px) {
-      .mobile-app {
-        height: 95vh;
-        border-radius: 28px;
-      }
-    }
-
-    .auth-overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: var(--app-bg);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 32px 24px;
-      border-radius: 36px;
-      transition: 0.2s;
-    }
+    .auth-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--app-bg); z-index: 100; display: flex; flex-direction: column; justify-content: center; padding: 32px 24px; border-radius: 36px; transition: 0.2s; }
     .auth-overlay.hidden { display: none; }
-    .auth-tab {
-      display: flex; gap: 16px; margin-bottom: 28px;
-      border-bottom: 2px solid var(--border-light);
-    }
-    .auth-tab button {
-      background: none; border: none; font-size: 18px; font-weight: 600;
-      padding: 10px 0; color: var(--text-secondary); cursor: pointer; flex: 1;
-    }
-    .auth-tab button.active {
-      color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px;
-    }
+    .auth-tab { display: flex; gap: 16px; margin-bottom: 28px; border-bottom: 2px solid var(--border-light); }
+    .auth-tab button { background: none; border: none; font-size: 18px; font-weight: 600; padding: 10px 0; color: var(--text-secondary); cursor: pointer; flex: 1; }
+    .auth-tab button.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
     .auth-form { display: flex; flex-direction: column; gap: 20px; }
-    .auth-form input {
-      background: var(--input-bg); border: 1px solid var(--input-border);
-      padding: 14px 16px; border-radius: 28px; font-size: 16px;
-      color: var(--text-primary); outline: none;
-    }
+    .auth-form input { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 28px; font-size: 16px; color: var(--text-primary); outline: none; }
     .auth-form input::placeholder { color: var(--placeholder-color); }
-    .auth-form button {
-      background: var(--accent); border: none; padding: 14px; border-radius: 40px;
-      font-weight: 700; font-size: 16px; color: white; cursor: pointer;
-    }
+    .auth-form button { background: var(--accent); border: none; padding: 14px; border-radius: 40px; font-weight: 700; font-size: 16px; color: white; cursor: pointer; }
     .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
     .auth-switch span { color: var(--accent); cursor: pointer; font-weight: 500; }
     .error-msg { color: var(--error-color); font-size: 13px; text-align: center; }
 
-    .app-header {
-      background: var(--app-bg); padding: 16px 20px 12px 20px;
-      border-bottom: 1px solid var(--border-light);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .app-header h1 {
-      font-size: 24px; font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), #8b5cf6);
-      background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0;
-    }
-    .bell-icon {
-      position: relative; cursor: pointer; font-size: 24px;
-      color: var(--text-secondary); background: transparent; border: none; padding: 8px;
-    }
-    .bell-badge {
-      position: absolute; top: 0; right: 0; background: var(--badge-bg); color: white;
-      font-size: 10px; font-weight: bold; min-width: 16px; height: 16px;
-      border-radius: 20px; display: flex; align-items: center; justify-content: center;
-      padding: 0 4px; transform: translate(30%, -30%);
-    }
+    .app-header { background: var(--app-bg); padding: 16px 20px 12px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .app-header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; }
+
+    /* КОЛОКОЛЬЧИК + ОБЛАЧКО */
+    .bell-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .bell-icon { position: relative; cursor: pointer; font-size: 24px; color: var(--text-secondary); background: transparent; border: none; padding: 8px; }
+    .bell-badge { position: absolute; top: 0; right: 0; background: var(--badge-bg); color: white; font-size: 10px; font-weight: bold; min-width: 16px; height: 16px; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; transform: translate(30%, -30%); }
+    .bell-bubble { position: absolute; bottom: calc(100% + 10px); right: -4px; background: var(--accent); color: white; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 20px; white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(8px) scale(0.88); transition: opacity 0.25s ease, transform 0.25s ease; box-shadow: 0 4px 16px rgba(59,130,246,0.45); z-index: 99; }
+    .bell-bubble::after { content: ''; position: absolute; top: 100%; right: 18px; border: 6px solid transparent; border-top-color: var(--accent); }
+    .bell-bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+
     .main-content { flex: 1; overflow-y: auto; padding: 16px 20px 20px 20px; }
     .tab-pane { display: none; animation: fadeIn 0.25s ease-out; }
     .tab-pane.active-pane { display: block; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .greeting-card, .greeting-card p, .greeting-card strong,
-    .stat-block, .stat-block span, .stat-block strong,
-    .menu-card h4, .menu-card p, .task-text, .job-title, .help-title,
-    .nav-item span, .small-text, .add-task-form input, .job-btn,
-    .request-card, .request-card p { color: var(--text-primary); }
-    .greeting-card p strong, .stat-block strong { color: var(--text-primary); }
-    .task-text.done { color: var(--text-secondary); }
-
-    .greeting-card {
-      background: var(--card-bg); border-radius: 28px; padding: 20px;
-      margin-bottom: 24px; border: 1px solid var(--border-light);
-    }
-    .menu-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px;
-    }
-    .menu-card {
-      background: var(--card-bg); border-radius: 24px; padding: 18px 12px;
-      text-align: center; border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s;
-    }
+    .greeting-card { background: var(--card-bg); border-radius: 28px; padding: 20px; margin-bottom: 24px; border: 1px solid var(--border-light); }
+    .greeting-card p, .greeting-card strong { color: var(--text-primary); }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px; }
+    .menu-card { background: var(--card-bg); border-radius: 24px; padding: 18px 12px; text-align: center; border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s; }
     .menu-card:active { transform: scale(0.97); }
     .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
+    .menu-card h4, .menu-card p { color: var(--text-primary); }
 
-    /* === STAT BLOCK: линия по балансу === */
-    .stat-block {
-      background: var(--card-bg); border-radius: 24px; padding: 16px;
-      margin-top: 16px; border: 1px solid var(--border-light); cursor: pointer;
-    }
-    .stat-bar {
-      background: var(--input-bg); border-radius: 30px; height: 8px; margin: 12px 0;
-    }
-    .stat-fill {
-      background: var(--accent); width: 0%; height: 100%;
-      border-radius: 30px; transition: width 0.4s ease;
-    }
+    /* СТАТ БЛОК — только баланс, без "Выполнено" */
+    .stat-block { background: var(--card-bg); border-radius: 24px; padding: 16px; margin-top: 16px; border: 1px solid var(--border-light); cursor: pointer; }
+    .stat-bar { background: var(--input-bg); border-radius: 30px; height: 8px; margin: 12px 0; }
+    .stat-fill { background: var(--accent); width: 0%; height: 100%; border-radius: 30px; transition: width 0.5s ease; }
 
-    .task-list { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
-    .task-item {
-      background: var(--task-bg); border-radius: 20px; padding: 14px 16px;
-      display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-light);
-    }
-    .task-check {
-      width: 26px; height: 26px; border-radius: 30px; border: 2px solid var(--text-secondary);
-      display: inline-flex; align-items: center; justify-content: center;
-      cursor: pointer; flex-shrink: 0; background: transparent;
-    }
+    /* СООБЩЕНИЯ — белый текст в тёмной теме */
+    .msg-item { background: var(--msg-bg); border: 1px solid var(--msg-border); border-radius: 20px; padding: 14px 16px; margin-bottom: 12px; }
+    .msg-item.unread { border-left: 3px solid var(--accent); }
+    .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .msg-badge { font-size: 13px; font-weight: 700; background: var(--success-color); color: #fff; padding: 2px 10px; border-radius: 20px; display: inline-block; }
+    .msg-date { font-size: 11px; color: var(--text-secondary); }
+    .msg-body { font-size: 14px; color: var(--msg-text); line-height: 1.55; }
+    .msg-delete { display: block; margin-top: 10px; background: transparent; border: none; font-size: 13px; color: #ef4444; cursor: pointer; padding: 0; }
+
+    .task-item { background: var(--task-bg); border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-light); margin-bottom: 12px; }
+    .task-check { width: 26px; height: 26px; border-radius: 30px; border: 2px solid var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; background: transparent; }
     .task-check.completed { background: var(--accent); border-color: var(--accent); color: white; }
-    .task-text { flex: 1; font-size: 15px; font-weight: 500; word-break: break-word; }
-    .delete-task, .edit-task, .delete-job, .edit-job, .delete-request {
-      background: transparent; border: none; font-size: 18px; cursor: pointer;
-      padding: 6px; color: var(--text-secondary);
-    }
-    .delete-task, .delete-job, .delete-request { color: #ef4444; }
+    .task-text { flex: 1; font-size: 15px; font-weight: 500; word-break: break-word; color: var(--text-primary); }
+    .task-text.done { color: var(--text-secondary); }
+    .delete-task, .edit-task, .delete-job, .edit-job { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 6px; }
+    .delete-task, .delete-job { color: #ef4444; }
     .edit-task, .edit-job { color: var(--accent); }
-    .add-task-form, .add-job-form {
-      display: flex; gap: 10px; background: var(--input-bg); padding: 12px;
-      border-radius: 60px; border: 1px solid var(--border-light); margin-bottom: 20px; flex-wrap: wrap;
-    }
-    .add-task-form input, .add-job-form input {
-      flex: 1; background: transparent; border: none; padding: 10px 12px; font-size: 15px; outline: none;
-    }
-    .add-task-form button, .add-job-form button {
-      background: var(--accent); border: none; color: white; padding: 8px 20px;
-      border-radius: 40px; font-weight: 600; cursor: pointer;
-    }
+    .add-task-form, .add-job-form { display: flex; gap: 10px; background: var(--input-bg); padding: 12px; border-radius: 60px; border: 1px solid var(--border-light); margin-bottom: 20px; flex-wrap: wrap; }
+    .add-task-form input, .add-job-form input { flex: 1; background: transparent; border: none; padding: 10px 12px; font-size: 15px; outline: none; color: var(--text-primary); }
+    .add-task-form button, .add-job-form button { background: var(--accent); border: none; color: white; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; }
     .sync-buttons { display: flex; gap: 12px; margin: 16px 0; }
-    .sync-btn {
-      background: var(--input-bg); border: 1px solid var(--border-light); padding: 10px 16px;
-      border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--text-primary); flex: 1; text-align: center;
-    }
+    .sync-btn { background: var(--input-bg); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--text-primary); flex: 1; text-align: center; }
     .cloud-save-btn { background: var(--accent); color: white; border: none; }
-    .job-card {
-      background: var(--card-bg); border-radius: 24px; padding: 18px; margin-bottom: 16px;
-      border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px;
-    }
+    .job-card { background: var(--card-bg); border-radius: 24px; padding: 18px; margin-bottom: 16px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
     .job-header { display: flex; justify-content: space-between; align-items: center; }
-    .job-title { font-size: 18px; font-weight: 700; }
-    .job-company { font-size: 14px; color: var(--accent); margin: 4px 0; }
-    .job-btn {
-      background: var(--input-bg); border: none; padding: 8px 18px; border-radius: 40px;
-      font-weight: 500; margin-top: 8px; cursor: pointer; align-self: flex-start;
-    }
+    .job-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .job-company { font-size: 14px; color: var(--accent); }
+    .job-btn { background: var(--input-bg); border: none; padding: 8px 18px; border-radius: 40px; font-weight: 500; margin-top: 8px; cursor: pointer; align-self: flex-start; color: var(--text-primary); }
     .job-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .request-card {
-      background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 14px;
-      border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px;
-    }
-    .request-header {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
-    }
-    .request-title {
-      font-size: 14px; background: var(--accent); display: inline-block;
-      padding: 2px 10px; border-radius: 20px; color: white;
-    }
+    .request-card { background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
+    .request-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .request-title { font-size: 14px; background: var(--accent); display: inline-block; padding: 2px 10px; border-radius: 20px; color: white; }
     .request-meta { font-size: 12px; color: var(--text-secondary); }
-    .request-user { font-weight: 600; font-size: 14px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .request-comment {
-      margin-top: 6px; font-size: 14px; background: var(--input-bg); padding: 10px; border-radius: 16px;
-    }
+    .request-user { font-weight: 600; font-size: 14px; display: flex; gap: 12px; flex-wrap: wrap; color: var(--text-primary); }
+    .request-comment { margin-top: 6px; font-size: 14px; background: var(--msg-bg); padding: 10px; border-radius: 16px; color: var(--msg-text); }
     .request-actions { display: flex; gap: 12px; margin-top: 8px; }
-    .accept-btn, .reject-btn {
-      padding: 8px 16px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer;
-    }
+    .accept-btn, .reject-btn { padding: 8px 16px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
     .accept-btn { background: var(--success-color); color: white; }
     .reject-btn { background: var(--error-color); color: white; }
-    .help-card {
-      background: var(--card-bg); border-radius: 20px; padding: 18px;
-      margin-bottom: 14px; border: 1px solid var(--border-light);
-    }
-    .help-question {
-      font-weight: 700; font-size: 16px; margin-bottom: 6px; cursor: pointer;
-      display: flex; justify-content: space-between;
-    }
-    .help-answer {
-      font-size: 14px; color: var(--text-secondary); margin-top: 6px;
-      padding-left: 12px; border-left: 2px solid var(--accent); display: none;
-    }
+    .help-card { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 14px; border: 1px solid var(--border-light); }
+    .help-question { font-weight: 700; font-size: 16px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; color: var(--text-primary); }
+    .help-answer { font-size: 14px; color: var(--text-secondary); margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--accent); display: none; }
     .help-answer.show { display: block; }
-    .bottom-nav {
-      background: var(--nav-bg); display: flex; align-items: center; justify-content: space-around;
-      padding: 8px 12px 12px; border-top: 1px solid var(--border-light);
-    }
-    .nav-item {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-      background: transparent; border: none; font-size: 12px; font-weight: 500;
-      color: var(--text-secondary); cursor: pointer; padding: 8px 0 4px; border-radius: 30px;
-    }
+    .bottom-nav { background: var(--nav-bg); display: flex; align-items: center; justify-content: space-around; padding: 8px 12px 12px; border-top: 1px solid var(--border-light); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: none; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; padding: 8px 0 4px; border-radius: 30px; }
     .nav-item i { font-size: 24px; }
     .nav-item.active { color: var(--nav-active-color); background: var(--nav-active-bg); transform: translateY(-2px); }
-    .small-text { font-size: 13px; margin-top: 5px; }
-    .jobs-container, .requests-container { margin-top: 12px; }
+    .small-text { font-size: 13px; margin-top: 5px; color: var(--text-secondary); }
 
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--modal-overlay); backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200; visibility: hidden; opacity: 0; transition: 0.2s;
-    }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; visibility: hidden; opacity: 0; transition: 0.2s; }
     .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal-container {
-      background: var(--app-bg); border-radius: 32px; width: calc(100% - 48px);
-      max-width: 360px; padding: 24px; box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-      transform: scale(0.95); transition: transform 0.2s;
-    }
+    .modal-container { background: var(--app-bg); border-radius: 32px; width: calc(100% - 48px); max-width: 360px; padding: 24px; box-shadow: 0 25px 40px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.2s; }
     .modal-overlay.active .modal-container { transform: scale(1); }
     .modal-container h3 { font-size: 20px; margin-bottom: 16px; color: var(--text-primary); }
-    .balance-value {
-      font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent);
-    }
-    .modal-container button {
-      width: 100%; padding: 12px; border-radius: 40px; border: none;
-      font-weight: 600; cursor: pointer; background: var(--accent); color: white;
-    }
-    .notify-item {
-      padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer;
-    }
+    .balance-value { font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent); }
+    .modal-close-btn { width: 100%; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: var(--accent); color: white; }
+    .notify-item { padding: 12px; border-bottom: 1px solid var(--border-light); cursor: pointer; color: var(--msg-text); }
     .notify-item:last-child { border-bottom: none; }
-
-    /* Модалка подтверждения суммы */
-    #amountModal .modal-container input {
-      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
-      padding: 12px 16px; border-radius: 28px; font-size: 18px; font-weight: 600;
-      color: var(--text-primary); outline: none; text-align: center; margin-bottom: 16px;
-    }
-    #amountModal .modal-btns { display: flex; gap: 10px; }
-    #amountModal .modal-btns button { flex: 1; }
-    #amountModal .cancel-btn { background: var(--input-bg); color: var(--text-primary); border: 1px solid var(--input-border); }
+    #amountModal .modal-container input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); padding: 12px 16px; border-radius: 28px; font-size: 18px; font-weight: 600; color: var(--text-primary); outline: none; text-align: center; margin-bottom: 16px; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: var(--accent); color: white; }
+    .cancel-btn { background: var(--input-bg) !important; color: var(--text-primary) !important; border: 1px solid var(--input-border) !important; }
   </style>
 </head>
 <body>
@@ -345,7 +186,7 @@
       <div id="loginError" class="error-msg"></div>
       <div class="auth-switch">Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span></div>
     </div>
-    <div id="registerForm" class="auth-form" style="display: none;">
+    <div id="registerForm" class="auth-form" style="display:none;">
       <input type="text" id="regName" placeholder="Ваше имя" autocomplete="off">
       <input type="password" id="regPassword" placeholder="Пароль">
       <button id="doRegisterBtn">Зарегистрироваться</button>
@@ -354,12 +195,20 @@
     </div>
   </div>
 
-  <div id="mainApp" style="display: flex; flex-direction: column; height: 100%;">
+  <div id="mainApp" style="display:flex;flex-direction:column;height:100%;">
     <div class="app-header">
       <h1 id="dynamicTitle">МЕНЮ</h1>
-      <button id="bellButton" class="bell-icon"><i class="fas fa-bell"></i><span id="bellBadge" class="bell-badge" style="display: none;">0</span></button>
+      <div class="bell-wrap">
+        <div class="bell-bubble" id="bellBubble">Новое сообщение!</div>
+        <button id="bellButton" class="bell-icon">
+          <i class="fas fa-bell"></i>
+          <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
+        </button>
+      </div>
     </div>
-    <div class="main-content" id="mainContent">
+
+    <div class="main-content">
+      <!-- МЕНЮ -->
       <div class="tab-pane active-pane" id="tab-menu">
         <div class="greeting-card">
           <p><i class="fas fa-user-astronaut"></i> Привет, <strong id="displayName"></strong></p>
@@ -367,29 +216,26 @@
         </div>
         <div class="menu-grid">
           <div class="menu-card" id="profileCard"><i class="fas fa-id-card"></i><h4>Мой профиль</h4><p>Информация</p></div>
-          <div class="menu-card" id="statsCard"><i class="fas fa-chart-simple"></i><h4>Статистика</h4><p>Прогресс заданий</p></div>
+          <div class="menu-card" id="statsCard"><i class="fas fa-chart-simple"></i><h4>Статистика</h4><p>Прогресс</p></div>
           <div class="menu-card" id="themeCard"><i class="fas fa-palette"></i><h4>Тема</h4><p>Светлая / Тёмная</p></div>
           <div class="menu-card" id="logoutCard"><i class="fas fa-sign-out-alt"></i><h4>Выйти</h4><p>Завершить сеанс</p></div>
         </div>
-        <!-- ИЗМЕНЕНО: убрали "Всего задач", линия теперь по балансу -->
+        <!-- Прогресс по балансу — БЕЗ "Выполнено" -->
         <div class="stat-block" id="statBlockClick">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span><i class="fas fa-check-circle"></i> <strong>Выполнено:</strong> <span id="completedTasksStat">0</span></span>
-            <span style="font-size:13px; color: var(--text-secondary);">Баланс до выплаты</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:14px;font-weight:600;color:var(--text-secondary);">💰 Прогресс до выплаты</span>
+            <span style="font-size:13px;color:var(--text-secondary);"><span id="userBalanceSpan">0</span> / <span id="maxBalance">500</span> ₽</span>
           </div>
-          <!-- Линия прогресса заполняется по балансу / maxBalance -->
           <div class="stat-bar"><div class="stat-fill" id="progressFill"></div></div>
-          <div style="margin-top: 12px; text-align: center;">
-            <i class="fas fa-ruble-sign"></i> <strong>Баланс:</strong>
-            <span id="userBalanceSpan">0</span> / <span id="maxBalance">500</span> ₽
-          </div>
+          <div style="margin-top:8px;text-align:center;font-size:12px;color:var(--text-secondary);">Нажмите для подробностей</div>
         </div>
       </div>
 
+      <!-- ЗАДАНИЯ -->
       <div class="tab-pane" id="tab-tasks">
-        <h3 style="font-size:20px; color:var(--text-primary);">📋 Общие задания</h3>
+        <h3 style="font-size:20px;color:var(--text-primary);">📋 Общие задания</h3>
         <div id="tasksContainer"></div>
-        <div id="adminTaskPanel" style="display: none;">
+        <div id="adminTaskPanel" style="display:none;">
           <div class="add-task-form">
             <input type="text" id="newTaskInput" placeholder="Новое задание...">
             <button id="addTaskBtn">Добавить</button>
@@ -397,33 +243,41 @@
           <div class="sync-buttons">
             <button id="forceSaveCloudBtn" class="sync-btn cloud-save-btn"><i class="fas fa-save"></i> Сохранить в облако</button>
           </div>
-          <div class="small-text" style="text-align:center;">✓ Управление заданиями — изменения сразу в облаке</div>
         </div>
-        <div class="small-text" style="margin-top:12px; text-align:center;">✓ Отмечайте выполненные задания — изменения сохраняются на всех устройствах</div>
+        <div class="small-text" style="margin-top:12px;text-align:center;">✓ Отмечайте выполненные задания</div>
       </div>
 
+      <!-- РАБОТА -->
       <div class="tab-pane" id="tab-work">
-        <h3 style="font-size:20px; color:var(--text-primary); margin-bottom:12px;">💼 Работа и проекты</h3>
-        <div id="adminJobsPanel" style="display: none; margin-bottom: 20px;">
+        <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">💼 Работа и проекты</h3>
+        <div id="adminJobsPanel" style="display:none;margin-bottom:20px;">
           <div class="add-job-form">
-            <input type="text" id="newJobTitle" placeholder="Название вакансии" style="min-width: 120px;">
+            <input type="text" id="newJobTitle" placeholder="Название вакансии" style="min-width:120px;">
             <input type="text" id="newJobCompany" placeholder="Компания">
             <input type="text" id="newJobButtonText" placeholder="Текст кнопки" value="Откликнуться">
             <button id="addJobBtn">Добавить</button>
           </div>
-          <div class="small-text" style="text-align:center;">➕ Добавьте новую вакансию — она появится у всех пользователей</div>
         </div>
-        <div id="jobsContainer" class="jobs-container"></div>
+        <div id="jobsContainer"></div>
       </div>
 
+      <!-- ЗАПРОСЫ (только для админа) -->
       <div class="tab-pane" id="tab-requests">
-        <h3 style="font-size:20px; color:var(--text-primary); margin-bottom:12px;">📬 Запросы от пользователей</h3>
-        <div id="requestsContainer" class="requests-container"></div>
-        <div class="small-text" style="text-align:center; margin-top:12px;">Здесь отображаются все отклики на вакансии</div>
+        <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">📬 Запросы от пользователей</h3>
+        <div id="requestsContainer"></div>
+        <div class="small-text" style="text-align:center;margin-top:12px;">Здесь отображаются все отклики на вакансии</div>
       </div>
 
+      <!-- СООБЩЕНИЯ (только для пользователей) -->
+      <div class="tab-pane" id="tab-messages">
+        <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">📩 Мои сообщения</h3>
+        <div id="messagesContainer"></div>
+        <div class="small-text" style="text-align:center;margin-top:12px;">Уведомления от администратора</div>
+      </div>
+
+      <!-- ПОМОЩЬ -->
       <div class="tab-pane" id="tab-help">
-        <h3 style="font-size:20px; color:var(--text-primary); margin-bottom:12px;">🛟 Частые вопросы</h3>
+        <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">🛟 Частые вопросы</h3>
         <div class="help-card" id="faq1">
           <div class="help-question">❓ Со скольки рублей выплаты? <i class="fas fa-chevron-down"></i></div>
           <div class="help-answer">✅ с 500 рублей.</div>
@@ -432,12 +286,13 @@
           <div class="help-question">❓ Как искать людей? <i class="fas fa-chevron-down"></i></div>
           <div class="help-answer">📢 Можете делать видео про бота или канал, главное это знать что они ваши рефералы.</div>
         </div>
-        <div class="help-card" id="telegramBtn">
+        <div class="help-card" id="telegramCard">
           <div class="help-question">📱 Написать разработчику <i class="fab fa-telegram-plane"></i></div>
           <div class="help-answer">Telegram: @vadymtm90</div>
         </div>
       </div>
     </div>
+
     <div class="bottom-nav" id="bottomNav">
       <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
       <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
@@ -452,24 +307,24 @@
   <div class="modal-container">
     <h3>💰 Мой баланс</h3>
     <div class="balance-value"><span id="modalBalance">0</span> / 500 ₽</div>
-    <button id="closeBalanceModal">Закрыть</button>
+    <button class="modal-close-btn" id="closeBalanceModal">Закрыть</button>
   </div>
 </div>
 
-<!-- Модалка уведомлений -->
+<!-- Модалка уведомлений (для админа) -->
 <div id="notifyModal" class="modal-overlay">
   <div class="modal-container">
     <h3>🔔 Новые запросы</h3>
     <div id="notifyList"></div>
-    <button id="closeNotifyModal">Закрыть</button>
+    <button class="modal-close-btn" id="closeNotifyModal" style="margin-top:16px;">Закрыть</button>
   </div>
 </div>
 
-<!-- НОВАЯ модалка: ввод суммы при одобрении -->
+<!-- Модалка суммы при одобрении -->
 <div id="amountModal" class="modal-overlay">
   <div class="modal-container">
     <h3>💸 Сумма зачисления</h3>
-    <p style="font-size:14px; color:var(--text-secondary); margin-bottom:16px;" id="amountModalDesc">Введите сумму для зачисления пользователю:</p>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;white-space:pre-line;" id="amountModalDesc">Введите сумму:</p>
     <input type="number" id="amountInput" min="1" placeholder="500" value="500">
     <div class="modal-btns">
       <button class="cancel-btn" id="cancelAmountBtn">Отмена</button>
@@ -479,7 +334,6 @@
 </div>
 
 <script>
-  // ---------------------------- FIREBASE ----------------------------
   const firebaseConfig = {
     apiKey: "AIzaSyDZYBxqh05e9HrEQXlaVYglP2RbPFdcivA",
     authDomain: "bot-podkrutka.firebaseapp.com",
@@ -489,440 +343,329 @@
     appId: "1:208233505545:web:f712433efb625fc8b2e9d8",
     measurementId: "G-9Z3T5CQZMB"
   };
-  
-  const firebaseApp = firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  const analytics = firebase.analytics();
-  
-  const tasksCollection = db.collection('global_tasks');
-  const jobsCollection = db.collection('work_jobs');
-  const requestsCollection = db.collection('job_requests');
-  const balancesCollection = db.collection('user_balances');
-  
-  let tasks = [], jobs = [], requests = [];
-  let currentUser = null;
-  let currentTheme = "light";
-  let unsubscribeTasks = null, unsubscribeJobs = null, unsubscribeRequests = null;
-  let currentBalance = 0;
+  try { firebase.analytics(); } catch(e){}
 
-  // Для модалки суммы
-  let pendingAcceptReqId = null;
-  let pendingAcceptUserId = null;
+  const tasksCol    = db.collection('global_tasks');
+  const jobsCol     = db.collection('work_jobs');
+  const reqsCol     = db.collection('job_requests');
+  const balancesCol = db.collection('user_balances');
+  const msgsCol     = db.collection('user_messages');
 
-  const MAX_BALANCE = 500;
-  
-  // DOM
-  const authOverlay = document.getElementById('authOverlay');
-  const mainApp = document.getElementById('mainApp');
-  const loginFormDiv = document.getElementById('loginForm');
-  const registerFormDiv = document.getElementById('registerForm');
-  const loginTab = document.getElementById('loginTabBtn');
-  const registerTab = document.getElementById('registerTabBtn');
-  const doLoginBtn = document.getElementById('doLoginBtn');
-  const doRegisterBtn = document.getElementById('doRegisterBtn');
-  const loginUsername = document.getElementById('loginUsername');
-  const loginPassword = document.getElementById('loginPassword');
-  const regName = document.getElementById('regName');
-  const regPassword = document.getElementById('regPassword');
-  const loginError = document.getElementById('loginError');
-  const regError = document.getElementById('regError');
-  const switchToLogin = document.getElementById('switchToLogin');
-  const switchToRegister = document.getElementById('switchToRegister');
-  const displayNameSpan = document.getElementById('displayName');
-  const userRoleSpan = document.getElementById('userRoleSpan');
-  const tasksContainer = document.getElementById('tasksContainer');
-  const completedTasksStat = document.getElementById('completedTasksStat');
-  const progressFill = document.getElementById('progressFill');
-  const adminPanel = document.getElementById('adminTaskPanel');
-  const adminJobsPanel = document.getElementById('adminJobsPanel');
-  const newTaskInput = document.getElementById('newTaskInput');
-  const addTaskBtn = document.getElementById('addTaskBtn');
-  const logoutCard = document.getElementById('logoutCard');
-  const forceSaveCloudBtn = document.getElementById('forceSaveCloudBtn');
-  const jobsContainer = document.getElementById('jobsContainer');
-  const addJobBtn = document.getElementById('addJobBtn');
-  const newJobTitle = document.getElementById('newJobTitle');
-  const newJobCompany = document.getElementById('newJobCompany');
-  const newJobButtonText = document.getElementById('newJobButtonText');
-  const requestsContainer = document.getElementById('requestsContainer');
-  const bottomNav = document.getElementById('bottomNav');
-  const userBalanceSpan = document.getElementById('userBalanceSpan');
-  const statBlockClick = document.getElementById('statBlockClick');
-  const bellButton = document.getElementById('bellButton');
-  const bellBadge = document.getElementById('bellBadge');
-  const balanceModal = document.getElementById('balanceModal');
-  const modalBalance = document.getElementById('modalBalance');
-  const closeBalanceModal = document.getElementById('closeBalanceModal');
-  const notifyModal = document.getElementById('notifyModal');
-  const notifyList = document.getElementById('notifyList');
-  const closeNotifyModal = document.getElementById('closeNotifyModal');
-  const amountModal = document.getElementById('amountModal');
-  const amountInput = document.getElementById('amountInput');
-  const amountModalDesc = document.getElementById('amountModalDesc');
-  const confirmAmountBtn = document.getElementById('confirmAmountBtn');
-  const cancelAmountBtn = document.getElementById('cancelAmountBtn');
+  let tasks=[], jobs=[], requests=[], userMsgs=[];
+  let currentUser=null, currentTheme='light', currentBalance=0;
+  let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null;
+  let pendingReqId=null, pendingUserId=null;
+  const MAX_BAL=500;
 
-  // ---------------------------- БАЛАНС ----------------------------
-  async function initUserBalance(userId) {
-    const doc = await balancesCollection.doc(userId).get();
-    if (!doc.exists) { await balancesCollection.doc(userId).set({ balance: 0 }); return 0; }
-    return doc.data().balance;
+  const $ = id => document.getElementById(id);
+
+  // ═══════════════ БАЛАНС ═══════════════
+  async function initBalance(uid) {
+    const d = await balancesCol.doc(uid).get();
+    if(!d.exists) { await balancesCol.doc(uid).set({balance:0}); return 0; }
+    return d.data().balance;
   }
-
-  // ИЗМЕНЕНО: линия прогресса = баланс / MAX_BALANCE
   async function updateBalanceUI() {
-    if (!currentUser) return;
-    const doc = await balancesCollection.doc(currentUser.username).get();
-    const balance = doc.exists ? doc.data().balance : 0;
-    currentBalance = balance;
-    if (userBalanceSpan) userBalanceSpan.innerText = balance;
-    // Линия заполняется по балансу
-    const pct = Math.min(100, (balance / MAX_BALANCE) * 100);
-    if (progressFill) progressFill.style.width = pct + '%';
+    if(!currentUser) return;
+    const d = await balancesCol.doc(currentUser.username).get();
+    const bal = d.exists ? d.data().balance : 0;
+    currentBalance = bal;
+    $('userBalanceSpan').innerText = bal;
+    $('progressFill').style.width = Math.min(100,(bal/MAX_BAL)*100)+'%';
   }
-
-  async function addBalance(userId, amount) {
-    const userRef = balancesCollection.doc(userId);
-    await db.runTransaction(async (transaction) => {
-      const doc = await transaction.get(userRef);
-      const newBalance = (doc.exists ? doc.data().balance : 0) + amount;
-      transaction.set(userRef, { balance: newBalance });
+  async function addBalance(uid, amt) {
+    const ref = balancesCol.doc(uid);
+    await db.runTransaction(async t => {
+      const d = await t.get(ref);
+      t.set(ref,{balance:(d.exists?d.data().balance:0)+amt});
     });
-    if (currentUser && currentUser.username === userId) await updateBalanceUI();
+    if(currentUser?.username===uid) await updateBalanceUI();
   }
 
-  // ---------------------------- ЗАПРОСЫ ----------------------------
-
-  // ИЗМЕНЕНО: acceptRequest теперь открывает модалку с вводом суммы
-  function showAcceptModal(reqId, userId, userName, jobTitle) {
-    pendingAcceptReqId = reqId;
-    pendingAcceptUserId = userId;
-    amountInput.value = '500';
-    amountModalDesc.innerText = `Пользователь: ${userName}\nВакансия: ${jobTitle}\n\nВведите сумму для зачисления:`;
-    amountModal.classList.add('active');
-  }
-
-  async function doAcceptRequest() {
-    const amount = parseInt(amountInput.value);
-    if (!amount || amount <= 0) { alert('Введите корректную сумму'); return; }
-    amountModal.classList.remove('active');
-    await addBalance(pendingAcceptUserId, amount);
-    await requestsCollection.doc(pendingAcceptReqId).delete();
-    alert(`Запрос принят, пользователю зачислено ${amount} ₽`);
-    pendingAcceptReqId = null;
-    pendingAcceptUserId = null;
-  }
-
-  async function rejectRequest(reqId) {
-    await requestsCollection.doc(reqId).delete();
-    alert("Запрос отклонён");
-  }
-
-  function updateUnreadCount() {
-    if (!currentUser || currentUser.role !== 'admin') return;
-    const unread = requests.filter(r => !r.isRead).length;
-    if (unread > 0) { bellBadge.style.display = 'flex'; bellBadge.innerText = unread > 9 ? '9+' : unread; }
-    else { bellBadge.style.display = 'none'; }
-  }
-
-  async function markAllAsRead() {
-    if (!currentUser || currentUser.role !== 'admin') return;
-    const batch = db.batch();
-    requests.forEach(req => { if (!req.isRead) { const ref = requestsCollection.doc(req.id); batch.update(ref, { isRead: true }); } });
-    await batch.commit();
-  }
-
-  function renderRequestsUI() {
-    if (!requestsContainer) return;
-    if (requests.length === 0) {
-      requestsContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет запросов.</div>';
-      return;
-    }
-    requestsContainer.innerHTML = '';
-    requests.forEach(req => {
-      const card = document.createElement('div'); card.className = 'request-card';
-      const header = document.createElement('div'); header.className = 'request-header';
-      const titleSpan = document.createElement('div'); titleSpan.className = 'request-title'; titleSpan.innerText = req.jobTitle;
-      const dateSpan = document.createElement('div'); dateSpan.className = 'request-meta'; dateSpan.innerText = new Date(req.timestamp).toLocaleString();
-      header.appendChild(titleSpan); header.appendChild(dateSpan);
-      card.appendChild(header);
-      const userDiv = document.createElement('div'); userDiv.className = 'request-user';
-      userDiv.innerHTML = `<i class="fas fa-user-circle"></i> ${escapeHtml(req.userName)} &nbsp;|&nbsp; <i class="fas fa-at"></i> ${escapeHtml(req.userLogin)}`;
-      card.appendChild(userDiv);
-      const commentDiv = document.createElement('div'); commentDiv.className = 'request-comment'; commentDiv.innerText = req.comment;
-      card.appendChild(commentDiv);
-      if (currentUser?.role === 'admin') {
-        const actions = document.createElement('div'); actions.className = 'request-actions';
-        const acceptBtn = document.createElement('button'); acceptBtn.className = 'accept-btn'; acceptBtn.innerText = '✅ Принять';
-        // ИЗМЕНЕНО: открываем модалку ввода суммы
-        acceptBtn.onclick = () => showAcceptModal(req.id, req.userLogin, req.userName, req.jobTitle);
-        const rejectBtn = document.createElement('button'); rejectBtn.className = 'reject-btn'; rejectBtn.innerText = '❌ Отклонить';
-        rejectBtn.onclick = () => rejectRequest(req.id);
-        actions.appendChild(acceptBtn); actions.appendChild(rejectBtn);
-        card.appendChild(actions);
-      }
-      requestsContainer.appendChild(card);
-    });
-    updateUnreadCount();
-  }
-
-  // ---------------------------- ЗАДАЧИ И РАБОТА ----------------------------
-  async function initializeDefaultTasks() {
-    const snapshot = await tasksCollection.limit(1).get();
-    if (snapshot.empty) {
-      const defaultTasks = [
-        { text: "Изучить новый интерфейс", completed: false, createdAt: Date.now() + 1 },
-        { text: "Проверить статистику", completed: false, createdAt: Date.now() + 2 },
-        { text: "Связаться с поддержкой", completed: false, createdAt: Date.now() + 3 }
-      ];
-      for (const task of defaultTasks) await tasksCollection.add(task);
-    }
-  }
-  async function initializeDefaultJobs() {
-    const snapshot = await jobsCollection.limit(1).get();
-    if (snapshot.empty) {
-      const defaultJobs = [
-        { title: "Frontend-разработчик", company: "Удалённо", buttonText: "Откликнуться", createdAt: Date.now() + 1 },
-        { title: "Менеджер проектов", company: "Гибрид", buttonText: "Подробнее", createdAt: Date.now() + 2 },
-        { title: "UX/UI дизайнер", company: "CreativeLab", buttonText: "Портфолио", createdAt: Date.now() + 3 }
-      ];
-      for (const job of defaultJobs) await jobsCollection.add(job);
-    }
-  }
-  function attachFirestoreListener() {
-    if (unsubscribeTasks) unsubscribeTasks();
-    unsubscribeTasks = tasksCollection.orderBy('createdAt', 'asc').onSnapshot(snapshot => {
-      tasks = []; snapshot.forEach(doc => tasks.push({ id: doc.id, ...doc.data() }));
-      renderTasksUI(); updateStatistics();
+  // ═══════════════ СООБЩЕНИЯ ═══════════════
+  async function sendMsg(uid, amount, jobTitle) {
+    await msgsCol.add({
+      toUser: uid,
+      text: `Ваш отклик на вакансию «${jobTitle}» одобрен! Вам зачислено ${amount} ₽.`,
+      amount, jobTitle,
+      timestamp: Date.now(),
+      isRead: false
     });
   }
-  function attachJobsListener() {
-    if (unsubscribeJobs) unsubscribeJobs();
-    unsubscribeJobs = jobsCollection.orderBy('createdAt', 'asc').onSnapshot(snapshot => {
-      jobs = []; snapshot.forEach(doc => jobs.push({ id: doc.id, ...doc.data() }));
-      renderJobsUI();
-    });
-  }
-  function attachRequestsListener() {
-    if (unsubscribeRequests) unsubscribeRequests();
-    if (currentUser && currentUser.role === 'admin') {
-      unsubscribeRequests = requestsCollection.orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-        requests = []; snapshot.forEach(doc => requests.push({ id: doc.id, ...doc.data(), isRead: doc.data().isRead || false }));
-        renderRequestsUI(); updateUnreadCount();
+  function attachMsgsListener() {
+    if(unsubMsgs) unsubMsgs();
+    if(!currentUser||currentUser.role==='admin') return;
+    unsubMsgs = msgsCol.where('toUser','==',currentUser.username)
+      .orderBy('timestamp','desc')
+      .onSnapshot(snap => {
+        userMsgs = [];
+        snap.forEach(d => userMsgs.push({id:d.id,...d.data()}));
+        renderMsgsUI();
+        updateUserBell();
       });
-    }
   }
-
-  async function addTaskToCloud(text) {
-    if (currentUser?.role === 'admin' && text.trim()) await tasksCollection.add({ text: text.trim(), completed: false, createdAt: Date.now() });
-    newTaskInput.value = '';
-  }
-  async function toggleTaskComplete(id, status) { await tasksCollection.doc(id).update({ completed: !status }); }
-  async function editTaskText(id, newText) { if (currentUser?.role === 'admin' && newText && newText.trim()) await tasksCollection.doc(id).update({ text: newText.trim() }); }
-  async function deleteTaskFromCloud(id) { if (currentUser?.role === 'admin') await tasksCollection.doc(id).delete(); }
-  async function addJobToCloud(title, company, btnText) {
-    if (currentUser?.role === 'admin' && title.trim()) await jobsCollection.add({ title: title.trim(), company: company.trim() || "Не указана", buttonText: btnText.trim() || "Откликнуться", createdAt: Date.now() });
-    newJobTitle.value = ''; newJobCompany.value = ''; newJobButtonText.value = 'Откликнуться';
-  }
-  async function editJob(id, title, company, btnText) { if (currentUser?.role === 'admin' && title && title.trim()) await jobsCollection.doc(id).update({ title: title.trim(), company: (company || '').trim() || "Не указана", buttonText: (btnText || '').trim() || "Откликнуться" }); }
-  async function deleteJob(id) { if (currentUser?.role === 'admin') await jobsCollection.doc(id).delete(); }
-
-  function renderTasksUI() {
-    tasksContainer.innerHTML = tasks.map(task =>
-      `<div class="task-item">
-        <div class="task-check ${task.completed ? 'completed' : ''}" onclick="window.toggleTaskComplete('${task.id}', ${task.completed})">${task.completed ? '<i class="fas fa-check"></i>' : ''}</div>
-        <div class="task-text ${task.completed ? 'done' : ''}">${escapeHtml(task.text)}</div>
-        ${currentUser?.role === 'admin' ? `<button class="edit-task" onclick="window.editTaskText('${task.id}', prompt('Редактировать:', '${task.text.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="window.deleteTaskFromCloud('${task.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}
-      </div>`
-    ).join('');
-  }
-
-  function renderJobsUI() {
-    jobsContainer.innerHTML = jobs.map(job =>
-      `<div class="job-card">
-        <div class="job-header">
-          <div class="job-title">${escapeHtml(job.title)}</div>
-          ${currentUser?.role === 'admin' ? `<div class="job-actions"><button class="edit-job" onclick="window.editJob('${job.id}', prompt('Название:', '${job.title.replace(/'/g, "\\'")}'), prompt('Компания:', '${job.company.replace(/'/g, "\\'")}'), prompt('Текст кнопки:', '${job.buttonText.replace(/'/g, "\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="window.deleteJob('${job.id}')"><i class="fas fa-trash-alt"></i></button></div>` : ''}
+  function renderMsgsUI() {
+    const c=$('messagesContainer'); if(!c) return;
+    if(!userMsgs.length){ c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет сообщений.</div>'; return; }
+    c.innerHTML = userMsgs.map(m=>`
+      <div class="msg-item ${m.isRead?'':'unread'}">
+        <div class="msg-header">
+          <span class="msg-badge">+${m.amount} ₽</span>
+          <span class="msg-date">${new Date(m.timestamp).toLocaleString()}</span>
         </div>
-        <div class="job-company">${escapeHtml(job.company)}</div>
-        <button class="job-btn" onclick="showRequestModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')">${escapeHtml(job.buttonText)}</button>
-      </div>`
-    ).join('');
+        <div class="msg-body">✅ ${escHtml(m.text)}</div>
+        <button class="msg-delete" onclick="window._delMsg('${m.id}')"><i class="fas fa-trash-alt"></i> Удалить</button>
+      </div>`).join('');
+  }
+  window._delMsg = async id => { await msgsCol.doc(id).delete(); };
+  async function markMsgsRead() {
+    if(!currentUser||currentUser.role==='admin') return;
+    const b=db.batch();
+    userMsgs.forEach(m=>{ if(!m.isRead) b.update(msgsCol.doc(m.id),{isRead:true}); });
+    await b.commit();
   }
 
-  // ИЗМЕНЕНО: updateStatistics больше не считает "всего задач", не трогает линию (линия = баланс)
-  function updateStatistics() {
-    const completed = tasks.filter(t => t.completed).length;
-    completedTasksStat.innerText = completed;
-    // Линия НЕ обновляется здесь — она обновляется только через updateBalanceUI()
+  // ═══════════════ КОЛОКОЛЬЧИК + ОБЛАЧКО ═══════════════
+  let bubTimer=null;
+  function showBubble(txt) {
+    const el=$('bellBubble');
+    el.innerText=txt; el.classList.add('show');
+    if(bubTimer) clearTimeout(bubTimer);
+    bubTimer = setTimeout(()=>el.classList.remove('show'), 4500);
+  }
+  function updateAdminBell() {
+    if(!currentUser||currentUser.role!=='admin') return;
+    const n=requests.filter(r=>!r.isRead).length;
+    const b=$('bellBadge');
+    if(n>0){ b.style.display='flex'; b.innerText=n>9?'9+':n; showBubble(n+' новых запросов'); }
+    else{ b.style.display='none'; }
+  }
+  function updateUserBell() {
+    if(!currentUser||currentUser.role==='admin') return;
+    const n=userMsgs.filter(m=>!m.isRead).length;
+    const b=$('bellBadge');
+    if(n>0){ b.style.display='flex'; b.innerText=n>9?'9+':n; showBubble(n===1?'Новое сообщение!':n+' новых сообщения'); }
+    else{ b.style.display='none'; }
   }
 
-  function showRequestModal(jobId, jobTitle) {
-    if (!currentUser) return;
-    const comment = prompt(`Отклик на вакансию: ${jobTitle}\n\nВаше имя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nВведите комментарий (минимум 5 слов):`);
-    if (comment && comment.trim().split(/\s+/).length >= 5) {
-      requestsCollection.add({ jobId, jobTitle, userName: currentUser.name, userLogin: currentUser.username, comment: comment.trim(), timestamp: Date.now(), isRead: false });
-      alert("Отклик отправлен!");
-    } else if (comment) alert("Минимум 5 слов!");
+  // ═══════════════ ЗАПРОСЫ ═══════════════
+  function showAcceptModal(reqId, userId, userName, jobTitle) {
+    pendingReqId=reqId; pendingUserId=userId;
+    $('amountInput').value='500';
+    $('amountModalDesc').innerText=`👤 ${userName}\nВакансия: «${jobTitle}»\n\nВведите сумму для зачисления:`;
+    $('amountModal').classList.add('active');
   }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m;
+  async function doAccept() {
+    const amt=parseInt($('amountInput').value);
+    if(!amt||amt<=0){ alert('Введите корректную сумму'); return; }
+    $('amountModal').classList.remove('active');
+    const req=requests.find(r=>r.id===pendingReqId);
+    const jobTitle=req?req.jobTitle:'Вакансия';
+    await addBalance(pendingUserId, amt);
+    await sendMsg(pendingUserId, amt, jobTitle);
+    await reqsCol.doc(pendingReqId).delete();
+    alert(`✅ Принято! Зачислено ${amt} ₽, сообщение отправлено.`);
+    pendingReqId=null; pendingUserId=null;
+  }
+  async function rejectReq(id) {
+    if(!confirm('Отклонить запрос?')) return;
+    await reqsCol.doc(id).delete();
+  }
+  async function markReqsRead() {
+    if(!currentUser||currentUser.role!=='admin') return;
+    const b=db.batch();
+    requests.forEach(r=>{ if(!r.isRead) b.update(reqsCol.doc(r.id),{isRead:true}); });
+    await b.commit();
+  }
+  function renderReqs() {
+    const c=$('requestsContainer'); if(!c) return;
+    if(!requests.length){ c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет запросов.</div>'; return; }
+    c.innerHTML='';
+    requests.forEach(req=>{
+      const el=document.createElement('div'); el.className='request-card';
+      el.innerHTML=`
+        <div class="request-header">
+          <div class="request-title">${escHtml(req.jobTitle)}</div>
+          <div class="request-meta">${new Date(req.timestamp).toLocaleString()}</div>
+        </div>
+        <div class="request-user"><i class="fas fa-user-circle"></i> ${escHtml(req.userName)} &nbsp;|&nbsp; <i class="fas fa-at"></i> ${escHtml(req.userLogin)}</div>
+        <div class="request-comment">${escHtml(req.comment)}</div>
+        ${currentUser?.role==='admin'?`
+        <div class="request-actions">
+          <button class="accept-btn" onclick="window._accept('${req.id}','${req.userLogin}','${(req.userName||'').replace(/'/g,"\\'")}','${(req.jobTitle||'').replace(/'/g,"\\'")}')">✅ Принять</button>
+          <button class="reject-btn" onclick="window._reject('${req.id}')">❌ Отклонить</button>
+        </div>`:''}`;
+      c.appendChild(el);
     });
+    updateAdminBell();
+  }
+  window._accept=(id,uid,name,title)=>showAcceptModal(id,uid,name,title);
+  window._reject=(id)=>rejectReq(id);
+
+  // ═══════════════ ЗАДАЧИ / РАБОТА ═══════════════
+  async function initDefTasks() { const s=await tasksCol.limit(1).get(); if(s.empty) for(const t of [{text:"Изучить новый интерфейс",completed:false,createdAt:Date.now()+1},{text:"Проверить статистику",completed:false,createdAt:Date.now()+2},{text:"Связаться с поддержкой",completed:false,createdAt:Date.now()+3}]) await tasksCol.add(t); }
+  async function initDefJobs() { const s=await jobsCol.limit(1).get(); if(s.empty) for(const j of [{title:"Frontend-разработчик",company:"Удалённо",buttonText:"Откликнуться",createdAt:Date.now()+1},{title:"Менеджер проектов",company:"Гибрид",buttonText:"Подробнее",createdAt:Date.now()+2},{title:"UX/UI дизайнер",company:"CreativeLab",buttonText:"Портфолио",createdAt:Date.now()+3}]) await jobsCol.add(j); }
+  function attachTasksL() { if(unsubTasks)unsubTasks(); unsubTasks=tasksCol.orderBy('createdAt','asc').onSnapshot(s=>{tasks=[];s.forEach(d=>tasks.push({id:d.id,...d.data()}));renderTasks();}); }
+  function attachJobsL() { if(unsubJobs)unsubJobs(); unsubJobs=jobsCol.orderBy('createdAt','asc').onSnapshot(s=>{jobs=[];s.forEach(d=>jobs.push({id:d.id,...d.data()}));renderJobs();}); }
+  function attachReqsL() { if(unsubReqs)unsubReqs(); if(currentUser?.role==='admin') unsubReqs=reqsCol.orderBy('timestamp','desc').onSnapshot(s=>{requests=[];s.forEach(d=>requests.push({id:d.id,...d.data(),isRead:d.data().isRead||false}));renderReqs();updateAdminBell();}); }
+
+  async function addTask(txt){ if(currentUser?.role==='admin'&&txt.trim()) await tasksCol.add({text:txt.trim(),completed:false,createdAt:Date.now()}); $('newTaskInput').value=''; }
+  async function toggleTask(id,st){ await tasksCol.doc(id).update({completed:!st}); }
+  async function editTask(id,nt){ if(currentUser?.role==='admin'&&nt?.trim()) await tasksCol.doc(id).update({text:nt.trim()}); }
+  async function delTask(id){ if(currentUser?.role==='admin') await tasksCol.doc(id).delete(); }
+  async function addJob(t,c,b){ if(currentUser?.role==='admin'&&t.trim()) await jobsCol.add({title:t.trim(),company:c.trim()||'Не указана',buttonText:b.trim()||'Откликнуться',createdAt:Date.now()}); $('newJobTitle').value='';$('newJobCompany').value='';$('newJobButtonText').value='Откликнуться'; }
+  async function editJob(id,t,c,b){ if(currentUser?.role==='admin'&&t?.trim()) await jobsCol.doc(id).update({title:t.trim(),company:(c||'').trim()||'Не указана',buttonText:(b||'').trim()||'Откликнуться'}); }
+  async function delJob(id){ if(currentUser?.role==='admin') await jobsCol.doc(id).delete(); }
+
+  function renderTasks(){
+    $('tasksContainer').innerHTML=tasks.map(t=>`
+      <div class="task-item">
+        <div class="task-check ${t.completed?'completed':''}" onclick="toggleTask('${t.id}',${t.completed})">${t.completed?'<i class="fas fa-check"></i>':''}</div>
+        <div class="task-text ${t.completed?'done':''}">${escHtml(t.text)}</div>
+        ${currentUser?.role==='admin'?`<button class="edit-task" onclick="editTask('${t.id}',prompt('Редактировать:','${t.text.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="delTask('${t.id}')"><i class="fas fa-trash-alt"></i></button>`:''}
+      </div>`).join('');
+  }
+  function renderJobs(){
+    $('jobsContainer').innerHTML=jobs.map(j=>`
+      <div class="job-card">
+        <div class="job-header">
+          <div class="job-title">${escHtml(j.title)}</div>
+          ${currentUser?.role==='admin'?`<div class="job-actions"><button class="edit-job" onclick="editJob('${j.id}',prompt('Название:','${j.title.replace(/'/g,"\\'")}'),prompt('Компания:','${j.company.replace(/'/g,"\\'")}'),prompt('Кнопка:','${j.buttonText.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="delJob('${j.id}')"><i class="fas fa-trash-alt"></i></button></div>`:''}
+        </div>
+        <div class="job-company">${escHtml(j.company)}</div>
+        <button class="job-btn" onclick="showReqModal('${j.id}','${j.title.replace(/'/g,"\\'")}') ">${escHtml(j.buttonText)}</button>
+      </div>`).join('');
+  }
+  function showReqModal(jid,jt){
+    if(!currentUser) return;
+    const c=prompt(`Отклик: ${jt}\n\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nКомментарий (мин. 5 слов):`);
+    if(c&&c.trim().split(/\s+/).length>=5){ reqsCol.add({jobId:jid,jobTitle:jt,userName:currentUser.name,userLogin:currentUser.username,comment:c.trim(),timestamp:Date.now(),isRead:false}); alert('Отклик отправлен!'); }
+    else if(c) alert('Минимум 5 слов!');
   }
 
-  // ---------------------------- АВТОРИЗАЦИЯ ----------------------------
-  function loadUsers() {
-    if (!localStorage.getItem('appUsers')) localStorage.setItem('appUsers', JSON.stringify({ "vadyms": { username: "vadyms", password: "1111", role: "admin", name: "Админ Vadym" } }));
-  }
-  function getUsers() { return JSON.parse(localStorage.getItem('appUsers') || '{}'); }
-  function saveUsers(users) { localStorage.setItem('appUsers', JSON.stringify(users)); }
-  function saveSession(user) { localStorage.setItem('currentSession', JSON.stringify({ username: user.username, role: user.role, name: user.name, loginTime: Date.now() })); }
-  function getSession() {
-    const raw = localStorage.getItem('currentSession'); if (!raw) return null;
-    try { const s = JSON.parse(raw); if (Date.now() - s.loginTime > 7 * 24 * 3600000) { localStorage.removeItem('currentSession'); return null; } return s; } catch(e) { return null; }
-  }
-  function clearSession() { localStorage.removeItem('currentSession'); }
+  function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-  async function afterLogin() {
-    hideAuthScreen(); applyTheme(); updateUIForUser();
-    await initializeDefaultTasks(); await initializeDefaultJobs();
-    await initUserBalance(currentUser.username); await updateBalanceUI();
-    attachFirestoreListener(); attachJobsListener(); attachRequestsListener();
-    updateStatistics(); setupNavAndButtons();
-  }
+  // ═══════════════ АВТОРИЗАЦИЯ ═══════════════
+  function loadUsers(){ if(!localStorage.getItem('appUsers')) localStorage.setItem('appUsers',JSON.stringify({vadyms:{username:'vadyms',password:'1111',role:'admin',name:'Админ Vadym'}})); }
+  function getUsers(){ return JSON.parse(localStorage.getItem('appUsers')||'{}'); }
+  function saveUsers(u){ localStorage.setItem('appUsers',JSON.stringify(u)); }
+  function saveSession(u){ localStorage.setItem('currentSession',JSON.stringify({username:u.username,role:u.role,name:u.name,loginTime:Date.now()})); }
+  function getSession(){ const r=localStorage.getItem('currentSession');if(!r)return null;try{const s=JSON.parse(r);if(Date.now()-s.loginTime>7*24*3600000){localStorage.removeItem('currentSession');return null;}return s;}catch{return null;} }
+  function clearSession(){ localStorage.removeItem('currentSession'); }
 
-  function login(username, password) {
-    const users = getUsers(); const user = users[username];
-    if (user && user.password === password) {
-      currentUser = { username, role: user.role, name: user.name }; saveSession(currentUser); afterLogin(); return true;
-    } else { loginError.innerText = 'Неверный логин или пароль'; return false; }
+  async function afterLogin(){
+    hideAuth(); applyTheme(); updateUI();
+    await initDefTasks(); await initDefJobs();
+    await initBalance(currentUser.username); await updateBalanceUI();
+    attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
+    setupNav();
   }
+  function login(u,p){ const users=getUsers(),user=users[u]; if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;} $('loginError').innerText='Неверный логин или пароль';return false; }
+  async function register(name,pwd){ if(!name.trim()){$('regError').innerText='Введите имя';return;} const users=getUsers(),id='user_'+Date.now();users[id]={username:id,password:pwd||'',role:'user',name:name.trim()};saveUsers(users);currentUser={username:id,role:'user',name:name.trim()};saveSession(currentUser);await balancesCol.doc(id).set({balance:0});afterLogin(); }
+  function logout(){ clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs].forEach(u=>u&&u());currentUser=null;showAuth(); }
 
-  async function register(name, password) {
-    if (!name.trim()) { regError.innerText = 'Введите имя'; return false; }
-    const users = getUsers(); const newUsername = "user_" + Date.now();
-    users[newUsername] = { username: newUsername, password: password || "", role: "user", name: name.trim() };
-    saveUsers(users); currentUser = { username: newUsername, role: "user", name: name.trim() };
-    saveSession(currentUser); await balancesCollection.doc(newUsername).set({ balance: 0 }); afterLogin(); return true;
-  }
-
-  function logout() {
-    clearSession();
-    if (unsubscribeTasks) unsubscribeTasks(); if (unsubscribeJobs) unsubscribeJobs(); if (unsubscribeRequests) unsubscribeRequests();
-    currentUser = null; showAuthScreen();
+  function updateUI(){
+    if(!currentUser)return;
+    $('displayName').innerText=currentUser.name||currentUser.username;
+    $('userRoleSpan').innerText=currentUser.role==='admin'?'Администратор':'Пользователь';
+    $('adminTaskPanel').style.display=currentUser.role==='admin'?'block':'none';
+    $('adminJobsPanel').style.display=currentUser.role==='admin'?'block':'none';
+    const nav=$('bottomNav');
+    // Вкладка ЗАПРОСЫ для админа
+    const eReq=nav.querySelector('[data-tab="requests"]');
+    if(currentUser.role==='admin'&&!eReq){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','requests');b.innerHTML='<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+    else if(currentUser.role!=='admin'&&eReq) eReq.remove();
+    // Вкладка СООБЩЕНИЯ для пользователя
+    const eMsg=nav.querySelector('[data-tab="messages"]');
+    if(currentUser.role!=='admin'&&!eMsg){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','messages');b.innerHTML='<i class="fas fa-envelope"></i><span>СООБЩЕНИЯ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+    else if(currentUser.role==='admin'&&eMsg) eMsg.remove();
   }
 
-  function updateUIForUser() {
-    if (currentUser) {
-      displayNameSpan.innerText = currentUser.name || currentUser.username;
-      userRoleSpan.innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
-      adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
-      if (adminJobsPanel) adminJobsPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
-      const existing = document.querySelector('.nav-item[data-tab="requests"]');
-      if (currentUser.role === 'admin' && !existing) {
-        const btn = document.createElement('button'); btn.className = 'nav-item'; btn.setAttribute('data-tab', 'requests');
-        btn.innerHTML = '<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';
-        const helpBtn = document.querySelector('.nav-item[data-tab="help"]');
-        bottomNav.insertBefore(btn, helpBtn); setupNavAndButtons();
-      } else if (currentUser.role !== 'admin' && existing) existing.remove();
-    }
-  }
+  function applyTheme(){ document.body.classList.toggle('dark',currentTheme==='dark');$('themeColorMeta')?.setAttribute('content',currentTheme==='dark'?'#1e293b':'#ffffff');localStorage.setItem('appTheme',currentTheme); }
+  function toggleTheme(){ currentTheme=currentTheme==='light'?'dark':'light';applyTheme(); }
 
-  function applyTheme() {
-    document.body.classList.toggle('dark', currentTheme === 'dark');
-    document.getElementById('themeColorMeta')?.setAttribute('content', currentTheme === 'dark' ? '#1e293b' : '#ffffff');
-    localStorage.setItem('appTheme', currentTheme);
-  }
-  function toggleTheme() { currentTheme = currentTheme === 'light' ? 'dark' : 'light'; applyTheme(); }
+  const TAB_TITLES={menu:'МЕНЮ',tasks:'ЗАДАНИЯ',work:'РАБОТА',help:'ПОМОЩЬ',requests:'ЗАПРОСЫ',messages:'СООБЩЕНИЯ'};
 
-  function setupNavAndButtons() {
-    const navBtns = document.querySelectorAll('.nav-item');
-    const panes = { menu: document.getElementById('tab-menu'), tasks: document.getElementById('tab-tasks'), work: document.getElementById('tab-work'), help: document.getElementById('tab-help'), requests: document.getElementById('tab-requests') };
-    const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ', requests: 'ЗАПРОСЫ' };
-    function switchTab(tabId) {
-      Object.values(panes).forEach(p => p?.classList.remove('active-pane'));
-      if (panes[tabId]) panes[tabId].classList.add('active-pane');
-      navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
-      document.getElementById('dynamicTitle').innerText = titles[tabId] || 'МЕНЮ';
-      if (tabId === 'tasks') renderTasksUI();
-      if (tabId === 'work') renderJobsUI();
-      if (tabId === 'requests' && currentUser?.role === 'admin') { markAllAsRead(); renderRequestsUI(); }
-    }
-    navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
-    document.getElementById('themeCard')?.addEventListener('click', toggleTheme);
-    document.getElementById('telegramBtn')?.addEventListener('click', () => window.open('https://t.me/vadymtm90', '_blank'));
-    document.getElementById('logoutCard')?.addEventListener('click', logout);
-    addTaskBtn?.addEventListener('click', () => addTaskToCloud(newTaskInput.value));
-    addJobBtn?.addEventListener('click', () => addJobToCloud(newJobTitle.value, newJobCompany.value, newJobButtonText.value));
-    forceSaveCloudBtn?.addEventListener('click', () => {});
-    statBlockClick?.addEventListener('click', async () => {
-      await updateBalanceUI(); modalBalance.innerText = currentBalance; balanceModal.classList.add('active');
+  function setupNav(){
+    // Клонируем все кнопки чтобы убрать старые листенеры
+    $('bottomNav').querySelectorAll('.nav-item').forEach(b=>{const c=b.cloneNode(true);b.replaceWith(c);});
+    $('bottomNav').querySelectorAll('.nav-item').forEach(btn=>{
+      btn.addEventListener('click',()=>switchTab(btn.getAttribute('data-tab')));
     });
-    closeBalanceModal?.addEventListener('click', () => balanceModal.classList.remove('active'));
-    bellButton?.addEventListener('click', () => {
-      if (currentUser?.role !== 'admin') return;
-      const unreadReqs = requests.filter(r => !r.isRead);
-      if (unreadReqs.length === 0) { alert('Нет новых уведомлений'); return; }
-      notifyList.innerHTML = unreadReqs.map(r =>
-        `<div class="notify-item">📌 ${escapeHtml(r.jobTitle)} — ${escapeHtml(r.userName)}</div>`
-      ).join('');
-      notifyModal.classList.add('active');
+    // Кнопки меню
+    $('themeCard')?.addEventListener('click',toggleTheme);
+    $('logoutCard')?.addEventListener('click',logout);
+    $('addTaskBtn')?.addEventListener('click',()=>addTask($('newTaskInput').value));
+    $('addJobBtn')?.addEventListener('click',()=>addJob($('newJobTitle').value,$('newJobCompany').value,$('newJobButtonText').value));
+    $('forceSaveCloudBtn')?.addEventListener('click',()=>{});
+    $('statBlockClick')?.addEventListener('click',async()=>{await updateBalanceUI();$('modalBalance').innerText=currentBalance;$('balanceModal').classList.add('active');});
+    $('closeBalanceModal')?.addEventListener('click',()=>$('balanceModal').classList.remove('active'));
+    $('closeNotifyModal')?.addEventListener('click',()=>$('notifyModal').classList.remove('active'));
+    $('confirmAmountBtn')?.addEventListener('click',doAccept);
+    $('cancelAmountBtn')?.addEventListener('click',()=>{$('amountModal').classList.remove('active');pendingReqId=null;pendingUserId=null;});
+    $('bellButton')?.addEventListener('click',()=>{
+      $('bellBubble').classList.remove('show');
+      if(currentUser?.role==='admin'){
+        const u=requests.filter(r=>!r.isRead);
+        if(!u.length){alert('Нет новых уведомлений');return;}
+        $('notifyList').innerHTML=u.map(r=>`<div class="notify-item">📌 ${escHtml(r.jobTitle)} — ${escHtml(r.userName)}</div>`).join('');
+        $('notifyModal').classList.add('active');
+      } else {
+        switchTab('messages');
+      }
     });
-    closeNotifyModal?.addEventListener('click', () => notifyModal.classList.remove('active'));
-
-    // Кнопки модалки суммы
-    confirmAmountBtn?.addEventListener('click', doAcceptRequest);
-    cancelAmountBtn?.addEventListener('click', () => { amountModal.classList.remove('active'); pendingAcceptReqId = null; pendingAcceptUserId = null; });
+    ['faq1','faq2','telegramCard'].forEach(id=>$( id)?.querySelector('.help-question')?.addEventListener('click',function(){this.nextElementSibling.classList.toggle('show');}));
   }
 
-  function initAuthUI() {
-    loginTab.addEventListener('click', () => { loginTab.classList.add('active'); registerTab.classList.remove('active'); loginFormDiv.style.display = 'flex'; registerFormDiv.style.display = 'none'; });
-    registerTab.addEventListener('click', () => { registerTab.classList.add('active'); loginTab.classList.remove('active'); loginFormDiv.style.display = 'none'; registerFormDiv.style.display = 'flex'; });
-    switchToLogin?.addEventListener('click', () => loginTab.click());
-    switchToRegister?.addEventListener('click', () => registerTab.click());
-    doLoginBtn.addEventListener('click', () => { const uname = loginUsername.value.trim(); const pwd = loginPassword.value; if (!uname) loginError.innerText = 'Введите логин'; else login(uname, pwd); });
-    doRegisterBtn.addEventListener('click', () => { const name = regName.value.trim(); const pwd = regPassword.value; if (!name) regError.innerText = 'Введите имя'; else register(name, pwd); });
-    document.getElementById('faq1')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
-    document.getElementById('faq2')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
-    document.getElementById('telegramBtn')?.querySelector('.help-question')?.addEventListener('click', function() { this.nextElementSibling.classList.toggle('show'); });
+  function switchTab(tabId){
+    ['menu','tasks','work','requests','messages','help'].forEach(id=>document.getElementById('tab-'+id)?.classList.remove('active-pane'));
+    document.getElementById('tab-'+tabId)?.classList.add('active-pane');
+    $('bottomNav').querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.getAttribute('data-tab')===tabId));
+    $('dynamicTitle').innerText=TAB_TITLES[tabId]||'';
+    if(tabId==='tasks') renderTasks();
+    if(tabId==='work') renderJobs();
+    if(tabId==='requests'&&currentUser?.role==='admin'){markReqsRead();renderReqs();}
+    if(tabId==='messages'&&currentUser?.role!=='admin'){markMsgsRead();renderMsgsUI();}
   }
 
-  function showAuthScreen() {
-    authOverlay.classList.remove('hidden'); mainApp.style.display = 'none';
-    if (unsubscribeTasks) unsubscribeTasks(); if (unsubscribeJobs) unsubscribeJobs(); if (unsubscribeRequests) unsubscribeRequests();
-    currentUser = null;
+  function initAuthUI(){
+    const lt=$('loginTabBtn'),rt=$('registerTabBtn'),lf=$('loginForm'),rf=$('registerForm');
+    lt.addEventListener('click',()=>{lt.classList.add('active');rt.classList.remove('active');lf.style.display='flex';rf.style.display='none';});
+    rt.addEventListener('click',()=>{rt.classList.add('active');lt.classList.remove('active');lf.style.display='none';rf.style.display='flex';});
+    $('switchToLogin')?.addEventListener('click',()=>lt.click());
+    $('switchToRegister')?.addEventListener('click',()=>rt.click());
+    $('doLoginBtn').addEventListener('click',()=>{const u=$('loginUsername').value.trim(),p=$('loginPassword').value;if(!u)$('loginError').innerText='Введите логин';else login(u,p);});
+    $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;if(!n)$('regError').innerText='Введите имя';else register(n,p);});
   }
-  function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
 
-  async function start() {
+  function showAuth(){ $('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs].forEach(u=>u&&u());currentUser=null; }
+  function hideAuth(){ $('authOverlay').classList.add('hidden');$('mainApp').style.display='flex'; }
+
+  async function start(){
     loadUsers();
-    const savedTheme = localStorage.getItem('appTheme');
-    currentTheme = savedTheme === 'dark' ? 'dark' : 'light';
+    currentTheme=localStorage.getItem('appTheme')==='dark'?'dark':'light';
     applyTheme();
-    const session = getSession();
-    if (session) {
-      const users = getUsers(); const userData = users[session.username];
-      if (userData) {
-        currentUser = { username: session.username, role: userData.role, name: userData.name };
-        hideAuthScreen(); updateUIForUser();
-        await initializeDefaultTasks(); await initializeDefaultJobs();
-        await initUserBalance(currentUser.username); await updateBalanceUI();
-        attachFirestoreListener(); attachJobsListener(); attachRequestsListener();
-        updateStatistics(); setupNavAndButtons();
-      } else showAuthScreen();
-    } else showAuthScreen();
+    const sess=getSession();
+    if(sess){
+      const ud=getUsers()[sess.username];
+      if(ud){
+        currentUser={username:sess.username,role:ud.role,name:ud.name};
+        hideAuth(); updateUI();
+        await initDefTasks(); await initDefJobs();
+        await initBalance(currentUser.username); await updateBalanceUI();
+        attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
+        setupNav();
+      } else showAuth();
+    } else showAuth();
     initAuthUI();
   }
 
   start();
-  window.toggleTaskComplete = toggleTaskComplete;
-  window.editTaskText = editTaskText;
-  window.deleteTaskFromCloud = deleteTaskFromCloud;
-  window.editJob = editJob;
-  window.deleteJob = deleteJob;
-  window.showRequestModal = showRequestModal;
+  // Глобальные алиасы для inline onclick
+  window.toggleTask=toggleTask; window.editTask=editTask; window.delTask=delTask;
+  window.editJob=editJob; window.delJob=delJob; window.showReqModal=showReqModal;
 </script>
 </body>
 </html>
