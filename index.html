@@ -210,7 +210,8 @@
     .greeting-card, .greeting-card p, .greeting-card strong, 
     .stat-block, .stat-block span, .stat-block strong,
     .menu-card h4, .menu-card p, .task-text, .job-title, .help-title,
-    .nav-item span, .small-text, .add-task-form input, .job-btn {
+    .nav-item span, .small-text, .add-task-form input, .job-btn,
+    .request-card, .request-card p {
       color: var(--text-primary);
     }
     .greeting-card p strong, .stat-block strong {
@@ -301,7 +302,7 @@
       font-weight: 500;
       word-break: break-word;
     }
-    .delete-task, .edit-task, .delete-job, .edit-job {
+    .delete-task, .edit-task, .delete-job, .edit-job, .delete-request {
       background: transparent;
       border: none;
       font-size: 18px;
@@ -309,7 +310,7 @@
       padding: 6px;
       color: var(--text-secondary);
     }
-    .delete-task, .delete-job { color: #ef4444; }
+    .delete-task, .delete-job, .delete-request { color: #ef4444; }
     .edit-task, .edit-job { color: var(--accent); }
     .add-task-form, .add-job-form {
       display: flex;
@@ -391,6 +392,42 @@
       gap: 8px;
       justify-content: flex-end;
     }
+    .request-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+    .request-title {
+      font-size: 16px;
+      background: var(--accent);
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      color: white;
+      background: var(--accent);
+    }
+    .request-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .request-comment {
+      margin-top: 6px;
+      font-size: 14px;
+      background: var(--input-bg);
+      padding: 10px;
+      border-radius: 16px;
+    }
     .help-card {
       background: var(--card-bg);
       border-radius: 20px;
@@ -433,7 +470,7 @@
       transform: translateY(-2px);
     }
     .small-text { font-size: 13px; margin-top: 5px; }
-    .jobs-container {
+    .jobs-container, .requests-container {
       margin-top: 12px;
     }
   </style>
@@ -514,16 +551,24 @@
         <div id="jobsContainer" class="jobs-container"></div>
       </div>
 
+      <!-- Новая вкладка ЗАПРОСЫ (видна только админу) -->
+      <div class="tab-pane" id="tab-requests">
+        <h3 style="font-size:20px; color:var(--text-primary); margin-bottom:12px;">📬 Запросы от пользователей</h3>
+        <div id="requestsContainer" class="requests-container"></div>
+        <div class="small-text" style="text-align:center; margin-top:12px;">Здесь отображаются все отклики на вакансии</div>
+      </div>
+
       <div class="tab-pane" id="tab-help">
         <h3 style="font-size:20px; color:var(--text-primary);">🛟 Помощь</h3>
         <div class="help-card" id="telegramBtn"><i class="fab fa-telegram-plane"></i><div><div class="help-title">Написать разработчику</div><div class="small-text">Telegram: @vadymtm90</div></div></div>
-        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Облачная синхронизация заданий и вакансий</div></div></div>
+        <div class="help-card" id="faqBtn"><i class="fas fa-question-circle"></i><div><div class="help-title">Частые вопросы</div><div class="small-text">Облачная синхронизация заданий, вакансий и откликов</div></div></div>
       </div>
     </div>
-    <div class="bottom-nav">
+    <div class="bottom-nav" id="bottomNav">
       <button class="nav-item active" data-tab="menu"><i class="fas fa-bars"></i><span>МЕНЮ</span></button>
       <button class="nav-item" data-tab="tasks"><i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span></button>
       <button class="nav-item" data-tab="work"><i class="fas fa-briefcase"></i><span>РАБОТА</span></button>
+      <!-- Кнопка ЗАПРОСЫ будет добавлена динамически для админа -->
       <button class="nav-item" data-tab="help"><i class="fas fa-circle-question"></i><span>ПОМОЩЬ</span></button>
     </div>
   </div>
@@ -547,13 +592,16 @@
   
   const tasksCollection = db.collection('global_tasks');
   const jobsCollection = db.collection('work_jobs');
+  const requestsCollection = db.collection('job_requests'); // новая коллекция для запросов
   
   let tasks = [];
   let jobs = [];
+  let requests = [];
   let currentUser = null;
   let currentTheme = "light";
   let unsubscribeTasks = null;
   let unsubscribeJobs = null;
+  let unsubscribeRequests = null;
   
   // DOM элементы
   const authOverlay = document.getElementById('authOverlay');
@@ -589,6 +637,8 @@
   const newJobTitle = document.getElementById('newJobTitle');
   const newJobCompany = document.getElementById('newJobCompany');
   const newJobButtonText = document.getElementById('newJobButtonText');
+  const requestsContainer = document.getElementById('requestsContainer');
+  const bottomNav = document.getElementById('bottomNav');
   
   // ---------------------------- ЛОКАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ ----------------------------
   function loadUsers() {
@@ -659,6 +709,19 @@
     }, () => {});
   }
   
+  // Прослушивание запросов (только для админа)
+  function attachRequestsListener() {
+    if (unsubscribeRequests) unsubscribeRequests();
+    if (currentUser && currentUser.role === 'admin') {
+      unsubscribeRequests = requestsCollection.orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+        const newRequests = [];
+        snapshot.forEach(doc => newRequests.push({ id: doc.id, ...doc.data() }));
+        requests = newRequests;
+        renderRequestsUI();
+      }, () => {});
+    }
+  }
+  
   async function addTaskToCloud(text) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!text.trim()) return;
@@ -695,7 +758,7 @@
     } catch(e) { console.error(e); }
   }
   
-  // ---------------------------- FIRESTORE: РАБОТА (ВАКАНСИИ) ----------------------------
+  // ---------------------------- FIRESTORE: ВАКАНСИИ ----------------------------
   async function addJobToCloud(title, company, buttonText) {
     if (!currentUser || currentUser.role !== 'admin') return;
     if (!title.trim()) return;
@@ -726,6 +789,63 @@
     await jobsCollection.doc(jobId).delete();
   }
   
+  // ---------------------------- ЗАПРОСЫ (ОТКЛИКИ) ----------------------------
+  async function sendJobRequest(jobId, jobTitle) {
+    if (!currentUser) return;
+    const comment = prompt(`Отклик на вакансию: ${jobTitle}\n\nВведите ваш комментарий или оставьте пустым:`);
+    if (comment === null) return; // отмена
+    
+    await requestsCollection.add({
+      jobId: jobId,
+      jobTitle: jobTitle,
+      userName: currentUser.name || currentUser.username,
+      userId: currentUser.username,
+      comment: comment.trim() || "Без комментария",
+      timestamp: Date.now(),
+      status: "new"
+    });
+    alert("Ваш отклик отправлен администратору!");
+  }
+  
+  async function deleteRequest(requestId) {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    if (confirm("Удалить этот запрос?")) {
+      await requestsCollection.doc(requestId).delete();
+    }
+  }
+  
+  function renderRequestsUI() {
+    if (!requestsContainer) return;
+    if (requests.length === 0) {
+      requestsContainer.innerHTML = '<div style="text-align:center; padding:30px; color: var(--text-secondary);">Нет новых запросов.</div>';
+      return;
+    }
+    requestsContainer.innerHTML = '';
+    requests.forEach(req => {
+      const card = document.createElement('div'); card.className = 'request-card';
+      const header = document.createElement('div'); header.className = 'request-header';
+      const titleSpan = document.createElement('div'); titleSpan.className = 'request-title'; titleSpan.innerText = req.jobTitle;
+      const dateSpan = document.createElement('div'); dateSpan.className = 'request-meta'; dateSpan.innerText = new Date(req.timestamp).toLocaleString();
+      header.appendChild(titleSpan); header.appendChild(dateSpan);
+      card.appendChild(header);
+      
+      const userSpan = document.createElement('div'); userSpan.className = 'request-meta'; userSpan.innerHTML = `<i class="fas fa-user"></i> ${req.userName}`;
+      card.appendChild(userSpan);
+      
+      const commentDiv = document.createElement('div'); commentDiv.className = 'request-comment'; commentDiv.innerText = req.comment;
+      card.appendChild(commentDiv);
+      
+      if (currentUser?.role === 'admin') {
+        const delBtn = document.createElement('button'); delBtn.className = 'delete-request'; delBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Удалить';
+        delBtn.style.alignSelf = 'flex-end'; delBtn.style.marginTop = '8px';
+        delBtn.addEventListener('click', () => deleteRequest(req.id));
+        card.appendChild(delBtn);
+      }
+      requestsContainer.appendChild(card);
+    });
+  }
+  
+  // ---------------------------- UI ОТРИСОВКА ----------------------------
   function renderJobsUI() {
     if (!jobsContainer) return;
     if (jobs.length === 0) {
@@ -763,8 +883,9 @@
       card.appendChild(companySpan);
       
       const actionBtn = document.createElement('button'); actionBtn.className = 'job-btn'; actionBtn.innerText = job.buttonText;
+      // Обработчик отклика с сохранением в ЗАПРОСЫ
       actionBtn.addEventListener('click', () => {
-        alert(`Вы откликнулись на "${job.title}" в компании ${job.company}. Функция в разработке.`);
+        sendJobRequest(job.id, job.title);
       });
       card.appendChild(actionBtn);
       jobsContainer.appendChild(card);
@@ -808,7 +929,7 @@
   }
   
   // ---------------------------- АВТОРИЗАЦИЯ ----------------------------
-  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); if(unsubscribeJobs) unsubscribeJobs(); currentUser = null; }
+  function showAuthScreen() { authOverlay.classList.remove('hidden'); mainApp.style.display = 'none'; if(unsubscribeTasks) unsubscribeTasks(); if(unsubscribeJobs) unsubscribeJobs(); if(unsubscribeRequests) unsubscribeRequests(); currentUser = null; }
   function hideAuthScreen() { authOverlay.classList.add('hidden'); mainApp.style.display = 'flex'; }
   
   async function afterLogin() {
@@ -819,6 +940,7 @@
     await initializeDefaultJobs();
     attachFirestoreListener();
     attachJobsListener();
+    attachRequestsListener(); // слушаем запросы только если админ
     updateStatistics();
     setupNavAndButtons();
   }
@@ -850,6 +972,7 @@
     clearSession(); 
     if (unsubscribeTasks) unsubscribeTasks();
     if (unsubscribeJobs) unsubscribeJobs();
+    if (unsubscribeRequests) unsubscribeRequests();
     currentUser = null; 
     showAuthScreen(); 
   }
@@ -860,6 +983,22 @@
       userRoleSpan.innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
       adminPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
       if (adminJobsPanel) adminJobsPanel.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+      
+      // Добавляем кнопку "ЗАПРОСЫ" в навигацию для админа, если её нет
+      const existingRequestsBtn = document.querySelector('.nav-item[data-tab="requests"]');
+      if (currentUser.role === 'admin' && !existingRequestsBtn) {
+        const newBtn = document.createElement('button');
+        newBtn.className = 'nav-item';
+        newBtn.setAttribute('data-tab', 'requests');
+        newBtn.innerHTML = '<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';
+        // вставляем перед кнопкой ПОМОЩЬ
+        const helpBtn = document.querySelector('.nav-item[data-tab="help"]');
+        bottomNav.insertBefore(newBtn, helpBtn);
+        // перепривязываем обработчики после добавления
+        setupNavAndButtons();
+      } else if (currentUser.role !== 'admin' && existingRequestsBtn) {
+        existingRequestsBtn.remove();
+      }
     }
   }
   
@@ -873,16 +1012,23 @@
   
   function setupNavAndButtons() {
     const navBtns = document.querySelectorAll('.nav-item');
-    const panes = { menu: document.getElementById('tab-menu'), tasks: document.getElementById('tab-tasks'), work: document.getElementById('tab-work'), help: document.getElementById('tab-help') };
+    const panes = {
+      menu: document.getElementById('tab-menu'),
+      tasks: document.getElementById('tab-tasks'),
+      work: document.getElementById('tab-work'),
+      help: document.getElementById('tab-help'),
+      requests: document.getElementById('tab-requests')
+    };
     const headerTitle = document.getElementById('dynamicTitle');
-    const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ' };
+    const titles = { menu: 'МЕНЮ', tasks: 'ЗАДАНИЯ', work: 'РАБОТА', help: 'ПОМОЩЬ', requests: 'ЗАПРОСЫ' };
     function switchTab(tabId) {
       Object.values(panes).forEach(p => p?.classList.remove('active-pane'));
       if (panes[tabId]) panes[tabId].classList.add('active-pane');
       navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId));
-      headerTitle.innerText = titles[tabId];
+      headerTitle.innerText = titles[tabId] || 'МЕНЮ';
       if (tabId === 'tasks') renderTasksUI();
       if (tabId === 'work') renderJobsUI();
+      if (tabId === 'requests' && currentUser?.role === 'admin') renderRequestsUI();
     }
     navBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     document.getElementById('themeCard')?.addEventListener('click', () => toggleTheme());
@@ -922,6 +1068,7 @@
         await initializeDefaultJobs();
         attachFirestoreListener();
         attachJobsListener();
+        attachRequestsListener();
         updateStatistics();
         setupNavAndButtons();
       } else showAuthScreen();
