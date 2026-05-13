@@ -866,8 +866,8 @@ let tasks=[], jobs=[], requests=[], userMsgs=[];
   function escHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
   function escAttr(s){return String(s).replace(/"/g,'&quot;');}
 
-  // ═══ АВТОРИЗАЦИЯ ═══
-  function loadUsers(){let users=JSON.parse(localStorage.getItem('appUsers')||'{}');let changed=false;for(let key in users){if(!users[key].registeredAt){users[key].registeredAt=Date.now();changed=true;}}if(changed)saveUsers(users);return users;}
+// ═══ АВТОРИЗАЦИЯ ═══
+   function loadUsers(){let users=JSON.parse(localStorage.getItem('appUsers')||'{}');let changed=false;for(let key in users){if(!users[key].registeredAt){users[key].registeredAt=Date.now();changed=true;}if(users[key].tgUser===undefined){users[key].tgUser=null;changed=true;}}if(changed)saveUsers(users);return users;}
   function getUsers(){return JSON.parse(localStorage.getItem('appUsers')||'{}');}
   function saveUsers(u){localStorage.setItem('appUsers',JSON.stringify(u));}
   function saveSession(u){localStorage.setItem('currentSession',JSON.stringify({username:u.username,role:u.role,name:u.name,loginTime:Date.now()}));}
@@ -896,18 +896,26 @@ let tasks=[], jobs=[], requests=[], userMsgs=[];
         users['vadyms']={username:'vadyms',password:'1',role:'admin',name:'Администратор',registeredAt:Date.now()};
         saveUsers(users);
       }
+      const adminUser = users['vadyms'];
       currentUser={username:'vadyms',role:'admin',name:'Администратор'};
-      saveSession(currentUser); afterLogin(); return true;
+      saveSession(currentUser); 
+      afterLogin(); 
+      return true;
     }
     const users=getUsers(),user=users[u];
-    if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;}
-    $('loginError').innerText='Неверный логин или пароль';return false;
+    if(user&&user.password===p&&typeof user.password==='string'){
+      currentUser={username:u,role:user.role,name:user.name};
+      saveSession(currentUser);
+      afterLogin();
+      return true;
+    }
+    $('loginError').innerText='Неверный логин или пароль';
+    return false;
   }
   async function register(name,pwd){
-    if(!name.trim()&&!tgUser){$('regError').innerText='Введите имя';return;}
+    if(!name.trim()&&!tgUser){$('regError').innerText='Введите имя или войдите через Telegram';return;}
     const users=getUsers();
     const id='user_'+Date.now();
-    const tgUsername = tgUser?.username ? '@' + tgUser.username : (tgUser?.id ? 'tg'+tgUser.id : '');
     users[id]={
       username:id,
       password:pwd||'',
@@ -917,12 +925,25 @@ let tasks=[], jobs=[], requests=[], userMsgs=[];
       tgUser: tgUser ? {id: tgUser.id, username: tgUser.username, first_name: tgUser.first_name, photo_url: tgUser.photo_url} : null
     };
     saveUsers(users);
-    currentUser={username:id,role:'user',name:users[id].name};
-    saveSession(currentUser);
     await balancesCol.doc(id).set({balance:0});
+    
+    // Check if admin is currently logged in to refresh their users list
+    const adminSess = getSession();
+    if(adminSess) {
+      const adminUser = users[adminSess.username];
+      if(adminUser && adminUser.role === 'admin') {
+        tgUser = null;
+        $('tgUserInfo').classList.remove('show');
+        renderUsersList();
+        return; // Stay in admin mode, just refresh list
+      }
+    }
+    
     tgUser = null;
     $('tgUserInfo').classList.remove('show');
-    afterLogin();
+    showAuth(); // Redirect to login after registration
+    $('loginError').innerText = 'Регистрация успешна! Войдите в аккаунт.';
+    $('loginError').style.color = 'var(--success-color)';
   }
   function logout(){clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth();}
 
