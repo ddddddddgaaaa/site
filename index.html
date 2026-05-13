@@ -11,6 +11,45 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
   <style>
+    /* Telegram Login Widget */
+    .tg-login-btn {
+      background: #0088cc;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 24px;
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin: 10px 0;
+      transition: background 0.2s;
+    }
+    .tg-login-btn:hover { background: #006fb3; }
+    #telegramLogin { margin: 15px 0; text-align: center; }
+    .tg-user-info {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 20px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      display: none;
+    }
+    .tg-user-info.show { display: block; }
+    .tg-user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+  </style>
+
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
@@ -316,6 +355,11 @@
     <div id="registerForm" class="auth-form" style="display:none;">
       <input type="text" id="regName" placeholder="Ваше имя (псевдоним)" autocomplete="off">
       <input type="password" id="regPassword" placeholder="Пароль (придумайте любой)">
+      <div id="telegramLogin"></div>
+      <div class="tg-user-info" id="tgUserInfo">
+        <img id="tgUserPhoto" src=""> <span id="tgUserName"></span>
+      </div>
+      <small style="color:var(--text-secondary);display:block;margin:8px 0;">Или войдите через Telegram выше</small>
       <button id="doRegisterBtn">Зарегистрироваться</button>
       <div id="regError" class="error-msg"></div>
       <div class="auth-switch">Уже есть аккаунт? <span id="switchToLogin">Войти</span></div>
@@ -583,15 +627,39 @@
   const settingsCol = db.collection('app_settings');
   const shopReqsCol = db.collection('shop_requests');
 
-  let tasks=[], jobs=[], requests=[], userMsgs=[];
-  let currentUser=null, currentTheme='light', currentBalance=0;
-  let currentMode = 'earn'; // 'earn' or 'shop'
-  let priceItems = []; // [{name, price}]
-  let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalance=null;
-  let pendingReqId=null, pendingUserId=null;
-  const MAX_BAL=500;
+let tasks=[], jobs=[], requests=[], userMsgs=[];
+   let currentUser=null, currentTheme='light', currentBalance=0;
+   let currentMode = 'earn'; // 'earn' or 'shop'
+   let priceItems = []; // [{name, price}]
+   let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalance=null;
+   let pendingReqId=null, pendingUserId=null;
+   const MAX_BAL=500;
+   let tgUser = null; // Telegram user data
 
-  const $ = id => document.getElementById(id);
+   const $ = id => document.getElementById(id);
+
+// Load Telegram Login script
+    function loadTelegramScript() {
+      const container = $('telegramLogin');
+      if (container.children.length > 0) return; // Already loaded
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.async = true;
+      script.setAttribute('data-telegram-login', '@vadyms22_bot'); // Replace with your bot @username
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-userpic', 'true');
+      script.setAttribute('data-request-access', 'write');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      container.appendChild(script);
+    }
+
+    window.onTelegramAuth = function(user) {
+      tgUser = user;
+      $('tgUserName').innerText = user.first_name + (user.username ? ' (@' + user.username + ')' : '');
+      $('tgUserPhoto').src = user.photo_url || 'https://t.me/favicon.ico';
+      $('tgUserInfo').classList.add('show');
+      $('regName').value = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+    };
 
   // ═══ ПРАЙС ═══
   const DEFAULT_PRICE = [
@@ -835,7 +903,27 @@
     if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;}
     $('loginError').innerText='Неверный логин или пароль';return false;
   }
-  async function register(name,pwd){if(!name.trim()){$('regError').innerText='Введите имя';return;}const users=getUsers(),id='user_'+Date.now();users[id]={username:id,password:pwd||'',role:'user',name:name.trim(),registeredAt:Date.now()};saveUsers(users);currentUser={username:id,role:'user',name:name.trim()};saveSession(currentUser);await balancesCol.doc(id).set({balance:0});afterLogin();}
+  async function register(name,pwd){
+    if(!name.trim()&&!tgUser){$('regError').innerText='Введите имя';return;}
+    const users=getUsers();
+    const id='user_'+Date.now();
+    const tgUsername = tgUser?.username ? '@' + tgUser.username : (tgUser?.id ? 'tg'+tgUser.id : '');
+    users[id]={
+      username:id,
+      password:pwd||'',
+      role:'user',
+      name:name.trim()||(tgUser?.first_name||'Пользователь'),
+      registeredAt:Date.now(),
+      tgUser: tgUser ? {id: tgUser.id, username: tgUser.username, first_name: tgUser.first_name, photo_url: tgUser.photo_url} : null
+    };
+    saveUsers(users);
+    currentUser={username:id,role:'user',name:users[id].name};
+    saveSession(currentUser);
+    await balancesCol.doc(id).set({balance:0});
+    tgUser = null;
+    $('tgUserInfo').classList.remove('show');
+    afterLogin();
+  }
   function logout(){clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth();}
 
   function updateUI(){
@@ -866,12 +954,12 @@
     if(!currentUser||currentUser.role!=='admin')return;
     const users=getUsers();const container=$('usersListContainer');if(!container)return;
     if(Object.keys(users).length===0){container.innerHTML='<div style="text-align:center;padding:20px;">Нет пользователей</div>';return;}
-    let html=`<table class="users-table"><thead><tr><th>Имя</th><th>Логин</th><th>Пароль</th><th>Дата</th><th>Баланс</th><th></th></tr></thead><tbody>`;
+    let html=`<table class="users-table"><thead><tr><th>Имя</th><th>Логин</th><th>Пароль</th><th>Дата</th><th>Баланс</th><th>Telegram</th><th></th></tr></thead><tbody>`;
     for(let [uid,u] of Object.entries(users)){
       if(u.role==='admin')continue;
       let balance=0;try{const balDoc=await balancesCol.doc(uid).get();if(balDoc.exists)balance=balDoc.data().balance;}catch(e){}
       const dateStr=u.registeredAt?new Date(u.registeredAt).toLocaleString():'—';
-      html+=`<tr><td>${escHtml(u.name||'')}</td><td>${escHtml(uid)}</td><td>${escHtml(u.password||'')}</td><td>${dateStr}</td><td>${balance} ₽</td><td><button class="user-balance-btn" data-uid="${uid}" data-name="${escAttr(u.name)}">💰</button></td></tr>`;
+      html+=`<tr><td>${escHtml(u.name||'')}</td><td>${escHtml(uid)}</td><td>${escHtml(u.password||'')}</td><td>${dateStr}</td><td>${balance} ₽</td><td>${u.tgUser?.username||u.tgUser?.id?'@'+ (u.tgUser?.username||u.tgUser?.id):'—'}</td><td><button class="user-balance-btn" data-uid="${uid}" data-name="${escAttr(u.name)}">💰</button></td></tr>`;
     }
     html+=`</tbody></table>`;container.innerHTML=html;
     document.querySelectorAll('.user-balance-btn').forEach(btn=>{btn.addEventListener('click',()=>{showEditUserBalanceModal(btn.getAttribute('data-uid'),btn.getAttribute('data-name'));});});
@@ -936,17 +1024,26 @@ $('modeBtn')?.addEventListener('click',(e)=>{
     if(tabId==='users'&&currentUser?.role==='admin')await renderUsersList();
   }
 
-  function initAuthUI(){
+function initAuthUI(){
     const lt=$('loginTabBtn'),rt=$('registerTabBtn'),lf=$('loginForm'),rf=$('registerForm');
     lt.addEventListener('click',()=>{lt.classList.add('active');rt.classList.remove('active');lf.style.display='flex';rf.style.display='none';});
-    rt.addEventListener('click',()=>{rt.classList.add('active');lt.classList.remove('active');lf.style.display='none';rf.style.display='flex';});
+    rt.addEventListener('click',()=>{rt.classList.add('active');lt.classList.remove('active');lf.style.display='none';rf.style.display='flex';loadTelegramScript();});
     $('switchToLogin')?.addEventListener('click',()=>lt.click());
-    $('switchToRegister')?.addEventListener('click',()=>rt.click());
+    $('switchToRegister')?.addEventListener('click',()=>{lt.click();setTimeout(loadTelegramScript,100);});
     $('doLoginBtn').addEventListener('click',()=>{const u=$('loginUsername').value.trim(),p=$('loginPassword').value;if(!u)$('loginError').innerText='Введите логин';else login(u,p);});
-    $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;if(!n)$('regError').innerText='Введите имя';else register(n,p);});
+    $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;register(n,p);});
   }
 
-  function showAuth(){$('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;}
+  function showAuth(){
+    $('authOverlay').classList.remove('hidden'); 
+    $('mainApp').style.display='none';
+    [unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());
+    currentUser=null;
+    tgUser = null;
+    $('tgUserInfo').classList.remove('show');
+    // Load Telegram widget when showing register tab
+    loadTelegramScript();
+  }
   function hideAuth(){$('authOverlay').classList.add('hidden');$('mainApp').style.display='flex';}
 
   async function start(){
