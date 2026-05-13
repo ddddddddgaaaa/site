@@ -692,17 +692,29 @@
     if(!currentUser) return;
     const nav=$('bottomNav');
     // Clear and rebuild nav based on mode + role
-    // Keep: menu, tasks, help always
-    // Earn mode: work tab
+    // Keep: menu, help always
+    // Earn mode: tasks, work tab
     // Shop mode: shop tab
+    const eTasks=nav.querySelector('[data-tab="tasks"]');
     const eWork=nav.querySelector('[data-tab="work"]');
     const eShop=nav.querySelector('[data-tab="shop"]');
+    const eReq=nav.querySelector('[data-tab="requests"]');
+    
     if(currentMode==='earn') {
+      // Show tasks and work, hide shop and requests
+      if(!eTasks){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','tasks');b.innerHTML='<i class="fas fa-tasks"></i><span>ЗАДАНИЯ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
       if(!eWork){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','work');b.innerHTML='<i class="fas fa-briefcase"></i><span>РАБОТА</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
       eShop?.remove();
+      // Show requests only for admin in earn mode
+      if(currentUser.role==='admin'&&!eReq){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','requests');b.innerHTML='<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+      else if(currentUser.role!=='admin'&&eReq)eReq.remove();
     } else {
-      if(!eShop){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','shop');b.innerHTML='<i class="fas fa-shopping-cart"></i><span>МАГАЗИН</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+      // Hide tasks and work, show shop
+      eTasks?.remove();
       eWork?.remove();
+      if(!eShop){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','shop');b.innerHTML='<i class="fas fa-shopping-cart"></i><span>МАГАЗИН</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+      // Hide requests in shop mode
+      eReq?.remove();
     }
     // Re-attach nav listeners
     nav.querySelectorAll('.nav-item').forEach(btn=>{
@@ -908,7 +920,7 @@ $('modeBtn')?.addEventListener('click',(e)=>{
     });
     ['faq1','faq2','telegramCard'].forEach(id=>$(id)?.querySelector('.help-question')?.addEventListener('click',function(){this.nextElementSibling.classList.toggle('show');}));
     $('profileCard')?.addEventListener('click',()=>{if(currentUser?.role==='admin'){switchTab('users');}else{alert(`Ваш профиль:\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\nБаланс: ${currentBalance} ₽`);}});
-    $('statsCard')?.addEventListener('click',()=>switchTab('tasks'));
+    $('statsCard')?.addEventListener('click',()=>switchTab(currentMode==='shop'?'shop':'tasks'));
   }
 
   async function switchTab(tabId){
