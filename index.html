@@ -93,15 +93,59 @@
     .app-header { background: var(--app-bg); padding: 16px 20px 12px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
     .app-header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; }
 
-    /* ── MODE TOGGLE ── */
-    .mode-toggle-wrap { display: flex; align-items: center; gap: 8px; }
-    .mode-toggle { position: relative; width: 64px; height: 30px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: 20px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-    .mode-toggle.shop-mode { background: linear-gradient(135deg,#7c3aed,#a78bfa); border-color: #7c3aed; }
-    .mode-toggle-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: transform 0.3s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: center; font-size: 11px; }
-    .mode-toggle.shop-mode .mode-toggle-knob { transform: translateX(34px); }
-    .mode-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; }
-    .mode-label.earn { color: var(--accent); }
-    .mode-label.shop { color: var(--shop-accent); }
+/* ── MODE SELECTOR ── */
+    .mode-selector { position: relative; display: inline-block; }
+    .mode-btn {
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mode-btn:hover { border-color: var(--accent); }
+    .mode-btn.shop { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; border-color: #7c3aed; }
+    .mode-btn.earn { color: var(--accent); }
+    .mode-btn i { font-size: 14px; }
+    .mode-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--app-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 8px;
+      min-width: 180px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+    }
+    .mode-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .mode-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .mode-option:hover { background: var(--input-bg); }
+    .mode-option.selected { background: var(--nav-active-bg); color: var(--accent); }
+    .mode-option i { width: 20px; text-align: center; }
+    body.dark .mode-dropdown { box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    body.dark .mode-option.selected { background: var(--nav-active-bg); }
 
     /* ── BELL ── */
     .bell-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
@@ -259,7 +303,7 @@
 
     <div class="privacy-notice">
       <strong>🔒 Важно — конфиденциальность!</strong>
-      <p>Не используйте настоящий логин и пароль от Telegram или других сервисов. Придумайте любой логин и пароль.</p>
+      <p>Не используйте настоящий логин и пароль от Telegram или других сервисов. Придумайте любой псевдоним — ваши данные видны только вам и администратору.</p>
     </div>
 
     <div id="loginForm" class="auth-form">
@@ -283,13 +327,23 @@
     <div class="app-header">
       <h1 id="dynamicTitle">МЕНЮ</h1>
       <div style="display:flex;align-items:center;gap:10px;">
-        <!-- Mode toggle -->
-        <div class="mode-toggle-wrap" id="modeToggleWrap" title="Переключить режим">
-          <span class="mode-label earn" id="modeEarnLabel">💰</span>
-          <div class="mode-toggle" id="modeToggle">
-            <div class="mode-toggle-knob" id="modeKnob">💰</div>
+        <!-- Mode selector button -->
+        <div class="mode-selector" id="modeSelector">
+          <button class="mode-btn" id="modeBtn">
+            <span id="modeIcon">💰</span>
+            <span id="modeText">ВЫБОР</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="mode-dropdown" id="modeDropdown">
+            <div class="mode-option" data-mode="earn">
+              <i class="fas fa-coins"></i>
+              <span>ЗАРАБОТОК</span>
+            </div>
+            <div class="mode-option" data-mode="shop">
+              <i class="fas fa-shopping-cart"></i>
+              <span>ПОКУПКА</span>
+            </div>
           </div>
-          <span class="mode-label shop" id="modeShopLabel">🛒</span>
         </div>
         <div class="bell-wrap">
           <div class="bell-bubble" id="bellBubble">Новое сообщение!</div>
@@ -601,28 +655,39 @@
     $('priceEditModal').classList.remove('active');
   }
 
-  // ═══ MODE TOGGLE ═══
-  function applyMode(mode) {
-    currentMode = mode;
-    localStorage.setItem('appMode', mode);
-    const toggle = $('modeToggle');
-    const knob = $('modeKnob');
-    const banner = $('modeBanner');
-    if(mode === 'shop') {
-      toggle?.classList.add('shop-mode');
-      if(knob) knob.innerText='🛒';
-      banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
-      if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
-      if(banner) banner.querySelector('span').innerText='🛒';
-    } else {
-      toggle?.classList.remove('shop-mode');
-      if(knob) knob.innerText='💰';
-      banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
-      if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
-      if(banner) banner.querySelector('span').innerText='💰';
-    }
-    rebuildNav();
-  }
+// ═══ MODE SELECTOR ═══
+   function applyMode(mode) {
+     currentMode = mode;
+     localStorage.setItem('appMode', mode);
+     const btn = $('modeBtn');
+     const icon = $('modeIcon');
+     const text = $('modeText');
+     const dropdown = $('modeDropdown');
+     const banner = $('modeBanner');
+     
+     if(mode === 'shop') {
+       btn?.classList.add('shop');
+       if(icon) icon.innerText = '🛒';
+       if(text) text.innerText = 'ПОКУПКА';
+       banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
+       if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
+       if(banner) banner.querySelector('span').innerText='🛒';
+     } else {
+       btn?.classList.remove('shop');
+       if(icon) icon.innerText = '💰';
+       if(text) text.innerText = 'ЗАРАБОТОК';
+       banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
+       if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
+       if(banner) banner.querySelector('span').innerText='💰';
+     }
+     
+     // Update dropdown selected state
+     document.querySelectorAll('.mode-option').forEach(opt => {
+       opt.classList.toggle('selected', opt.dataset.mode === mode);
+     });
+     
+     rebuildNav();
+   }
   function rebuildNav() {
     if(!currentUser) return;
     const nav=$('bottomNav');
@@ -823,8 +888,20 @@
     $('addPriceRowBtn')?.addEventListener('click',addPriceRow);
     $('savePriceEditBtn')?.addEventListener('click',savePriceEdit);
     $('cancelPriceEditBtn')?.addEventListener('click',()=>$('priceEditModal').classList.remove('active'));
-    $('modeToggle')?.addEventListener('click',()=>applyMode(currentMode==='earn'?'shop':'earn'));
-    $('bellButton')?.addEventListener('click',()=>{
+$('modeBtn')?.addEventListener('click',(e)=>{
+       e.stopPropagation();
+       $('modeDropdown').classList.toggle('show');
+     });
+     document.querySelectorAll('.mode-option').forEach(opt=>{
+       opt.addEventListener('click',()=>{
+         applyMode(opt.dataset.mode);
+         $('modeDropdown').classList.remove('show');
+       });
+     });
+     document.addEventListener('click',(e)=>{
+       if(!$('modeSelector')?.contains(e.target)) $('modeDropdown').classList.remove('show');
+     });
+     $('bellButton')?.addEventListener('click',()=>{
       $('bellBubble').classList.remove('show');
       if(currentUser?.role==='admin'){const u=requests.filter(r=>!r.isRead);if(!u.length){alert('Нет новых уведомлений');return;}$('notifyList').innerHTML=u.map(r=>`<div class="notify-item">📌 ${escHtml(r.jobTitle)} — ${escHtml(r.userName)}</div>`).join('');$('notifyModal').classList.add('active');}
       else{switchTab('messages');}
