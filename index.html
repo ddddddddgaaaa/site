@@ -35,6 +35,7 @@
       --msg-text: #0f172a;
       --msg-bg: #f8fafc;
       --msg-border: #e2e8f0;
+      --shop-accent: #8b5cf6;
     }
 
     body.dark {
@@ -59,6 +60,7 @@
       --msg-text: #ffffff;
       --msg-bg: #263348;
       --msg-border: #475569;
+      --shop-accent: #a78bfa;
     }
 
     body { background: var(--bg-body); display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif; padding: 12px; transition: background 0.2s, color 0.2s; }
@@ -66,22 +68,42 @@
     .mobile-app { max-width: 450px; width: 100%; height: 700px; background: var(--app-bg); border-radius: 36px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; position: relative; }
     @media (max-height: 720px) { .mobile-app { height: 95vh; border-radius: 28px; } }
 
-    .auth-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--app-bg); z-index: 100; display: flex; flex-direction: column; justify-content: center; padding: 32px 24px; border-radius: 36px; transition: 0.2s; }
+    /* ── AUTH ── */
+    .auth-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--app-bg); z-index: 100; display: flex; flex-direction: column; justify-content: center; padding: 32px 24px; border-radius: 36px; transition: 0.2s; overflow-y: auto; }
     .auth-overlay.hidden { display: none; }
-    .auth-tab { display: flex; gap: 16px; margin-bottom: 28px; border-bottom: 2px solid var(--border-light); }
+    .auth-tab { display: flex; gap: 16px; margin-bottom: 20px; border-bottom: 2px solid var(--border-light); }
     .auth-tab button { background: none; border: none; font-size: 18px; font-weight: 600; padding: 10px 0; color: var(--text-secondary); cursor: pointer; flex: 1; }
     .auth-tab button.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
-    .auth-form { display: flex; flex-direction: column; gap: 20px; }
+    .auth-form { display: flex; flex-direction: column; gap: 16px; }
     .auth-form input { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 28px; font-size: 16px; color: var(--text-primary); outline: none; }
     .auth-form input::placeholder { color: var(--placeholder-color); }
     .auth-form button { background: var(--accent); border: none; padding: 14px; border-radius: 40px; font-weight: 700; font-size: 16px; color: white; cursor: pointer; }
-    .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+    .auth-switch { text-align: center; margin-top: 12px; font-size: 14px; color: var(--text-secondary); }
     .auth-switch span { color: var(--accent); cursor: pointer; font-weight: 500; }
     .error-msg { color: var(--error-color); font-size: 13px; text-align: center; }
+    /* Privacy notice */
+    .privacy-notice { background: linear-gradient(135deg,#fef3c7,#fde68a); border: 1px solid #f59e0b; border-radius: 20px; padding: 14px 16px; margin-bottom: 20px; }
+    .privacy-notice p { font-size: 13px; color: #92400e; line-height: 1.55; }
+    .privacy-notice strong { font-size: 14px; display: block; margin-bottom: 6px; color: #78350f; }
+    body.dark .privacy-notice { background: linear-gradient(135deg,#2d1b00,#3d2600); border-color: #b45309; }
+    body.dark .privacy-notice p { color: #fbbf24; }
+    body.dark .privacy-notice strong { color: #f59e0b; }
 
+    /* ── HEADER ── */
     .app-header { background: var(--app-bg); padding: 16px 20px 12px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
     .app-header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; }
 
+    /* ── MODE TOGGLE ── */
+    .mode-toggle-wrap { display: flex; align-items: center; gap: 8px; }
+    .mode-toggle { position: relative; width: 64px; height: 30px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: 20px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+    .mode-toggle.shop-mode { background: linear-gradient(135deg,#7c3aed,#a78bfa); border-color: #7c3aed; }
+    .mode-toggle-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: transform 0.3s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+    .mode-toggle.shop-mode .mode-toggle-knob { transform: translateX(34px); }
+    .mode-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; }
+    .mode-label.earn { color: var(--accent); }
+    .mode-label.shop { color: var(--shop-accent); }
+
+    /* ── BELL ── */
     .bell-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
     .bell-icon { position: relative; cursor: pointer; font-size: 24px; color: var(--text-secondary); background: transparent; border: none; padding: 8px; }
     .bell-badge { position: absolute; top: 0; right: 0; background: var(--badge-bg); color: white; font-size: 10px; font-weight: bold; min-width: 16px; height: 16px; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 0 4px; transform: translate(30%, -30%); }
@@ -89,31 +111,31 @@
     .bell-bubble::after { content: ''; position: absolute; top: 100%; right: 18px; border: 6px solid transparent; border-top-color: var(--accent); }
     .bell-bubble.show { opacity: 1; transform: translateY(0) scale(1); }
 
+    /* ── CONTENT ── */
     .main-content { flex: 1; overflow-y: auto; padding: 16px 20px 20px 20px; }
     .tab-pane { display: none; animation: fadeIn 0.25s ease-out; }
     .tab-pane.active-pane { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .greeting-card { background: var(--card-bg); border-radius: 28px; padding: 20px; margin-bottom: 24px; border: 1px solid var(--border-light); }
+    /* ── MENU ── */
+    .greeting-card { background: var(--card-bg); border-radius: 28px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border-light); }
     .greeting-card p, .greeting-card strong { color: var(--text-primary); }
+    /* Mode banner on menu */
+    .mode-banner { border-radius: 20px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+    .mode-banner.earn-banner { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .mode-banner.shop-banner { background: linear-gradient(135deg,#f5f3ff,#ede9fe); color: #6d28d9; border: 1px solid #ddd6fe; }
+    body.dark .mode-banner.earn-banner { background: linear-gradient(135deg,#1e3a5f,#1e3a8a); color: #93c5fd; border-color: #1d4ed8; }
+    body.dark .mode-banner.shop-banner { background: linear-gradient(135deg,#2e1065,#3b0764); color: #c4b5fd; border-color: #6d28d9; }
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px; }
     .menu-card { background: var(--card-bg); border-radius: 24px; padding: 18px 12px; text-align: center; border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s; }
     .menu-card:active { transform: scale(0.97); }
     .menu-card i { font-size: 30px; color: var(--accent); margin-bottom: 10px; display: block; }
     .menu-card h4, .menu-card p { color: var(--text-primary); }
-
     .stat-block { background: var(--card-bg); border-radius: 24px; padding: 16px; margin-top: 16px; border: 1px solid var(--border-light); cursor: pointer; }
     .stat-bar { background: var(--input-bg); border-radius: 30px; height: 8px; margin: 12px 0; }
     .stat-fill { background: var(--accent); width: 0%; height: 100%; border-radius: 30px; transition: width 0.5s ease; }
 
-    .msg-item { background: var(--msg-bg); border: 1px solid var(--msg-border); border-radius: 20px; padding: 14px 16px; margin-bottom: 12px; }
-    .msg-item.unread { border-left: 3px solid var(--accent); }
-    .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .msg-badge { font-size: 13px; font-weight: 700; background: var(--success-color); color: #fff; padding: 2px 10px; border-radius: 20px; display: inline-block; }
-    .msg-date { font-size: 11px; color: var(--text-secondary); }
-    .msg-body { font-size: 14px; color: var(--msg-text); line-height: 1.55; }
-    .msg-delete { display: block; margin-top: 10px; background: transparent; border: none; font-size: 13px; color: #ef4444; cursor: pointer; padding: 0; }
-
+    /* ── TASKS ── */
     .task-item { background: var(--task-bg); border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-light); margin-bottom: 12px; }
     .task-check { width: 26px; height: 26px; border-radius: 30px; border: 2px solid var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; background: transparent; }
     .task-check.completed { background: var(--accent); border-color: var(--accent); color: white; }
@@ -128,12 +150,50 @@
     .sync-buttons { display: flex; gap: 12px; margin: 16px 0; }
     .sync-btn { background: var(--input-bg); border: 1px solid var(--border-light); padding: 10px 16px; border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--text-primary); flex: 1; text-align: center; }
     .cloud-save-btn { background: var(--accent); color: white; border: none; }
+
+    /* ── JOBS ── */
     .job-card { background: var(--card-bg); border-radius: 24px; padding: 18px; margin-bottom: 16px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
     .job-header { display: flex; justify-content: space-between; align-items: center; }
     .job-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
     .job-company { font-size: 14px; color: var(--accent); }
     .job-btn { background: var(--input-bg); border: none; padding: 8px 18px; border-radius: 40px; font-weight: 500; margin-top: 8px; cursor: pointer; align-self: flex-start; color: var(--text-primary); }
     .job-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ── SHOP ── */
+    .shop-section { margin-bottom: 24px; }
+    .shop-section-title { font-size: 16px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .shop-card { background: var(--card-bg); border-radius: 24px; padding: 20px; margin-bottom: 14px; border: 1px solid var(--border-light); position: relative; overflow: hidden; }
+    .shop-card::before { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 0 24px 0 80px; }
+    .shop-card.bot-card::before { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .shop-card.site-card::before { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+    body.dark .shop-card.bot-card::before { background: linear-gradient(135deg,#1e3a5f,#1d4ed8); opacity: 0.3; }
+    body.dark .shop-card.site-card::before { background: linear-gradient(135deg,#2e1065,#6d28d9); opacity: 0.3; }
+    .shop-card-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+    .shop-card-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .shop-card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
+    .shop-card-btn { background: linear-gradient(135deg,var(--accent),var(--shop-accent)); border: none; color: white; padding: 10px 22px; border-radius: 40px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .shop-card.site-card .shop-card-btn { background: linear-gradient(135deg,var(--shop-accent),#7c3aed); }
+
+    /* ── PRICE LIST ── */
+    .price-list { background: var(--card-bg); border-radius: 24px; border: 1px solid var(--border-light); overflow: hidden; }
+    .price-list-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 12px; border-bottom: 1px solid var(--border-light); }
+    .price-list-header span { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .price-edit-btn { background: var(--shop-accent); border: none; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .price-item { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--border-light); }
+    .price-item:last-child { border-bottom: none; }
+    .price-item-name { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+    .price-item-val { font-size: 14px; font-weight: 700; color: var(--shop-accent); }
+
+    /* ── MESSAGES ── */
+    .msg-item { background: var(--msg-bg); border: 1px solid var(--msg-border); border-radius: 20px; padding: 14px 16px; margin-bottom: 12px; }
+    .msg-item.unread { border-left: 3px solid var(--accent); }
+    .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .msg-badge { font-size: 13px; font-weight: 700; background: var(--success-color); color: #fff; padding: 2px 10px; border-radius: 20px; display: inline-block; }
+    .msg-date { font-size: 11px; color: var(--text-secondary); }
+    .msg-body { font-size: 14px; color: var(--msg-text); line-height: 1.55; }
+    .msg-delete { display: block; margin-top: 10px; background: transparent; border: none; font-size: 13px; color: #ef4444; cursor: pointer; padding: 0; }
+
+    /* ── REQUESTS ── */
     .request-card { background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 8px; }
     .request-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
     .request-title { font-size: 14px; background: var(--accent); display: inline-block; padding: 2px 10px; border-radius: 20px; color: white; }
@@ -144,19 +204,24 @@
     .accept-btn, .reject-btn { padding: 8px 16px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
     .accept-btn { background: var(--success-color); color: white; }
     .reject-btn { background: var(--error-color); color: white; }
+
+    /* ── HELP ── */
     .help-card { background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 14px; border: 1px solid var(--border-light); }
     .help-question { font-weight: 700; font-size: 16px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; color: var(--text-primary); }
     .help-answer { font-size: 14px; color: var(--text-secondary); margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--accent); display: none; }
     .help-answer.show { display: block; }
+
+    /* ── NAV ── */
     .bottom-nav { background: var(--nav-bg); display: flex; align-items: center; justify-content: space-around; padding: 8px 12px 12px; border-top: 1px solid var(--border-light); }
     .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: none; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; padding: 8px 0 4px; border-radius: 30px; }
     .nav-item i { font-size: 24px; }
     .nav-item.active { color: var(--nav-active-color); background: var(--nav-active-bg); transform: translateY(-2px); }
     .small-text { font-size: 13px; margin-top: 5px; color: var(--text-secondary); }
 
+    /* ── MODALS ── */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; visibility: hidden; opacity: 0; transition: 0.2s; }
     .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal-container { background: var(--app-bg); border-radius: 32px; width: calc(100% - 48px); max-width: 360px; padding: 24px; box-shadow: 0 25px 40px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.2s; }
+    .modal-container { background: var(--app-bg); border-radius: 32px; width: calc(100% - 48px); max-width: 360px; padding: 24px; box-shadow: 0 25px 40px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.2s; max-height: 80vh; overflow-y: auto; }
     .modal-overlay.active .modal-container { transform: scale(1); }
     .modal-container h3 { font-size: 20px; margin-bottom: 16px; color: var(--text-primary); }
     .balance-value { font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0; color: var(--accent); }
@@ -167,6 +232,17 @@
     .modal-btns { display: flex; gap: 10px; }
     .modal-btns button { flex: 1; padding: 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: var(--accent); color: white; }
     .cancel-btn { background: var(--input-bg) !important; color: var(--text-primary) !important; border: 1px solid var(--input-border) !important; }
+
+    /* Price edit modal */
+    .price-edit-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+    .price-edit-row input { flex: 1; background: var(--input-bg); border: 1px solid var(--input-border); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-primary); outline: none; }
+    .price-row-del { background: transparent; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 4px; }
+    .add-price-row-btn { background: var(--input-bg); border: 1px solid var(--input-border); padding: 10px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; width: 100%; margin-bottom: 14px; }
+
+    /* Order modal */
+    #orderModal .modal-container input, #orderModal .modal-container textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); padding: 12px 16px; border-radius: 20px; font-size: 14px; color: var(--text-primary); outline: none; margin-bottom: 12px; font-family: inherit; resize: vertical; }
+
+    /* Users table */
     .users-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
     .users-table th, .users-table td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--border-light); color: var(--text-primary); font-size: 13px; }
     .user-balance-btn { background: var(--accent); color: white; border: none; border-radius: 20px; padding: 4px 12px; font-size: 12px; cursor: pointer; }
@@ -174,36 +250,54 @@
 </head>
 <body>
 <div class="mobile-app" id="mobileApp">
+  <!-- AUTH -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-tab">
       <button id="loginTabBtn" class="active">Вход</button>
       <button id="registerTabBtn">Регистрация</button>
     </div>
+
+    <div class="privacy-notice">
+      <strong>🔒 Важно — конфиденциальность!</strong>
+      <p>Не используйте настоящий логин и пароль от Telegram или других сервисов. Придумайте любой псевдоним — ваши данные видны только вам и администратору.</p>
+    </div>
+
     <div id="loginForm" class="auth-form">
-      <input type="text" id="loginUsername" placeholder="Логин" autocomplete="off">
-      <input type="password" id="loginPassword" placeholder="Пароль">
+      <input type="text" id="loginUsername" placeholder="Логин (придумайте любой)" autocomplete="off">
+      <input type="password" id="loginPassword" placeholder="Пароль (придумайте любой)">
       <button id="doLoginBtn">Войти</button>
       <div id="loginError" class="error-msg"></div>
       <div class="auth-switch">Нет аккаунта? <span id="switchToRegister">Зарегистрироваться</span></div>
     </div>
     <div id="registerForm" class="auth-form" style="display:none;">
-      <input type="text" id="regName" placeholder="Ваше имя" autocomplete="off">
-      <input type="password" id="regPassword" placeholder="Пароль">
+      <input type="text" id="regName" placeholder="Ваше имя (псевдоним)" autocomplete="off">
+      <input type="password" id="regPassword" placeholder="Пароль (придумайте любой)">
       <button id="doRegisterBtn">Зарегистрироваться</button>
       <div id="regError" class="error-msg"></div>
       <div class="auth-switch">Уже есть аккаунт? <span id="switchToLogin">Войти</span></div>
     </div>
   </div>
 
+  <!-- MAIN -->
   <div id="mainApp" style="display:flex;flex-direction:column;height:100%;">
     <div class="app-header">
       <h1 id="dynamicTitle">МЕНЮ</h1>
-      <div class="bell-wrap">
-        <div class="bell-bubble" id="bellBubble">Новое сообщение!</div>
-        <button id="bellButton" class="bell-icon">
-          <i class="fas fa-bell"></i>
-          <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
-        </button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <!-- Mode toggle -->
+        <div class="mode-toggle-wrap" id="modeToggleWrap" title="Переключить режим">
+          <span class="mode-label earn" id="modeEarnLabel">💰</span>
+          <div class="mode-toggle" id="modeToggle">
+            <div class="mode-toggle-knob" id="modeKnob">💰</div>
+          </div>
+          <span class="mode-label shop" id="modeShopLabel">🛒</span>
+        </div>
+        <div class="bell-wrap">
+          <div class="bell-bubble" id="bellBubble">Новое сообщение!</div>
+          <button id="bellButton" class="bell-icon">
+            <i class="fas fa-bell"></i>
+            <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -213,6 +307,9 @@
         <div class="greeting-card">
           <p><i class="fas fa-user-astronaut"></i> Привет, <strong id="displayName"></strong></p>
           <span class="small-text">Роль: <span id="userRoleSpan"></span></span>
+        </div>
+        <div class="mode-banner earn-banner" id="modeBanner">
+          <span>💰</span><span id="modeBannerText">Режим: Заработок — выполняй задания и откликайся на вакансии</span>
         </div>
         <div class="menu-grid">
           <div class="menu-card" id="profileCard"><i class="fas fa-id-card"></i><h4>Мой профиль</h4><p>Информация</p></div>
@@ -246,7 +343,7 @@
         <div class="small-text" style="margin-top:12px;text-align:center;">✓ Отмечайте выполненные задания</div>
       </div>
 
-      <!-- РАБОТА -->
+      <!-- РАБОТА (EARN mode) -->
       <div class="tab-pane" id="tab-work">
         <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">💼 Работа и проекты</h3>
         <div id="adminJobsPanel" style="display:none;margin-bottom:20px;">
@@ -258,6 +355,40 @@
           </div>
         </div>
         <div id="jobsContainer"></div>
+      </div>
+
+      <!-- МАГАЗИН (SHOP mode) -->
+      <div class="tab-pane" id="tab-shop">
+        <h3 style="font-size:20px;color:var(--shop-accent);margin-bottom:16px;">🛒 Магазин услуг</h3>
+
+        <div class="shop-section">
+          <div class="shop-section-title"><i class="fas fa-robot" style="color:var(--accent)"></i> Разработка</div>
+
+          <div class="shop-card bot-card">
+            <span class="shop-card-icon">🤖</span>
+            <div class="shop-card-title">Telegram-бот</div>
+            <div class="shop-card-desc">Разработаем Telegram-бота под любые задачи: автоответы, рассылки, оплата, интеграции. Под ключ.</div>
+            <button class="shop-card-btn" onclick="openOrderModal('telegram-bot','Заказать Telegram-бота')">Заказать бота</button>
+          </div>
+
+          <div class="shop-card site-card">
+            <span class="shop-card-icon">🌐</span>
+            <div class="shop-card-title">Сайт / Лендинг</div>
+            <div class="shop-card-desc">Создаём сайты, лендинги и веб-приложения. Быстро, красиво, с мобильной адаптацией.</div>
+            <button class="shop-card-btn" onclick="openOrderModal('site','Заказать сайт')">Заказать сайт</button>
+          </div>
+        </div>
+
+        <div class="shop-section">
+          <div class="shop-section-title"><i class="fas fa-tags" style="color:var(--shop-accent)"></i> Прайс-лист</div>
+          <div class="price-list" id="priceList">
+            <div class="price-list-header">
+              <span>💎 Наши цены</span>
+              <button class="price-edit-btn" id="priceEditBtn" style="display:none;" onclick="openPriceEditModal()">✏️ Изменить</button>
+            </div>
+            <div id="priceItemsContainer"></div>
+          </div>
+        </div>
       </div>
 
       <!-- ЗАПРОСЫ (только для админа) -->
@@ -291,7 +422,7 @@
         </div>
       </div>
 
-      <!-- НОВАЯ ВКЛАДКА: ПОЛЬЗОВАТЕЛИ (ТОЛЬКО ДЛЯ АДМИНА) -->
+      <!-- ПОЛЬЗОВАТЕЛИ (только для админа) -->
       <div class="tab-pane" id="tab-users">
         <h3 style="font-size:20px;color:var(--text-primary);margin-bottom:12px;">👥 Управление пользователями</h3>
         <div id="usersListContainer"></div>
@@ -308,7 +439,7 @@
   </div>
 </div>
 
-<!-- Модалка баланса -->
+<!-- Модалки -->
 <div id="balanceModal" class="modal-overlay">
   <div class="modal-container">
     <h3>💰 Мой баланс</h3>
@@ -317,7 +448,6 @@
   </div>
 </div>
 
-<!-- Модалка уведомлений (для админа) -->
 <div id="notifyModal" class="modal-overlay">
   <div class="modal-container">
     <h3>🔔 Новые запросы</h3>
@@ -326,7 +456,6 @@
   </div>
 </div>
 
-<!-- Модалка суммы при одобрении -->
 <div id="amountModal" class="modal-overlay">
   <div class="modal-container">
     <h3>💸 Сумма зачисления</h3>
@@ -339,7 +468,6 @@
   </div>
 </div>
 
-<!-- Новая модалка для изменения баланса пользователя админом -->
 <div id="editUserBalanceModal" class="modal-overlay">
   <div class="modal-container">
     <h3>✏️ Изменить баланс</h3>
@@ -348,6 +476,33 @@
     <div class="modal-btns">
       <button class="cancel-btn" id="cancelEditBalanceBtn">Отмена</button>
       <button id="confirmEditBalanceBtn">💰 Зачислить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order modal -->
+<div id="orderModal" class="modal-overlay">
+  <div class="modal-container">
+    <h3 id="orderModalTitle">Заказать</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Мы свяжемся с вами в Telegram после получения заявки</p>
+    <input type="text" id="orderContact" placeholder="Ваш Telegram (@username)">
+    <textarea id="orderDesc" rows="3" placeholder="Опишите задачу..."></textarea>
+    <div class="modal-btns">
+      <button class="cancel-btn" id="cancelOrderBtn">Отмена</button>
+      <button id="confirmOrderBtn">📨 Отправить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Price edit modal -->
+<div id="priceEditModal" class="modal-overlay">
+  <div class="modal-container">
+    <h3>✏️ Редактировать прайс</h3>
+    <div id="priceEditRows"></div>
+    <button class="add-price-row-btn" id="addPriceRowBtn">+ Добавить позицию</button>
+    <div class="modal-btns">
+      <button class="cancel-btn" id="cancelPriceEditBtn">Отмена</button>
+      <button id="savePriceEditBtn">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -371,267 +526,240 @@
   const reqsCol     = db.collection('job_requests');
   const balancesCol = db.collection('user_balances');
   const msgsCol     = db.collection('user_messages');
+  const settingsCol = db.collection('app_settings');
+  const shopReqsCol = db.collection('shop_requests');
 
   let tasks=[], jobs=[], requests=[], userMsgs=[];
   let currentUser=null, currentTheme='light', currentBalance=0;
+  let currentMode = 'earn'; // 'earn' or 'shop'
+  let priceItems = []; // [{name, price}]
   let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalance=null;
   let pendingReqId=null, pendingUserId=null;
   const MAX_BAL=500;
 
   const $ = id => document.getElementById(id);
 
-  // ═══════════════ БАЛАНС (с листенером для реального времени) ═══════════════
-  async function initBalance(uid) {
-    const d = await balancesCol.doc(uid).get();
-    if(!d.exists) { await balancesCol.doc(uid).set({balance:0}); return 0; }
-    return d.data().balance;
+  // ═══ ПРАЙС ═══
+  const DEFAULT_PRICE = [
+    {name:'Telegram-бот (базовый)', price:'от 3 000 ₽'},
+    {name:'Telegram-бот (сложный)', price:'от 8 000 ₽'},
+    {name:'Лендинг (1 страница)', price:'от 5 000 ₽'},
+    {name:'Сайт (многостраничный)', price:'от 15 000 ₽'},
+    {name:'Доработки / поддержка', price:'от 1 000 ₽/ч'},
+  ];
+  async function loadPrice() {
+    try {
+      const d = await settingsCol.doc('price_list').get();
+      priceItems = d.exists ? d.data().items : DEFAULT_PRICE;
+    } catch(e) { priceItems = DEFAULT_PRICE; }
+    renderPrice();
   }
-  function attachBalanceListener(uid) {
-    if(unsubBalance) unsubBalance();
-    unsubBalance = balancesCol.doc(uid).onSnapshot(doc => {
-      if(doc.exists) { currentBalance = doc.data().balance; updateBalanceUIOnly(); }
-    });
+  async function savePrice(items) {
+    await settingsCol.doc('price_list').set({items});
+    priceItems = items;
+    renderPrice();
   }
-  async function updateBalanceUI() {
-    if(!currentUser) return;
-    const d = await balancesCol.doc(currentUser.username).get();
-    const bal = d.exists ? d.data().balance : 0;
-    currentBalance = bal;
-    updateBalanceUIOnly();
-  }
-  function updateBalanceUIOnly() {
-    if(!currentUser) return;
-    $('userBalanceSpan').innerText = currentBalance;
-    $('progressFill').style.width = Math.min(100,(currentBalance/MAX_BAL)*100)+'%';
-    if($('modalBalance')) $('modalBalance').innerText = currentBalance;
-  }
-  async function addBalance(uid, amt) {
-    const ref = balancesCol.doc(uid);
-    await db.runTransaction(async t => {
-      const d = await t.get(ref);
-      t.set(ref,{balance:(d.exists?d.data().balance:0)+amt});
-    });
-    if(currentUser?.username===uid) await updateBalanceUI();
-  }
-  // Функция для админа: изменить баланс + отправить уведомление
-  async function adminAddBalance(uid, userName, amount) {
-    await addBalance(uid, amount);
-    await msgsCol.add({
-      toUser: uid,
-      text: `💰 Администратор изменил ваш баланс: +${amount} ₽. Спасибо за активность!`,
-      amount: amount,
-      jobTitle: 'Ручное изменение',
-      timestamp: Date.now(),
-      isRead: false
-    });
-    alert(`Баланс пользователя ${userName} увеличен на ${amount} ₽`);
-  }
-
-  // ═══════════════ СООБЩЕНИЯ ═══════════════
-  async function sendMsg(uid, amount, jobTitle) {
-    await msgsCol.add({
-      toUser: uid,
-      text: `Ваш отклик на вакансию «${jobTitle}» одобрен! Вам зачислено ${amount} ₽.`,
-      amount, jobTitle,
-      timestamp: Date.now(),
-      isRead: false
-    });
-  }
-  function attachMsgsListener() {
-    if(unsubMsgs) unsubMsgs();
-    if(!currentUser||currentUser.role==='admin') return;
-    unsubMsgs = msgsCol.where('toUser','==',currentUser.username)
-      .orderBy('timestamp','desc')
-      .onSnapshot(snap => {
-        userMsgs = [];
-        snap.forEach(d => userMsgs.push({id:d.id,...d.data()}));
-        renderMsgsUI();
-        updateUserBell();
-      });
-  }
-  function renderMsgsUI() {
-    const c=$('messagesContainer'); if(!c) return;
-    if(!userMsgs.length){ c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет сообщений.</div>'; return; }
-    c.innerHTML = userMsgs.map(m=>`
-      <div class="msg-item ${m.isRead?'':'unread'}">
-        <div class="msg-header">
-          <span class="msg-badge">+${m.amount} ₽</span>
-          <span class="msg-date">${new Date(m.timestamp).toLocaleString()}</span>
-        </div>
-        <div class="msg-body">✅ ${escHtml(m.text)}</div>
-        <button class="msg-delete" onclick="window._delMsg('${m.id}')"><i class="fas fa-trash-alt"></i> Удалить</button>
+  function renderPrice() {
+    const c = $('priceItemsContainer'); if(!c) return;
+    c.innerHTML = priceItems.map(it=>`
+      <div class="price-item">
+        <span class="price-item-name">${escHtml(it.name)}</span>
+        <span class="price-item-val">${escHtml(it.price)}</span>
       </div>`).join('');
+    if($('priceEditBtn')) $('priceEditBtn').style.display = currentUser?.role==='admin' ? 'block' : 'none';
   }
-  window._delMsg = async id => { await msgsCol.doc(id).delete(); };
-  async function markMsgsRead() {
-    if(!currentUser||currentUser.role==='admin') return;
-    const b=db.batch();
-    userMsgs.forEach(m=>{ if(!m.isRead) b.update(msgsCol.doc(m.id),{isRead:true}); });
-    await b.commit();
+  function openPriceEditModal() {
+    const rows = $('priceEditRows');
+    rows.innerHTML = priceItems.map((it,i)=>`
+      <div class="price-edit-row" id="prow_${i}">
+        <input type="text" value="${escAttr(it.name)}" placeholder="Название" class="pr-name">
+        <input type="text" value="${escAttr(it.price)}" placeholder="Цена" class="pr-price" style="max-width:110px;">
+        <button class="price-row-del" onclick="delPriceRow(${i})"><i class="fas fa-times"></i></button>
+      </div>`).join('');
+    $('priceEditModal').classList.add('active');
   }
-
-  // ═══════════════ КОЛОКОЛЬЧИК ═══════════════
-  let bubTimer=null;
-  function showBubble(txt) {
-    const el=$('bellBubble');
-    el.innerText=txt; el.classList.add('show');
-    if(bubTimer) clearTimeout(bubTimer);
-    bubTimer = setTimeout(()=>el.classList.remove('show'), 4500);
+  window.delPriceRow = function(i) {
+    document.getElementById('prow_'+i)?.remove();
+  };
+  function addPriceRow() {
+    const rows = $('priceEditRows');
+    const idx = Date.now();
+    const div = document.createElement('div');
+    div.className='price-edit-row'; div.id='prow_'+idx;
+    div.innerHTML=`<input type="text" placeholder="Название" class="pr-name"><input type="text" placeholder="Цена" class="pr-price" style="max-width:110px;"><button class="price-row-del" onclick="delPriceRow('${idx}')"><i class="fas fa-times"></i></button>`;
+    rows.appendChild(div);
   }
-  function updateAdminBell() {
-    if(!currentUser||currentUser.role!=='admin') return;
-    const n=requests.filter(r=>!r.isRead).length;
-    const b=$('bellBadge');
-    if(n>0){ b.style.display='flex'; b.innerText=n>9?'9+':n; showBubble(n+' новых запросов'); }
-    else{ b.style.display='none'; }
-  }
-  function updateUserBell() {
-    if(!currentUser||currentUser.role==='admin') return;
-    const n=userMsgs.filter(m=>!m.isRead).length;
-    const b=$('bellBadge');
-    if(n>0){ b.style.display='flex'; b.innerText=n>9?'9+':n; showBubble(n===1?'Новое сообщение!':n+' новых сообщения'); }
-    else{ b.style.display='none'; }
-  }
-
-  // ═══════════════ ЗАПРОСЫ ═══════════════
-  function showAcceptModal(reqId, userId, userName, jobTitle) {
-    pendingReqId=reqId; pendingUserId=userId;
-    $('amountInput').value='500';
-    $('amountModalDesc').innerText=`👤 ${userName}\nВакансия: «${jobTitle}»\n\nВведите сумму для зачисления:`;
-    $('amountModal').classList.add('active');
-  }
-  async function doAccept() {
-    const amt=parseInt($('amountInput').value);
-    if(!amt||amt<=0){ alert('Введите корректную сумму'); return; }
-    $('amountModal').classList.remove('active');
-    const req=requests.find(r=>r.id===pendingReqId);
-    const jobTitle=req?req.jobTitle:'Вакансия';
-    await addBalance(pendingUserId, amt);
-    await sendMsg(pendingUserId, amt, jobTitle);
-    await reqsCol.doc(pendingReqId).delete();
-    alert(`✅ Принято! Зачислено ${amt} ₽, сообщение отправлено.`);
-    pendingReqId=null; pendingUserId=null;
-  }
-  async function rejectReq(id) {
-    if(!confirm('Отклонить запрос?')) return;
-    await reqsCol.doc(id).delete();
-  }
-  async function markReqsRead() {
-    if(!currentUser||currentUser.role!=='admin') return;
-    const b=db.batch();
-    requests.forEach(r=>{ if(!r.isRead) b.update(reqsCol.doc(r.id),{isRead:true}); });
-    await b.commit();
-  }
-  function renderReqs() {
-    const c=$('requestsContainer'); if(!c) return;
-    if(!requests.length){ c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет запросов.</div>'; return; }
-    c.innerHTML='';
-    requests.forEach(req=>{
-      const el=document.createElement('div'); el.className='request-card';
-      el.innerHTML=`
-        <div class="request-header">
-          <div class="request-title">${escHtml(req.jobTitle)}</div>
-          <div class="request-meta">${new Date(req.timestamp).toLocaleString()}</div>
-        </div>
-        <div class="request-user"><i class="fas fa-user-circle"></i> ${escHtml(req.userName)} &nbsp;|&nbsp; <i class="fas fa-at"></i> ${escHtml(req.userLogin)}</div>
-        <div class="request-comment">${escHtml(req.comment)}</div>
-        ${currentUser?.role==='admin'?`
-        <div class="request-actions">
-          <button class="accept-btn" onclick="window._accept('${req.id}','${req.userLogin}','${(req.userName||'').replace(/'/g,"\\'")}','${(req.jobTitle||'').replace(/'/g,"\\'")}')">✅ Принять</button>
-          <button class="reject-btn" onclick="window._reject('${req.id}')">❌ Отклонить</button>
-        </div>`:''}`;
-      c.appendChild(el);
+  function savePriceEdit() {
+    const rows = document.querySelectorAll('#priceEditRows .price-edit-row');
+    const items = [];
+    rows.forEach(row=>{
+      const n=row.querySelector('.pr-name')?.value.trim();
+      const p=row.querySelector('.pr-price')?.value.trim();
+      if(n) items.push({name:n, price:p||'—'});
     });
-    updateAdminBell();
-  }
-  window._accept=(id,uid,name,title)=>showAcceptModal(id,uid,name,title);
-  window._reject=(id)=>rejectReq(id);
-
-  // ═══════════════ ЗАДАЧИ / РАБОТА ═══════════════
-  async function initDefTasks() { const s=await tasksCol.limit(1).get(); if(s.empty) for(const t of [{text:"Изучить новый интерфейс",completed:false,createdAt:Date.now()+1},{text:"Проверить статистику",completed:false,createdAt:Date.now()+2},{text:"Связаться с поддержкой",completed:false,createdAt:Date.now()+3}]) await tasksCol.add(t); }
-  async function initDefJobs() { const s=await jobsCol.limit(1).get(); if(s.empty) for(const j of [{title:"Frontend-разработчик",company:"Удалённо",buttonText:"Откликнуться",createdAt:Date.now()+1},{title:"Менеджер проектов",company:"Гибрид",buttonText:"Подробнее",createdAt:Date.now()+2},{title:"UX/UI дизайнер",company:"CreativeLab",buttonText:"Портфолио",createdAt:Date.now()+3}]) await jobsCol.add(j); }
-  function attachTasksL() { if(unsubTasks)unsubTasks(); unsubTasks=tasksCol.orderBy('createdAt','asc').onSnapshot(s=>{tasks=[];s.forEach(d=>tasks.push({id:d.id,...d.data()}));renderTasks();}); }
-  function attachJobsL() { if(unsubJobs)unsubJobs(); unsubJobs=jobsCol.orderBy('createdAt','asc').onSnapshot(s=>{jobs=[];s.forEach(d=>jobs.push({id:d.id,...d.data()}));renderJobs();}); }
-  function attachReqsL() { if(unsubReqs)unsubReqs(); if(currentUser?.role==='admin') unsubReqs=reqsCol.orderBy('timestamp','desc').onSnapshot(s=>{requests=[];s.forEach(d=>requests.push({id:d.id,...d.data(),isRead:d.data().isRead||false}));renderReqs();updateAdminBell();}); }
-
-  async function addTask(txt){ if(currentUser?.role==='admin'&&txt.trim()) await tasksCol.add({text:txt.trim(),completed:false,createdAt:Date.now()}); $('newTaskInput').value=''; }
-  async function toggleTask(id,st){ await tasksCol.doc(id).update({completed:!st}); }
-  async function editTask(id,nt){ if(currentUser?.role==='admin'&&nt?.trim()) await tasksCol.doc(id).update({text:nt.trim()}); }
-  async function delTask(id){ if(currentUser?.role==='admin') await tasksCol.doc(id).delete(); }
-  async function addJob(t,c,b){ if(currentUser?.role==='admin'&&t.trim()) await jobsCol.add({title:t.trim(),company:c.trim()||'Не указана',buttonText:b.trim()||'Откликнуться',createdAt:Date.now()}); $('newJobTitle').value='';$('newJobCompany').value='';$('newJobButtonText').value='Откликнуться'; }
-  async function editJob(id,t,c,b){ if(currentUser?.role==='admin'&&t?.trim()) await jobsCol.doc(id).update({title:t.trim(),company:(c||'').trim()||'Не указана',buttonText:(b||'').trim()||'Откликнуться'}); }
-  async function delJob(id){ if(currentUser?.role==='admin') await jobsCol.doc(id).delete(); }
-
-  function renderTasks(){
-    $('tasksContainer').innerHTML=tasks.map(t=>`
-      <div class="task-item">
-        <div class="task-check ${t.completed?'completed':''}" onclick="toggleTask('${t.id}',${t.completed})">${t.completed?'<i class="fas fa-check"></i>':''}</div>
-        <div class="task-text ${t.completed?'done':''}">${escHtml(t.text)}</div>
-        ${currentUser?.role==='admin'?`<button class="edit-task" onclick="editTask('${t.id}',prompt('Редактировать:','${t.text.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="delTask('${t.id}')"><i class="fas fa-trash-alt"></i></button>`:''}
-      </div>`).join('');
-  }
-  function renderJobs(){
-    $('jobsContainer').innerHTML=jobs.map(j=>`
-      <div class="job-card">
-        <div class="job-header">
-          <div class="job-title">${escHtml(j.title)}</div>
-          ${currentUser?.role==='admin'?`<div class="job-actions"><button class="edit-job" onclick="editJob('${j.id}',prompt('Название:','${j.title.replace(/'/g,"\\'")}'),prompt('Компания:','${j.company.replace(/'/g,"\\'")}'),prompt('Кнопка:','${j.buttonText.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="delJob('${j.id}')"><i class="fas fa-trash-alt"></i></button></div>`:''}
-        </div>
-        <div class="job-company">${escHtml(j.company)}</div>
-        <button class="job-btn" onclick="showReqModal('${j.id}','${j.title.replace(/'/g,"\\'")}') ">${escHtml(j.buttonText)}</button>
-      </div>`).join('');
-  }
-  function showReqModal(jid,jt){
-    if(!currentUser) return;
-    const c=prompt(`Отклик: ${jt}\n\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nКомментарий (мин. 5 слов):`);
-    if(c&&c.trim().split(/\s+/).length>=5){ reqsCol.add({jobId:jid,jobTitle:jt,userName:currentUser.name,userLogin:currentUser.username,comment:c.trim(),timestamp:Date.now(),isRead:false}); alert('Отклик отправлен!'); }
-    else if(c) alert('Минимум 5 слов!');
+    savePrice(items);
+    $('priceEditModal').classList.remove('active');
   }
 
-  function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-  // ═══════════════ АВТОРИЗАЦИЯ + ДАТА РЕГИСТРАЦИИ ═══════════════
-  function loadUsers(){ 
-    let users = JSON.parse(localStorage.getItem('appUsers')||'{}');
-    // Добавляем дату регистрации для старых записей
-    let changed=false;
-    for(let key in users){
-      if(!users[key].registeredAt){
-        users[key].registeredAt = Date.now();
-        changed=true;
-      }
+  // ═══ MODE TOGGLE ═══
+  function applyMode(mode) {
+    currentMode = mode;
+    localStorage.setItem('appMode', mode);
+    const toggle = $('modeToggle');
+    const knob = $('modeKnob');
+    const banner = $('modeBanner');
+    if(mode === 'shop') {
+      toggle?.classList.add('shop-mode');
+      if(knob) knob.innerText='🛒';
+      banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
+      if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
+      if(banner) banner.querySelector('span').innerText='🛒';
+    } else {
+      toggle?.classList.remove('shop-mode');
+      if(knob) knob.innerText='💰';
+      banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
+      if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
+      if(banner) banner.querySelector('span').innerText='💰';
     }
-    if(changed) saveUsers(users);
-    return users;
+    rebuildNav();
   }
-  function getUsers(){ return JSON.parse(localStorage.getItem('appUsers')||'{}'); }
-  function saveUsers(u){ localStorage.setItem('appUsers',JSON.stringify(u)); }
-  function saveSession(u){ localStorage.setItem('currentSession',JSON.stringify({username:u.username,role:u.role,name:u.name,loginTime:Date.now()})); }
-  function getSession(){ const r=localStorage.getItem('currentSession');if(!r)return null;try{const s=JSON.parse(r);if(Date.now()-s.loginTime>7*24*3600000){localStorage.removeItem('currentSession');return null;}return s;}catch{return null;} }
-  function clearSession(){ localStorage.removeItem('currentSession'); }
+  function rebuildNav() {
+    if(!currentUser) return;
+    const nav=$('bottomNav');
+    // Clear and rebuild nav based on mode + role
+    // Keep: menu, tasks, help always
+    // Earn mode: work tab
+    // Shop mode: shop tab
+    const eWork=nav.querySelector('[data-tab="work"]');
+    const eShop=nav.querySelector('[data-tab="shop"]');
+    if(currentMode==='earn') {
+      if(!eWork){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','work');b.innerHTML='<i class="fas fa-briefcase"></i><span>РАБОТА</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+      eShop?.remove();
+    } else {
+      if(!eShop){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','shop');b.innerHTML='<i class="fas fa-shopping-cart"></i><span>МАГАЗИН</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
+      eWork?.remove();
+    }
+    // Re-attach nav listeners
+    nav.querySelectorAll('.nav-item').forEach(btn=>{
+      btn.onclick=()=>switchTab(btn.getAttribute('data-tab'));
+    });
+  }
+
+  // ═══ ЗАКАЗ ═══
+  let currentOrderType = '';
+  window.openOrderModal = function(type, title) {
+    currentOrderType = type;
+    $('orderModalTitle').innerText = title;
+    $('orderContact').value = '';
+    $('orderDesc').value = '';
+    $('orderModal').classList.add('active');
+  };
+  async function submitOrder() {
+    const contact = $('orderContact').value.trim();
+    const desc = $('orderDesc').value.trim();
+    if(!contact){ alert('Введите Telegram @username'); return; }
+    if(!desc){ alert('Опишите задачу'); return; }
+    await shopReqsCol.add({
+      type: currentOrderType,
+      userLogin: currentUser.username,
+      userName: currentUser.name,
+      contact, desc,
+      timestamp: Date.now(),
+      isRead: false
+    });
+    $('orderModal').classList.remove('active');
+    alert('✅ Заявка отправлена! Мы свяжемся с вами в Telegram.');
+  }
+
+  // ═══ БАЛАНС ═══
+  async function initBalance(uid) { const d=await balancesCol.doc(uid).get(); if(!d.exists){await balancesCol.doc(uid).set({balance:0});return 0;} return d.data().balance; }
+  function attachBalanceListener(uid) { if(unsubBalance)unsubBalance(); unsubBalance=balancesCol.doc(uid).onSnapshot(doc=>{if(doc.exists){currentBalance=doc.data().balance;updateBalanceUIOnly();}}); }
+  async function updateBalanceUI() { if(!currentUser)return; const d=await balancesCol.doc(currentUser.username).get(); currentBalance=d.exists?d.data().balance:0; updateBalanceUIOnly(); }
+  function updateBalanceUIOnly() { if(!currentUser)return; $('userBalanceSpan').innerText=currentBalance; $('progressFill').style.width=Math.min(100,(currentBalance/MAX_BAL)*100)+'%'; if($('modalBalance'))$('modalBalance').innerText=currentBalance; }
+  async function addBalance(uid,amt) { const ref=balancesCol.doc(uid); await db.runTransaction(async t=>{const d=await t.get(ref);t.set(ref,{balance:(d.exists?d.data().balance:0)+amt});}); if(currentUser?.username===uid)await updateBalanceUI(); }
+  async function adminAddBalance(uid,userName,amount) { await addBalance(uid,amount); await msgsCol.add({toUser:uid,text:`💰 Администратор изменил ваш баланс: +${amount} ₽. Спасибо за активность!`,amount,jobTitle:'Ручное изменение',timestamp:Date.now(),isRead:false}); alert(`Баланс пользователя ${userName} увеличен на ${amount} ₽`); }
+
+  // ═══ СООБЩЕНИЯ ═══
+  async function sendMsg(uid,amount,jobTitle) { await msgsCol.add({toUser:uid,text:`Ваш отклик на вакансию «${jobTitle}» одобрен! Вам зачислено ${amount} ₽.`,amount,jobTitle,timestamp:Date.now(),isRead:false}); }
+  function attachMsgsListener() { if(unsubMsgs)unsubMsgs(); if(!currentUser||currentUser.role==='admin')return; unsubMsgs=msgsCol.where('toUser','==',currentUser.username).orderBy('timestamp','desc').onSnapshot(snap=>{userMsgs=[];snap.forEach(d=>userMsgs.push({id:d.id,...d.data()}));renderMsgsUI();updateUserBell();}); }
+  function renderMsgsUI() { const c=$('messagesContainer');if(!c)return; if(!userMsgs.length){c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет сообщений.</div>';return;} c.innerHTML=userMsgs.map(m=>`<div class="msg-item ${m.isRead?'':'unread'}"><div class="msg-header"><span class="msg-badge">+${m.amount} ₽</span><span class="msg-date">${new Date(m.timestamp).toLocaleString()}</span></div><div class="msg-body">✅ ${escHtml(m.text)}</div><button class="msg-delete" onclick="window._delMsg('${m.id}')"><i class="fas fa-trash-alt"></i> Удалить</button></div>`).join(''); }
+  window._delMsg=async id=>{await msgsCol.doc(id).delete();};
+  async function markMsgsRead() { if(!currentUser||currentUser.role==='admin')return; const b=db.batch(); userMsgs.forEach(m=>{if(!m.isRead)b.update(msgsCol.doc(m.id),{isRead:true});}); await b.commit(); }
+
+  // ═══ КОЛОКОЛЬЧИК ═══
+  let bubTimer=null;
+  function showBubble(txt){const el=$('bellBubble');el.innerText=txt;el.classList.add('show');if(bubTimer)clearTimeout(bubTimer);bubTimer=setTimeout(()=>el.classList.remove('show'),4500);}
+  function updateAdminBell(){if(!currentUser||currentUser.role!=='admin')return;const n=requests.filter(r=>!r.isRead).length;const b=$('bellBadge');if(n>0){b.style.display='flex';b.innerText=n>9?'9+':n;showBubble(n+' новых запросов');}else{b.style.display='none';}}
+  function updateUserBell(){if(!currentUser||currentUser.role==='admin')return;const n=userMsgs.filter(m=>!m.isRead).length;const b=$('bellBadge');if(n>0){b.style.display='flex';b.innerText=n>9?'9+':n;showBubble(n===1?'Новое сообщение!':n+' новых сообщения');}else{b.style.display='none';}}
+
+  // ═══ ЗАПРОСЫ ═══
+  function showAcceptModal(reqId,userId,userName,jobTitle){pendingReqId=reqId;pendingUserId=userId;$('amountInput').value='500';$('amountModalDesc').innerText=`👤 ${userName}\nВакансия: «${jobTitle}»\n\nВведите сумму для зачисления:`;$('amountModal').classList.add('active');}
+  async function doAccept(){const amt=parseInt($('amountInput').value);if(!amt||amt<=0){alert('Введите корректную сумму');return;}$('amountModal').classList.remove('active');const req=requests.find(r=>r.id===pendingReqId);const jobTitle=req?req.jobTitle:'Вакансия';await addBalance(pendingUserId,amt);await sendMsg(pendingUserId,amt,jobTitle);await reqsCol.doc(pendingReqId).delete();alert(`✅ Принято! Зачислено ${amt} ₽, сообщение отправлено.`);pendingReqId=null;pendingUserId=null;}
+  async function rejectReq(id){if(!confirm('Отклонить запрос?'))return;await reqsCol.doc(id).delete();}
+  async function markReqsRead(){if(!currentUser||currentUser.role!=='admin')return;const b=db.batch();requests.forEach(r=>{if(!r.isRead)b.update(reqsCol.doc(r.id),{isRead:true});});await b.commit();}
+  function renderReqs(){const c=$('requestsContainer');if(!c)return;if(!requests.length){c.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);">Нет запросов.</div>';return;}c.innerHTML='';requests.forEach(req=>{const el=document.createElement('div');el.className='request-card';el.innerHTML=`<div class="request-header"><div class="request-title">${escHtml(req.jobTitle)}</div><div class="request-meta">${new Date(req.timestamp).toLocaleString()}</div></div><div class="request-user"><i class="fas fa-user-circle"></i> ${escHtml(req.userName)} &nbsp;|&nbsp; <i class="fas fa-at"></i> ${escHtml(req.userLogin)}</div><div class="request-comment">${escHtml(req.comment)}</div>${currentUser?.role==='admin'?`<div class="request-actions"><button class="accept-btn" onclick="window._accept('${req.id}','${req.userLogin}','${(req.userName||'').replace(/'/g,"\\'")}','${(req.jobTitle||'').replace(/'/g,"\\'")}')">✅ Принять</button><button class="reject-btn" onclick="window._reject('${req.id}')">❌ Отклонить</button></div>`:''}`;c.appendChild(el);});updateAdminBell();}
+  window._accept=(id,uid,name,title)=>showAcceptModal(id,uid,name,title);
+  window._reject=id=>rejectReq(id);
+
+  // ═══ ЗАДАЧИ / РАБОТА ═══
+  async function initDefTasks(){const s=await tasksCol.limit(1).get();if(s.empty)for(const t of [{text:"Изучить новый интерфейс",completed:false,createdAt:Date.now()+1},{text:"Проверить статистику",completed:false,createdAt:Date.now()+2},{text:"Связаться с поддержкой",completed:false,createdAt:Date.now()+3}])await tasksCol.add(t);}
+  async function initDefJobs(){const s=await jobsCol.limit(1).get();if(s.empty)for(const j of [{title:"Frontend-разработчик",company:"Удалённо",buttonText:"Откликнуться",createdAt:Date.now()+1},{title:"Менеджер проектов",company:"Гибрид",buttonText:"Подробнее",createdAt:Date.now()+2},{title:"UX/UI дизайнер",company:"CreativeLab",buttonText:"Портфолио",createdAt:Date.now()+3}])await jobsCol.add(j);}
+  function attachTasksL(){if(unsubTasks)unsubTasks();unsubTasks=tasksCol.orderBy('createdAt','asc').onSnapshot(s=>{tasks=[];s.forEach(d=>tasks.push({id:d.id,...d.data()}));renderTasks();});}
+  function attachJobsL(){if(unsubJobs)unsubJobs();unsubJobs=jobsCol.orderBy('createdAt','asc').onSnapshot(s=>{jobs=[];s.forEach(d=>jobs.push({id:d.id,...d.data()}));renderJobs();});}
+  function attachReqsL(){if(unsubReqs)unsubReqs();if(currentUser?.role==='admin')unsubReqs=reqsCol.orderBy('timestamp','desc').onSnapshot(s=>{requests=[];s.forEach(d=>requests.push({id:d.id,...d.data(),isRead:d.data().isRead||false}));renderReqs();updateAdminBell();});}
+  async function addTask(txt){if(currentUser?.role==='admin'&&txt.trim())await tasksCol.add({text:txt.trim(),completed:false,createdAt:Date.now()});$('newTaskInput').value='';}
+  async function toggleTask(id,st){await tasksCol.doc(id).update({completed:!st});}
+  async function editTask(id,nt){if(currentUser?.role==='admin'&&nt?.trim())await tasksCol.doc(id).update({text:nt.trim()});}
+  async function delTask(id){if(currentUser?.role==='admin')await tasksCol.doc(id).delete();}
+  async function addJob(t,c,b){if(currentUser?.role==='admin'&&t.trim())await jobsCol.add({title:t.trim(),company:c.trim()||'Не указана',buttonText:b.trim()||'Откликнуться',createdAt:Date.now()});$('newJobTitle').value='';$('newJobCompany').value='';$('newJobButtonText').value='Откликнуться';}
+  async function editJob(id,t,c,b){if(currentUser?.role==='admin'&&t?.trim())await jobsCol.doc(id).update({title:t.trim(),company:(c||'').trim()||'Не указана',buttonText:(b||'').trim()||'Откликнуться'});}
+  async function delJob(id){if(currentUser?.role==='admin')await jobsCol.doc(id).delete();}
+  function renderTasks(){$('tasksContainer').innerHTML=tasks.map(t=>`<div class="task-item"><div class="task-check ${t.completed?'completed':''}" onclick="toggleTask('${t.id}',${t.completed})">${t.completed?'<i class="fas fa-check"></i>':''}</div><div class="task-text ${t.completed?'done':''}">${escHtml(t.text)}</div>${currentUser?.role==='admin'?`<button class="edit-task" onclick="editTask('${t.id}',prompt('Редактировать:','${t.text.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-task" onclick="delTask('${t.id}')"><i class="fas fa-trash-alt"></i></button>`:''}</div>`).join('');}
+  function renderJobs(){$('jobsContainer').innerHTML=jobs.map(j=>`<div class="job-card"><div class="job-header"><div class="job-title">${escHtml(j.title)}</div>${currentUser?.role==='admin'?`<div class="job-actions"><button class="edit-job" onclick="editJob('${j.id}',prompt('Название:','${j.title.replace(/'/g,"\\'")}'),prompt('Компания:','${j.company.replace(/'/g,"\\'")}'),prompt('Кнопка:','${j.buttonText.replace(/'/g,"\\'")}'))"><i class="fas fa-edit"></i></button><button class="delete-job" onclick="delJob('${j.id}')"><i class="fas fa-trash-alt"></i></button></div>`:''}</div><div class="job-company">${escHtml(j.company)}</div><button class="job-btn" onclick="showReqModal('${j.id}','${j.title.replace(/'/g,"\\'")}') ">${escHtml(j.buttonText)}</button></div>`).join('');}
+  function showReqModal(jid,jt){if(!currentUser)return;const c=prompt(`Отклик: ${jt}\n\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\n\nКомментарий (мин. 5 слов):`);if(c&&c.trim().split(/\s+/).length>=5){reqsCol.add({jobId:jid,jobTitle:jt,userName:currentUser.name,userLogin:currentUser.username,comment:c.trim(),timestamp:Date.now(),isRead:false});alert('Отклик отправлен!');}else if(c)alert('Минимум 5 слов!');}
+
+  function escHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function escAttr(s){return String(s).replace(/"/g,'&quot;');}
+
+  // ═══ АВТОРИЗАЦИЯ ═══
+  function loadUsers(){let users=JSON.parse(localStorage.getItem('appUsers')||'{}');let changed=false;for(let key in users){if(!users[key].registeredAt){users[key].registeredAt=Date.now();changed=true;}}if(changed)saveUsers(users);return users;}
+  function getUsers(){return JSON.parse(localStorage.getItem('appUsers')||'{}');}
+  function saveUsers(u){localStorage.setItem('appUsers',JSON.stringify(u));}
+  function saveSession(u){localStorage.setItem('currentSession',JSON.stringify({username:u.username,role:u.role,name:u.name,loginTime:Date.now()}));}
+  function getSession(){const r=localStorage.getItem('currentSession');if(!r)return null;try{const s=JSON.parse(r);if(Date.now()-s.loginTime>7*24*3600000){localStorage.removeItem('currentSession');return null;}return s;}catch{return null;}}
+  function clearSession(){localStorage.removeItem('currentSession');}
 
   async function afterLogin(){
-    hideAuth(); applyTheme(); updateUI();
+    hideAuth(); applyTheme();
+    currentMode = localStorage.getItem('appMode')||'earn';
+    updateUI();
     await initDefTasks(); await initDefJobs();
     await initBalance(currentUser.username); await updateBalanceUI();
-    attachBalanceListener(currentUser.username); // слушаем изменения баланса в реальном времени
+    attachBalanceListener(currentUser.username);
     attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
+    await loadPrice();
     setupNav();
+    applyMode(currentMode);
     if(currentUser.role==='admin') renderUsersList();
   }
-  function login(u,p){ const users=getUsers(),user=users[u]; if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;} $('loginError').innerText='Неверный логин или пароль';return false; }
-  async function register(name,pwd){ 
-    if(!name.trim()){$('regError').innerText='Введите имя';return;} 
-    const users=getUsers(), id='user_'+Date.now();
-    const registeredAt = Date.now();
-    users[id]={username:id,password:pwd||'',role:'user',name:name.trim(), registeredAt};
-    saveUsers(users);
-    currentUser={username:id,role:'user',name:name.trim()};
-    saveSession(currentUser);
-    await balancesCol.doc(id).set({balance:0});
-    afterLogin(); 
+
+  function login(u,p){
+    // Admin special login
+    if(u==='1'&&p==='1'){
+      let users=getUsers();
+      if(!users['vadyms']){
+        users['vadyms']={username:'vadyms',password:'1',role:'admin',name:'Администратор',registeredAt:Date.now()};
+        saveUsers(users);
+      }
+      currentUser={username:'vadyms',role:'admin',name:'Администратор'};
+      saveSession(currentUser); afterLogin(); return true;
+    }
+    const users=getUsers(),user=users[u];
+    if(user&&user.password===p){currentUser={username:u,role:user.role,name:user.name};saveSession(currentUser);afterLogin();return true;}
+    $('loginError').innerText='Неверный логин или пароль';return false;
   }
-  function logout(){ clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth(); }
+  async function register(name,pwd){if(!name.trim()){$('regError').innerText='Введите имя';return;}const users=getUsers(),id='user_'+Date.now();users[id]={username:id,password:pwd||'',role:'user',name:name.trim(),registeredAt:Date.now()};saveUsers(users);currentUser={username:id,role:'user',name:name.trim()};saveSession(currentUser);await balancesCol.doc(id).set({balance:0});afterLogin();}
+  function logout(){clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth();}
 
   function updateUI(){
     if(!currentUser)return;
@@ -640,79 +768,45 @@
     $('adminTaskPanel').style.display=currentUser.role==='admin'?'block':'none';
     $('adminJobsPanel').style.display=currentUser.role==='admin'?'block':'none';
     const nav=$('bottomNav');
-    // Вкладка ЗАПРОСЫ для админа
     const eReq=nav.querySelector('[data-tab="requests"]');
     if(currentUser.role==='admin'&&!eReq){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','requests');b.innerHTML='<i class="fas fa-envelope"></i><span>ЗАПРОСЫ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
-    else if(currentUser.role!=='admin'&&eReq) eReq.remove();
-    // Вкладка СООБЩЕНИЯ для пользователя
+    else if(currentUser.role!=='admin'&&eReq)eReq.remove();
     const eMsg=nav.querySelector('[data-tab="messages"]');
     if(currentUser.role!=='admin'&&!eMsg){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','messages');b.innerHTML='<i class="fas fa-envelope"></i><span>СООБЩЕНИЯ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
-    else if(currentUser.role==='admin'&&eMsg) eMsg.remove();
-    // Вкладка ПОЛЬЗОВАТЕЛИ для админа
+    else if(currentUser.role==='admin'&&eMsg)eMsg.remove();
     const eUsers=nav.querySelector('[data-tab="users"]');
     if(currentUser.role==='admin'&&!eUsers){const b=document.createElement('button');b.className='nav-item';b.setAttribute('data-tab','users');b.innerHTML='<i class="fas fa-users"></i><span>ПОЛЬЗОВАТЕЛИ</span>';nav.insertBefore(b,nav.querySelector('[data-tab="help"]'));}
-    else if(currentUser.role!=='admin'&&eUsers) eUsers.remove();
+    else if(currentUser.role!=='admin'&&eUsers)eUsers.remove();
+    if($('priceEditBtn')) $('priceEditBtn').style.display=currentUser.role==='admin'?'block':'none';
   }
 
-  function applyTheme(){ document.body.classList.toggle('dark',currentTheme==='dark');$('themeColorMeta')?.setAttribute('content',currentTheme==='dark'?'#1e293b':'#ffffff');localStorage.setItem('appTheme',currentTheme); }
-  function toggleTheme(){ currentTheme=currentTheme==='light'?'dark':'light';applyTheme(); }
+  function applyTheme(){document.body.classList.toggle('dark',currentTheme==='dark');$('themeColorMeta')?.setAttribute('content',currentTheme==='dark'?'#1e293b':'#ffffff');localStorage.setItem('appTheme',currentTheme);}
+  function toggleTheme(){currentTheme=currentTheme==='light'?'dark':'light';applyTheme();}
 
-  const TAB_TITLES={menu:'МЕНЮ',tasks:'ЗАДАНИЯ',work:'РАБОТА',help:'ПОМОЩЬ',requests:'ЗАПРОСЫ',messages:'СООБЩЕНИЯ',users:'ПОЛЬЗОВАТЕЛИ'};
+  const TAB_TITLES={menu:'МЕНЮ',tasks:'ЗАДАНИЯ',work:'РАБОТА',shop:'МАГАЗИН',help:'ПОМОЩЬ',requests:'ЗАПРОСЫ',messages:'СООБЩЕНИЯ',users:'ПОЛЬЗОВАТЕЛИ'};
 
-  // Отрисовка списка пользователей для админа
   async function renderUsersList(){
-    if(!currentUser || currentUser.role!=='admin') return;
-    const users = getUsers();
-    const container = $('usersListContainer');
-    if(!container) return;
-    if(Object.keys(users).length===0){
-      container.innerHTML='<div style="text-align:center;padding:20px;">Нет пользователей</div>';
-      return;
+    if(!currentUser||currentUser.role!=='admin')return;
+    const users=getUsers();const container=$('usersListContainer');if(!container)return;
+    if(Object.keys(users).length===0){container.innerHTML='<div style="text-align:center;padding:20px;">Нет пользователей</div>';return;}
+    let html=`<table class="users-table"><thead><tr><th>Имя</th><th>Логин</th><th>Пароль</th><th>Дата</th><th>Баланс</th><th></th></tr></thead><tbody>`;
+    for(let [uid,u] of Object.entries(users)){
+      if(u.role==='admin')continue;
+      let balance=0;try{const balDoc=await balancesCol.doc(uid).get();if(balDoc.exists)balance=balDoc.data().balance;}catch(e){}
+      const dateStr=u.registeredAt?new Date(u.registeredAt).toLocaleString():'—';
+      html+=`<tr><td>${escHtml(u.name||'')}</td><td>${escHtml(uid)}</td><td>${escHtml(u.password||'')}</td><td>${dateStr}</td><td>${balance} ₽</td><td><button class="user-balance-btn" data-uid="${uid}" data-name="${escAttr(u.name)}">💰</button></td></tr>`;
     }
-    let html=`<table class="users-table"><thead><tr><th>Имя</th><th>Логин</th><th>Пароль</th><th>Дата регистрации</th><th>Баланс</th><th>Действие</th></tr></thead><tbody>`;
-    for(let [uid, u] of Object.entries(users)){
-      if(uid==='vadyms') continue; // скроем админа из списка, чтобы не редактировать сам себя
-      let balance = 0;
-      try{
-        const balDoc = await balancesCol.doc(uid).get();
-        if(balDoc.exists) balance = balDoc.data().balance;
-      }catch(e){}
-      const dateStr = u.registeredAt ? new Date(u.registeredAt).toLocaleString() : '—';
-      html+=`<tr><td>${escHtml(u.name||'')}</td><td>${escHtml(uid)}</td><td>${escHtml(u.password||'')}</td><td>${dateStr}</td><td>${balance} ₽</td><td><button class="user-balance-btn" data-uid="${uid}" data-name="${escHtml(u.name)}">💰 Изменить баланс</button></td></tr>`;
-    }
-    html+=`</tbody></table>`;
-    container.innerHTML = html;
-    document.querySelectorAll('.user-balance-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const uid = btn.getAttribute('data-uid');
-        const name = btn.getAttribute('data-name');
-        showEditUserBalanceModal(uid, name);
-      });
-    });
+    html+=`</tbody></table>`;container.innerHTML=html;
+    document.querySelectorAll('.user-balance-btn').forEach(btn=>{btn.addEventListener('click',()=>{showEditUserBalanceModal(btn.getAttribute('data-uid'),btn.getAttribute('data-name'));});});
   }
 
-  let currentEditUserId = null, currentEditUserName = '';
-  function showEditUserBalanceModal(uid, userName){
-    currentEditUserId = uid;
-    currentEditUserName = userName;
-    $('editBalanceDesc').innerText = `Пользователь: ${userName} (${uid})`;
-    $('editBalanceAmount').value = '100';
-    $('editUserBalanceModal').classList.add('active');
-  }
-  async function confirmEditBalance(){
-    const amount = parseInt($('editBalanceAmount').value);
-    if(!amount || amount<=0){ alert('Введите корректную сумму'); return; }
-    await adminAddBalance(currentEditUserId, currentEditUserName, amount);
-    $('editUserBalanceModal').classList.remove('active');
-    renderUsersList(); // обновим таблицу
-    currentEditUserId = null;
-  }
+  let currentEditUserId=null,currentEditUserName='';
+  function showEditUserBalanceModal(uid,userName){currentEditUserId=uid;currentEditUserName=userName;$('editBalanceDesc').innerText=`Пользователь: ${userName} (${uid})`;$('editBalanceAmount').value='100';$('editUserBalanceModal').classList.add('active');}
+  async function confirmEditBalance(){const amount=parseInt($('editBalanceAmount').value);if(!amount||amount<=0){alert('Введите корректную сумму');return;}await adminAddBalance(currentEditUserId,currentEditUserName,amount);$('editUserBalanceModal').classList.remove('active');renderUsersList();currentEditUserId=null;}
 
   function setupNav(){
     $('bottomNav').querySelectorAll('.nav-item').forEach(b=>{const c=b.cloneNode(true);b.replaceWith(c);});
-    $('bottomNav').querySelectorAll('.nav-item').forEach(btn=>{
-      btn.addEventListener('click',()=>switchTab(btn.getAttribute('data-tab')));
-    });
+    $('bottomNav').querySelectorAll('.nav-item').forEach(btn=>{btn.addEventListener('click',()=>switchTab(btn.getAttribute('data-tab')));});
     $('themeCard')?.addEventListener('click',toggleTheme);
     $('logoutCard')?.addEventListener('click',logout);
     $('addTaskBtn')?.addEventListener('click',()=>addTask($('newTaskInput').value));
@@ -724,37 +818,33 @@
     $('cancelAmountBtn')?.addEventListener('click',()=>{$('amountModal').classList.remove('active');pendingReqId=null;pendingUserId=null;});
     $('confirmEditBalanceBtn')?.addEventListener('click',confirmEditBalance);
     $('cancelEditBalanceBtn')?.addEventListener('click',()=>{$('editUserBalanceModal').classList.remove('active');currentEditUserId=null;});
+    $('confirmOrderBtn')?.addEventListener('click',submitOrder);
+    $('cancelOrderBtn')?.addEventListener('click',()=>$('orderModal').classList.remove('active'));
+    $('addPriceRowBtn')?.addEventListener('click',addPriceRow);
+    $('savePriceEditBtn')?.addEventListener('click',savePriceEdit);
+    $('cancelPriceEditBtn')?.addEventListener('click',()=>$('priceEditModal').classList.remove('active'));
+    $('modeToggle')?.addEventListener('click',()=>applyMode(currentMode==='earn'?'shop':'earn'));
     $('bellButton')?.addEventListener('click',()=>{
       $('bellBubble').classList.remove('show');
-      if(currentUser?.role==='admin'){
-        const u=requests.filter(r=>!r.isRead);
-        if(!u.length){alert('Нет новых уведомлений');return;}
-        $('notifyList').innerHTML=u.map(r=>`<div class="notify-item">📌 ${escHtml(r.jobTitle)} — ${escHtml(r.userName)}</div>`).join('');
-        $('notifyModal').classList.add('active');
-      } else {
-        switchTab('messages');
-      }
+      if(currentUser?.role==='admin'){const u=requests.filter(r=>!r.isRead);if(!u.length){alert('Нет новых уведомлений');return;}$('notifyList').innerHTML=u.map(r=>`<div class="notify-item">📌 ${escHtml(r.jobTitle)} — ${escHtml(r.userName)}</div>`).join('');$('notifyModal').classList.add('active');}
+      else{switchTab('messages');}
     });
     ['faq1','faq2','telegramCard'].forEach(id=>$(id)?.querySelector('.help-question')?.addEventListener('click',function(){this.nextElementSibling.classList.toggle('show');}));
-    $('profileCard')?.addEventListener('click',()=>{
-      if(currentUser?.role==='admin'){
-        switchTab('users');
-      } else {
-        alert(`Ваш профиль:\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\nБаланс: ${currentBalance} ₽`);
-      }
-    });
+    $('profileCard')?.addEventListener('click',()=>{if(currentUser?.role==='admin'){switchTab('users');}else{alert(`Ваш профиль:\nИмя: ${currentUser.name}\nЛогин: ${currentUser.username}\nБаланс: ${currentBalance} ₽`);}});
+    $('statsCard')?.addEventListener('click',()=>switchTab('tasks'));
   }
 
   async function switchTab(tabId){
-    ['menu','tasks','work','requests','messages','help','users'].forEach(id=>document.getElementById('tab-'+id)?.classList.remove('active-pane'));
+    ['menu','tasks','work','shop','requests','messages','help','users'].forEach(id=>document.getElementById('tab-'+id)?.classList.remove('active-pane'));
     document.getElementById('tab-'+tabId)?.classList.add('active-pane');
     $('bottomNav').querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.getAttribute('data-tab')===tabId));
     $('dynamicTitle').innerText=TAB_TITLES[tabId]||'';
-    if(tabId==='tasks') renderTasks();
-    if(tabId==='work') renderJobs();
+    if(tabId==='tasks')renderTasks();
+    if(tabId==='work')renderJobs();
+    if(tabId==='shop'){renderPrice();if($('priceEditBtn'))$('priceEditBtn').style.display=currentUser?.role==='admin'?'block':'none';}
     if(tabId==='requests'&&currentUser?.role==='admin'){markReqsRead();renderReqs();}
     if(tabId==='messages'&&currentUser?.role!=='admin'){markMsgsRead();renderMsgsUI();}
-    if(tabId==='users'&&currentUser?.role==='admin') await renderUsersList();
+    if(tabId==='users'&&currentUser?.role==='admin')await renderUsersList();
   }
 
   function initAuthUI(){
@@ -767,8 +857,8 @@
     $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;if(!n)$('regError').innerText='Введите имя';else register(n,p);});
   }
 
-  function showAuth(){ $('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null; }
-  function hideAuth(){ $('authOverlay').classList.add('hidden');$('mainApp').style.display='flex'; }
+  function showAuth(){$('authOverlay').classList.remove('hidden');$('mainApp').style.display='none';[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;}
+  function hideAuth(){$('authOverlay').classList.add('hidden');$('mainApp').style.display='flex';}
 
   async function start(){
     loadUsers();
@@ -779,12 +869,15 @@
       const ud=getUsers()[sess.username];
       if(ud){
         currentUser={username:sess.username,role:ud.role,name:ud.name};
-        hideAuth(); updateUI();
+        hideAuth(); currentMode=localStorage.getItem('appMode')||'earn'; updateUI();
         await initDefTasks(); await initDefJobs();
         await initBalance(currentUser.username); await updateBalanceUI();
         attachBalanceListener(currentUser.username);
         attachTasksL(); attachJobsL(); attachReqsL(); attachMsgsListener();
+        await loadPrice();
         setupNav();
+        applyMode(currentMode);
+        if(currentUser.role==='admin')renderUsersList();
       } else showAuth();
     } else showAuth();
     initAuthUI();
