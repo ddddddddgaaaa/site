@@ -147,6 +147,26 @@
     body.dark .mode-dropdown { box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
     body.dark .mode-option.selected { background: var(--nav-active-bg); }
 
+    /* Loading animation for buttons */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-left: 8px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     /* ── BELL ── */
     .bell-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
     .bell-icon { position: relative; cursor: pointer; font-size: 24px; color: var(--text-secondary); background: transparent; border: none; padding: 8px; }
@@ -821,56 +841,65 @@ let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalanc
   }
 
   function login(u,p){
-    // Admin special login
-    if(u==='1'&&p==='1'){
-      let users=getUsers();
-      if(!users['vadyms']){
-        users['vadyms']={username:'vadyms',password:'1',role:'admin',name:'Администратор',registeredAt:Date.now()};
-        saveUsers(users);
+    $('loginError').innerText='';
+    $('loginError').style.color='';
+    $('doLoginBtn').classList.add('loading');
+    
+    setTimeout(async ()=>{
+      // Admin special login
+      if(u==='1'&&p==='1'){
+        let users=getUsers();
+        if(!users['vadyms']){
+          users['vadyms']={username:'vadyms',password:'1',role:'admin',name:'Администратор',registeredAt:Date.now()};
+          saveUsers(users);
+        }
+        currentUser={username:'vadyms',role:'admin',name:'Администратор'};
+        saveSession(currentUser); 
+        afterLogin();
+        $('doLoginBtn').classList.remove('loading');
+        return;
       }
-      const adminUser = users['vadyms'];
-      currentUser={username:'vadyms',role:'admin',name:'Администратор'};
-      saveSession(currentUser); 
-      afterLogin(); 
-      return true;
-    }
-    const users=getUsers(),user=users[u];
-    if(user&&user.password===p&&typeof user.password==='string'){
-      currentUser={username:u,role:user.role,name:user.name};
-      saveSession(currentUser);
-      afterLogin();
-      return true;
-    }
-    $('loginError').innerText='Неверный логин или пароль';
-    return false;
+      const users=getUsers(),user=users[u];
+      if(user&&user.password===p&&typeof user.password==='string'){
+        currentUser={username:u,role:user.role,name:user.name};
+        saveSession(currentUser);
+        afterLogin();
+      } else {
+        $('loginError').innerText='Неверный логин или пароль';
+        $('doLoginBtn').classList.remove('loading');
+      }
+    }, 500);
   }
   async function register(name,pwd){
-    if(!name.trim()){$('regError').innerText='Введите псевдоним';return;}
+    $('regError').innerText='';
+    $('doRegisterBtn').classList.add('loading');
+    
+    await new Promise(r => setTimeout(r, 800));
+    
+    if(!name.trim()){
+      $('regError').innerText='Введите псевдоним';
+      $('doRegisterBtn').classList.remove('loading');
+      return;
+    }
     const users=getUsers();
-    const id='user_'+Date.now();
-    users[id]={
-      username:id,
+    const loginId = name.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    const username = loginId || ('user_' + Date.now());
+    users[username]={
+      username: username,
       password:pwd||'',
       role:'user',
       name:name.trim(),
       registeredAt:Date.now()
     };
     saveUsers(users);
-    await balancesCol.doc(id).set({balance:0});
-    
-    // Check if admin is currently logged in to refresh their users list
-    const adminSess = getSession();
-    if(adminSess) {
-      const adminUser = users[adminSess.username];
-      if(adminUser && adminUser.role === 'admin') {
-        renderUsersList();
-        return;
-      }
-    }
+    await balancesCol.doc(username).set({balance:0});
     
     showAuth();
-    $('loginError').innerText = 'Регистрация успешна! Войдите в аккаунт.';
+    $('loginUsername').value = username;
+    $('loginPassword').value = pwd;
+    $('loginError').innerText = '✅ Регистрация успешна! Логин: ' + username + '. Можете войти.';
     $('loginError').style.color = 'var(--success-color)';
+    $('doRegisterBtn').classList.remove('loading');
   }
   function logout(){clearSession();[unsubTasks,unsubJobs,unsubReqs,unsubMsgs,unsubBalance].forEach(u=>u&&u());currentUser=null;showAuth();}
 
@@ -976,8 +1005,8 @@ function initAuthUI(){
     const lt=$('loginTabBtn'),rt=$('registerTabBtn'),lf=$('loginForm'),rf=$('registerForm');
     lt.addEventListener('click',()=>{lt.classList.add('active');rt.classList.remove('active');lf.style.display='flex';rf.style.display='none';});
     rt.addEventListener('click',()=>{rt.classList.add('active');lt.classList.remove('active');lf.style.display='none';rf.style.display='flex';});
-    $('switchToLogin')?.addEventListener('click',()=>lt.click());
-    $('switchToRegister')?.addEventListener('click',()=>lt.click());
+    $('switchToLogin')?.addEventListener('click',()=>{rt.classList.remove('active');lt.classList.add('active');lf.style.display='flex';rf.style.display='none';});
+    $('switchToRegister')?.addEventListener('click',()=>{lt.classList.remove('active');rt.classList.add('active');lf.style.display='none';rf.style.display='flex';});
     $('doLoginBtn').addEventListener('click',()=>{const u=$('loginUsername').value.trim(),p=$('loginPassword').value;if(!u)$('loginError').innerText='Введите логин';else login(u,p);});
     $('doRegisterBtn').addEventListener('click',()=>{const n=$('regName').value.trim(),p=$('regPassword').value;register(n,p);});
   }
