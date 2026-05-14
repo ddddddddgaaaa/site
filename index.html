@@ -690,14 +690,14 @@ let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalanc
 if(mode === 'shop') {
         btn?.classList.add('shop');
         if(icon) icon.innerText = '🛒';
-        if(text) text.innerText = 'МАГ.';
+        if(text) text.innerText = 'ПОКУПКА';
         banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
         if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
         if(banner) banner.querySelector('span').innerText='🛒';
       } else {
         btn?.classList.remove('shop');
         if(icon) icon.innerText = '💰';
-        if(text) text.innerText = 'ЗАРБ.';
+        if(text) text.innerText = 'ЗАРОБОТОК';
         banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
         if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
         if(banner) banner.querySelector('span').innerText='💰';
