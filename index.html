@@ -91,24 +91,26 @@
 
     /* ── HEADER ── */
     .app-header { background: var(--app-bg); padding: 16px 20px 12px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
-    .app-header h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; }
+    .app-header h1 { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #8b5cf6); background-clip: text; -webkit-background-clip: text; color: transparent; margin: 0; white-space: nowrap; }
 
 /* ── MODE SELECTOR ── */
     .mode-selector { position: relative; display: inline-block; }
-    .mode-btn {
-      background: var(--input-bg);
-      border: 1.5px solid var(--input-border);
-      border-radius: 40px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+.mode-btn {
+       background: var(--input-bg);
+       border: 1.5px solid var(--input-border);
+       border-radius: 40px;
+       padding: 6px 10px;
+       font-size: 12px;
+       font-weight: 700;
+       color: var(--text-secondary);
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       gap: 4px;
+       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+       min-width: 100px;
+       justify-content: center;
+     }
     .mode-btn:hover { border-color: var(--accent); }
     .mode-btn.shop { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; border-color: #7c3aed; }
     .mode-btn.earn { color: var(--accent); }
@@ -685,21 +687,21 @@ let unsubTasks=null, unsubJobs=null, unsubReqs=null, unsubMsgs=null, unsubBalanc
      const dropdown = $('modeDropdown');
      const banner = $('modeBanner');
      
-     if(mode === 'shop') {
-       btn?.classList.add('shop');
-       if(icon) icon.innerText = '🛒';
-       if(text) text.innerText = 'ПОКУПКА';
-       banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
-       if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
-       if(banner) banner.querySelector('span').innerText='🛒';
-     } else {
-       btn?.classList.remove('shop');
-       if(icon) icon.innerText = '💰';
-       if(text) text.innerText = 'ЗАРАБОТОК';
-       banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
-       if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
-       if(banner) banner.querySelector('span').innerText='💰';
-     }
+if(mode === 'shop') {
+        btn?.classList.add('shop');
+        if(icon) icon.innerText = '🛒';
+        if(text) text.innerText = 'МАГ.';
+        banner?.classList.remove('earn-banner'); banner?.classList.add('shop-banner');
+        if($('modeBannerText')) $('modeBannerText').innerText='Режим: Покупка — закажи бота, сайт или услугу';
+        if(banner) banner.querySelector('span').innerText='🛒';
+      } else {
+        btn?.classList.remove('shop');
+        if(icon) icon.innerText = '💰';
+        if(text) text.innerText = 'ЗАРБ.';
+        banner?.classList.remove('shop-banner'); banner?.classList.add('earn-banner');
+        if($('modeBannerText')) $('modeBannerText').innerText='Режим: Заработок — выполняй задания и откликайся на вакансии';
+        if(banner) banner.querySelector('span').innerText='💰';
+      }
      
      // Update dropdown selected state
      document.querySelectorAll('.mode-option').forEach(opt => {
